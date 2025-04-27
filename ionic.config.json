@@ -1,0 +1,7 @@
+{
+  "name": "trasaturi_personalitate_react_ionic",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
