@@ -1,0 +1,81 @@
+/*MAIN CONTAINER*/
+.main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;           /* fill full viewport height */
+    background-color: black;
+    overflow: hidden;        /* prevent overflow when shrinking */
+}
+.main-container > * {
+    flex-shrink: 1;          /* allow shrinking */
+    min-height: 0;           /* needed for proper flex behavior in some cases */
+}
+
+
+/*TOP BAR CONTAINER*/
+.top-bar-container{
+    width: 100%;
+    height: 15%;
+    justify-items: center;
+}
+.top-bar-container-up{
+    /*font-size: 30px;*/
+    /*font-size: 5vh;*/
+    font-size: 1.875rem;
+    color: #00b5ff;
+    margin-top: 20px;
+}
+.top-bar-container-down{
+    color: white;
+    /*font-size: 14px;*/
+    /*font-size: 2.5vh;*/
+    font-size: 0.875rem;
+}
+
+/*MIDDLE CONTAINER*/
+.middle-container{
+}
+
+.split-container-top {
+    display: flex;
+    flex-direction: column;   /* Stack items vertically */
+    align-items: center;      /* Center items horizontally */
+    /*font-size: 11px;*/
+    /*font-size: 2vh;*/
+    font-size: 0.68rem;
+    margin-bottom: 10px;
+}
+
+
+.insta-frame{
+    width: 50vh;
+}
+
+.split-container-bottom{
+    display: flex;
+    flex-direction: column;   /* Stack items vertically */
+    align-items: center;      /* Center items horizontally */
+    margin-top: 10px;
+}
+
+.bottom-bar-buttons{
+    display: flex;
+    justify-content: center;   /* center the whole group of buttons */
+    align-items: center;
+    gap: 12px;                 /* specify exact space between buttons */
+    /*font-size: 11px;*/
+    /*font-size: 2vh;*/
+    font-size: 0.68rem;
+    margin:0;
+}
+
+.bottom-bar-button{
+    margin:0;
+    /*font-size: 11px;*/
+    /*font-size: 2vh;*/
+    font-size: 0.68rem;
+    background-color: #00b5ff;
+    /*padding: 6px 10px;*/
+    padding: 1vh 1.8vh;
+    border-radius: 50px;
+}
