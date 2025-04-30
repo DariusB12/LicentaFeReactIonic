@@ -1,6 +1,6 @@
 
 /*BAR CONTAINER*/
-.insta-images-bar {
+.insta-icons-bar-images {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
@@ -10,9 +10,9 @@
 
 
 /* STYLE FOR ICON IN THE INSTA BAR ICON */
-.insta-bar-icon {
+.insta-icons-bar-icon {
     /*width: 20px;*/
     /*height: 20px;*/
-    width: 3vh;
-    height: 3vh;
+    width: 1.3rem;
+    height: 1.3rem;
 }

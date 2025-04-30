@@ -38,7 +38,7 @@ const InstaCarousel = () => {
     };
 
     return (
-        <div className="carousel-container">
+        <div className="insta-carousel-container">
             {images.map((src, i) => {
                 const pos = getPosition(i);
                 return pos !== null ? (
@@ -46,7 +46,7 @@ const InstaCarousel = () => {
                         key={i}
                         src={src}
                         alt={`img${i}`}
-                        className={`carousel-image pos-${pos}`}
+                        className={`insta-carousel-image insta-carousel-pos-${pos}`}
                     />
                 ) : null;
             })}

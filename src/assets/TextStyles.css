@@ -1,3 +1,4 @@
+/*TEXT FONTS*/
 .kaushan-script-style{
     font-family: "Kaushan Script", cursive;
     font-weight: 400;
@@ -7,7 +8,28 @@
 .roboto-style{
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 300;
+    font-weight: 350;
     font-style: normal;
     font-variation-settings: "wdth" 100;
+}
+
+.input-reset {
+    all: unset; /* removes all default browser styles */
+    box-sizing: border-box;
+}
+
+.blue-button{
+    margin:0;
+    /*font-size: 11px;*/
+    /*font-size: 2vh;*/
+    font-size: 0.688rem;
+    background-color: #00b5ff;
+    /*padding: 6px 10px;*/
+    padding: 0.4rem 0.8rem;
+    border-radius: 50px;
+    width: fit-content;
+    transition: background-color 0.2s ease; /* Smooth transition */
+}
+.blue-button:hover {
+    background-color: #008cc6;
 }

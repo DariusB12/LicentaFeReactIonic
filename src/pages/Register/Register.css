@@ -1,0 +1,76 @@
+.register-main-container{
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: normal;
+}
+.register-top-titles{
+    width: 100% ;
+    justify-items: center;
+    margin-top: 4rem;
+}
+.register-top-titles-up{
+    color: #00b5ff;
+    font-size: 1.875rem; /*30px*/
+
+}
+.register-top-titles-down{
+    color: white;
+    font-size: 0.875rem; /*14px*/
+}
+.register-content-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1rem;
+}
+.register-content-container-inputs{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.register-input{
+    font-size: 0.688rem; /*11px*/
+    border-radius: 20px;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid white;
+    width: 10rem;
+    margin: 0.3rem;
+}
+
+.register-content-register-text{
+    font-size: 0.688rem; /*11px*/
+}
+.register-login-button{
+    font-size: 0.688rem; /*11px*/
+    color: #00b5ff;
+    background-color: black;
+}
+.register-login-button:hover{
+    color: #008cc6;
+}
+
+
+.register-home-button-bar{
+    width: 100%;
+}
+.register-home-button{
+    display: flex;
+    align-items: center;
+    float: right;
+    margin-right: 2rem;
+    margin-top: 2rem;
+}
+.register-home-img{
+    margin-left: 1px;
+    width: 1rem;
+    height: 1rem;
+}
+
+.register-divider {
+    border: none;
+    border-top: 1px solid #ccc; /* adjust color as needed */
+    margin: 16px 0; /* spacing above and below */
+    width: 6rem;    /* or a custom width */
+}
