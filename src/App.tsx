@@ -34,25 +34,33 @@ import {Register} from "./pages/Register/Register";
 import {About} from "./pages/About/About";
 import {AuthProvider} from "./providers/AuthProvider/AuthProvider";
 import {PrivateRoute} from "./components/PrivateRoute/PrivateRoute";
+import {Switch} from "react-router";
 
 
 setupIonicReact();
 
 const App: React.FC = () => (
     <IonApp>
-        <IonReactRouter>
-            <IonRouterOutlet>
-                <AuthProvider>
-                    <Route path="/home" component={Home} exact={true}/>
-                    <Route path="/login" component={Login} exact={true}/>
-                    <Route path="/register" component={Register} exact={true}/>
 
-                    <PrivateRoute path="/about" component={About} exact={true}/>
+        <AuthProvider>
 
-                    <Route exact path="/" render={() => <Redirect to="/home"/>}/>
-                </AuthProvider>
-            </IonRouterOutlet>
-        </IonReactRouter>
+            <IonReactRouter>
+                <IonRouterOutlet style={{ backgroundColor: '#000000' }}>
+                    {/*USING SWITCH SO THAT NO MORE PAGES ARE MOUNTED AT THE SAME TIME*/}
+                    <Switch>
+                        <Route path="/home" component={Home} exact={true}/>
+                        <Route path="/login" component={Login} exact={true}/>
+                        <Route path="/register" component={Register} exact={true}/>
+
+                        <PrivateRoute path="/about" component={About} exact={true}/>
+
+                        <Route exact path="/" render={() => <Redirect to="/home"/>}/>
+                    </Switch>
+                </IonRouterOutlet>
+            </IonReactRouter>
+
+        </AuthProvider>
+
     </IonApp>
 );
 

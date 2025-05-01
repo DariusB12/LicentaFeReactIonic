@@ -28,16 +28,26 @@ export const Register: React.FC<RouteComponentProps> = ({history}) => {
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [showAlertSuccessRegister, setShowAlertSuccessRegister] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>('');
+    // FOR PAGE FADE OUT TRANSITION
+    const [transitionClass, setTransitionClass] = useState('page-transition');
+    // FUNCTION FOR REDIRECTIONS
+    const handleRedirect = useCallback((path: string) => {
+        // Add exit class
+        setTransitionClass('page-transition-exit');
+        history.push(path);
+    },[history]);
 
     const handleOnClickHome = useCallback(async () => {
         log('redirecting to Home page');
-        history.push('/home')
-    }, [history]);
+        // history.push('/home')
+        handleRedirect('/home')
+    }, [handleRedirect]);
 
     const handleOnClickLogin = useCallback(async () => {
         log('redirecting to Login page');
-        history.push('/login')
-    }, [history]);
+        // history.push('/login')
+        handleRedirect('/login')
+    }, [handleRedirect]);
 
     const handleOnClickRegister = useCallback(async () => {
         log('trying to register');
@@ -64,6 +74,7 @@ export const Register: React.FC<RouteComponentProps> = ({history}) => {
     useEffect(() => {
         if (authenticationError) {
             log('error trying to register', authenticationError.message);
+
             if (authenticationError.status_code === 409) {
                 setErrorMessage('Username already taken');
             } else if (authenticationError.status_code === 422) {
@@ -75,14 +86,14 @@ export const Register: React.FC<RouteComponentProps> = ({history}) => {
             setPassword('');
             setRetypedPassword('');
         }
-        if(isRegistered){
+        if (isRegistered) {
             log('registered successfully');
             setShowAlertSuccessRegister(true)
         }
     }, [isRegistered, authenticationError, isAuthenticated, isAuthenticated]);
 
     return (
-        <IonPage className="register-main-container">
+        <IonPage className={`register-main-container ${transitionClass}`}>
 
             <div className="register-home-button-bar">
                 <button className="register-home-button blue-button roboto-style" onClick={handleOnClickHome}>Home <img
@@ -146,8 +157,10 @@ export const Register: React.FC<RouteComponentProps> = ({history}) => {
                 message={"Your account has been created"}
                 onDismiss={() => {
                     setShowAlertSuccessRegister(false)
-                    clearIsRegistered?.().then(()=>{})
-                    history.push('/login');
+                    clearIsRegistered?.().then(() => {
+                    })
+                    // history.push('/login');
+                    handleRedirect('/login')
                 }}/>
         </IonPage>
     )

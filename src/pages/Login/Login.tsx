@@ -23,16 +23,27 @@ export const Login: React.FC<RouteComponentProps> = ({history}) => {
     const [password, setPassword] = useState('');
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>('');
+    // FOR PAGE FADE OUT TRANSITION
+    const [transitionClass, setTransitionClass] = useState('page-transition');
+    // FUNCTION FOR REDIRECTIONS
+    const handleRedirect = useCallback((path: string) => {
+        // Add exit class
+        setTransitionClass('page-transition-exit');
+        history.push(path);
+    },[history]);
 
     const handleOnClickHome = useCallback(async () => {
         log('redirecting to Home page');
-        history.push('/home')
-    }, [history]);
+        // history.push('/home')
+        handleRedirect('/home')
+    }, [handleRedirect]);
 
     const handleOnClickRegister = useCallback(async () => {
         log('redirecting to Register page');
-        history.push('/register')
-    }, [history]);
+        // history.push('/register')
+        handleRedirect('/register')
+
+    }, [handleRedirect]);
 
     const handleOnClickLogin = useCallback(async () => {
         log('trying to log in');
@@ -53,12 +64,13 @@ export const Login: React.FC<RouteComponentProps> = ({history}) => {
         }
         if (isAuthenticated) {
             log('log in successfully, redirecting to main page');
-            history.push('/about');
+            // history.push('/about');
+            handleRedirect('/about')
         }
-    }, [authenticationError, isAuthenticated, isAuthenticated]);
+    }, [handleRedirect, authenticationError, isAuthenticated]);
 
     return (
-        <IonPage className="login-main-container">
+        <IonPage className={`login-main-container ${transitionClass}`}>
 
             <div className="login-home-button-bar">
                 <button className="blue-button roboto-style login-home-button" onClick={handleOnClickHome}>Home <img
@@ -108,9 +120,9 @@ export const Login: React.FC<RouteComponentProps> = ({history}) => {
                 header={"Login Failed"}
                 message={errorMessage}
                 onDismiss={() => {
-                    setShowAlert(false)
                     clearAuthenticationError?.().then(() => {
                     })
+                    setShowAlert(false)
                 }}/>
         </IonPage>
     )
