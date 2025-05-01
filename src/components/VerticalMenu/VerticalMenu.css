@@ -1,0 +1,15 @@
+.vertical-menu-main-box{
+    /*background-color: red;*/
+    /*display: flex;*/
+    /*float: left;*/
+    /*width: 5rem;*/
+    /*height: 100%;*/
+
+}
+
+.vertical-menu-right-bar{
+    border: none;
+    border-top: 1px solid #ccc; /* adjust color as needed */
+    margin: 16px 0; /* spacing above and below */
+    width: 6rem;    /* or a custom width */
+}

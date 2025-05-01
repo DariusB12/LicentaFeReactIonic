@@ -1,0 +1,35 @@
+.custom-alert-container{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(255,255,255,0.1);
+    justify-items: center;
+    align-content: center;
+}
+
+.custom-alert-content{
+    background-color: black;
+    width: auto;
+    height: auto;
+    padding: 0.8rem 1rem;
+    border-radius: 0.3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.custom-alert-header{
+    font-size: 0.875rem;
+}
+
+.custom-alert-message{
+    margin-top: 0.3rem;
+    font-size: 0.688rem;
+}
+
+.custom-alert-close-button-container{
+}
+
+.custom-alert-close-button{
+    margin-top: 0.8rem;
+}

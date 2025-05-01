@@ -33,3 +33,17 @@
 .blue-button:hover {
     background-color: #008cc6;
 }
+
+.grey-button{
+    margin:0;
+    font-size: 0.688rem; /*11px*/
+    background-color: rgb(255,255,255,20%);
+    padding: 0.4rem 0.8rem;
+    border-radius: 50px;
+    width: fit-content;
+    transition: background-color 0.2s ease; /* Smooth transition */
+}
+.grey-button:hover {
+    background-color: rgb(255,255,255,15%);
+}
+
