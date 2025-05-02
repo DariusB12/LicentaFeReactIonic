@@ -19,8 +19,8 @@ const MenuAccountsList: React.FC<AccountsListProps> = ({accounts}) => {
             <IonContent className="unstyled-ion-content">
                 <div className="accounts-list-container-list custom-scroll-area">
                     <IonList className="unstyled-ion-list">
-                        {accounts.map(({id, username, profile_photo}) =>
-                            <MenuAccountsListItem key={id} _id={id} username={username} profile_photo={profile_photo}/>
+                        {accounts.map((account) =>
+                            <MenuAccountsListItem key={account.id}  account={account}/>
                         )}
                     </IonList>
                 </div>

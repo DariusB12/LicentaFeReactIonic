@@ -63,8 +63,6 @@ const VerticalMenu: React.FC = () => {
                         </div>
                     </div>
                 </div>
-                {/*<input className="vertical-menu-container-search-bar input-reset roboto-style" placeholder="search profile"></input>*/}
-
                 <input
                     className="vertical-menu-container-search-bar input-reset roboto-style"
                     placeholder="search profile"
