@@ -1,0 +1,25 @@
+
+.accounts-list-item-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0.2rem;
+    justify-content: left;
+    padding: 0.5rem;
+    width: 8.5rem;
+    margin-bottom: 0.2rem;
+    border-radius: 0.2rem;
+    transition: 0.1s ease;
+}
+.accounts-list-item-container:hover{
+    background-color: rgb(255, 255, 255, 0.2);
+}
+.accounts-list-item-username {
+    font-size: 0.688rem;
+    padding: 0.3rem;
+}
+
+.accounts-list-item-profile-image {
+    width: 1.3rem;
+    height: 1.3rem;
+    border-radius: 100%;
+}

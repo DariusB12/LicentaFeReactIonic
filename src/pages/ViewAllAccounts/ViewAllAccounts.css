@@ -1,0 +1,9 @@
+.view-all-accounts-main-container{
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+}
+.view-all-accounts-content-container{
+    width: 100vw;
+    height: 100vh;
+}

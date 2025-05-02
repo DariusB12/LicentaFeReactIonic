@@ -1,15 +1,237 @@
-.vertical-menu-main-box{
-    /*background-color: red;*/
-    /*display: flex;*/
-    /*float: left;*/
-    /*width: 5rem;*/
-    /*height: 100%;*/
+.vertical-menu-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: black;
+    width: 10rem;
+    height: 100%;
+    margin: 0;
+    border-right: 0.03rem solid rgb(255, 255, 255, 0.4);
 
 }
 
-.vertical-menu-right-bar{
-    border: none;
-    border-top: 1px solid #ccc; /* adjust color as needed */
-    margin: 16px 0; /* spacing above and below */
-    width: 6rem;    /* or a custom width */
+.vertical-menu-top-container {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.vertical-menu-top-container-top {
+    display: flex;
+    padding-left: 1.2rem;
+    flex-direction: row;
+    gap: 0.4rem;
+    justify-content: center;
+    color: #00b5ff;
+    font-size: 1.25rem; /*20px*/
+}
+
+.vertical-menu-info-img {
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 100%;
+    transition: 0.1s ease-out;
+}
+
+.vertical-menu-info-img:hover {
+    background-color: #2b2b2b;
+    transition: 0.2s ease-in;
+}
+
+.vertical-menu-info-button {
+    background-color: black;
+    border-radius: 100%;
+}
+
+.vertical-menu-top-container-bottom {
+    display: flex;
+    flex-direction: row;
+    gap: 0.2rem;
+}
+
+.vertical-menu-container-search-bar {
+    margin: 0.7rem 0;
+    font-size: 0.688rem;
+    min-height: 1.3rem;
+    width: 9rem;
+    padding: 0 0.7rem;
+    background-color: rgb(255, 255, 255, 0.1);
+    border-radius: 1rem;
+}
+
+.vertical-menu-container-bottom-buttons {
+    display: flex;
+    flex-direction: row;
+    height: 1.5rem;
+    gap: 0.4rem;
+}
+
+.vertical-menu-container-add-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 0.6rem;
+    padding: 0.7rem 0.1rem 0.7rem 0.5rem;
+}
+
+.vertical-menu-add-img {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+.vertical-menu-container-view-button {
+    font-size: 0.6rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.vertical-menu-container-bottom {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.vertical-menu-container-logout-button {
+    font-size: 0.688rem;
+    background-color: black;
+    transition: 0.1s ease-in;
+
+}
+
+.vertical-menu-container-delete-account-button {
+    background-color: black;
+    font-size: 0.688rem;
+    transition: 0.1s ease-in;
+
+}
+
+.vertical-menu-container-logout-button:hover {
+    color: #00b5ff;
+}
+
+.vertical-menu-container-delete-account-button:hover {
+    color: #00b5ff;
+}
+
+.vertical-menu-container-bottom-conatiner {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .vertical-menu-container {
+        position: fixed;
+        z-index: 1000;
+        border: 0;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+    }
+    .vertical-menu-container.open {
+        transform: translateX(0);
+        visibility: visible;
+        border: 0;
+    }
+    .vertical-menu-container-grey-background-for-hamburger-menu.open{
+        width: 100%;
+        height: 100%;
+        background-color: rgb(255,255,255,0.2);
+        position: fixed;
+        z-index: 999;
+    }
+}
+
+@media (min-width: 768px) {
+    .vertical-menu-hamburger-container {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .vertical-menu-hamburger-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        border-right: 0.03rem solid rgb(255, 255, 255, 0.4);
+        padding: 0.3rem;
+    }
+
+    .vertical-menu-hamburger_image {
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+
+    .vertical-menu-hamburger-button {
+        background-color: black;
+        min-width: 1.2rem;
+        min-height: 1.2rem;
+        border-radius: 10%;
+        transition: 0.15s ease-in;
+        height: fit-content;
+        width: fit-content;
+        padding: 0 0.1rem ;
+    }
+    .vertical-menu-hamburger-button:hover{
+        background-color: #353535;
+    }
+
+    .vertical-menu-hamburger-add-button {
+        padding: 0;
+        border-radius: 100%;
+        width: 1.2rem;
+        min-height: 1.2rem;
+    }
+
+    .vertical-menu-hamburger-add-img {
+        width: 1rem;
+        height: 1rem;
+        border-radius: 100%;
+        margin-top: 0.1rem;
+    }
+
+    .vertical-menu-hamburger-view-button {
+        padding: 0;
+        border-radius: 100%;
+        min-width: 1.2rem;
+        min-height: 1.2rem;
+        transition: 0.1s ease-in;
+    }
+
+    .vertical-menu-hamburger-view-button:hover {
+        background-color: #2b2b2b;
+    }
+
+    .vertical-menu-hamburger-view-img {
+        width: 0.7rem;
+        height: 0.7rem;
+        border-radius: 100%;
+        margin-top: 0.1rem;
+    }
+
+    .vertical-menu-hamburger-info-button {
+        background-color: black;
+        width: 1.2rem;
+        height: 1.2rem;
+        transition: 0.1s ease-in;
+        border-radius: 100%;
+    }
+
+    .vertical-menu-hamburger-info-button:hover {
+        background-color: #2b2b2b;
+    }
+
+    .vertical-menu-hamburger-info-img {
+        width: 1.2rem;
+        height: 1.2rem;
+        border-radius: 100%;
+    }
+
+    .vertical-menu-hamburger-empty-div {
+        height: 100vh;
+    }
 }

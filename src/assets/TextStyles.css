@@ -1,11 +1,11 @@
 /*TEXT FONTS*/
-.kaushan-script-style{
+.kaushan-script-style {
     font-family: "Kaushan Script", cursive;
     font-weight: 400;
     font-style: normal;
 }
 
-.roboto-style{
+.roboto-style {
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
     font-weight: 350;
@@ -18,8 +18,8 @@
     box-sizing: border-box;
 }
 
-.blue-button{
-    margin:0;
+.blue-button {
+    margin: 0;
     /*font-size: 11px;*/
     /*font-size: 2vh;*/
     font-size: 0.688rem;
@@ -30,21 +30,38 @@
     width: fit-content;
     transition: background-color 0.2s ease; /* Smooth transition */
 }
+
 .blue-button:hover {
-    background-color: #008cc6;
+    background-color: #007aae;
 }
 
-.grey-button{
-    margin:0;
+.grey-button {
+    margin: 0;
     font-size: 0.688rem; /*11px*/
-    background-color: rgb(255,255,255,20%);
+    background-color: rgb(255, 255, 255, 20%);
     padding: 0.4rem 0.8rem;
     border-radius: 50px;
     width: fit-content;
     transition: background-color 0.2s ease; /* Smooth transition */
 }
+
 .grey-button:hover {
-    background-color: rgb(255,255,255,15%);
+    background-color: rgb(255, 255, 255, 15%);
+}
+
+.black-button {
+    margin: 0;
+    font-size: 0.688rem; /*11px*/
+    background-color: black;
+    padding: 0.4rem 0.8rem;
+    border-radius: 50px;
+    border: 1px solid white;
+    width: fit-content;
+    transition: background-color 0.2s ease; /* Smooth transition */
+}
+
+.black-button:hover {
+    background-color: #2b2b2b;
 }
 
 /*PAGE TRANSITIONS WHEN LOADING PAGES*/
@@ -76,3 +93,73 @@
     }
 }
 
+/*IN ORDER TO REMOVE ALL THE ION LIST DEFAULT CSS*/
+.unstyled-ion-list {
+    --background: transparent;
+    --padding-start: 0;
+    --padding-end: 0;
+    --margin-top: 0;
+    --margin-bottom: 0;
+    --ion-safe-area-top: 0;
+    --ion-safe-area-bottom: 0;
+    --ion-item-border-color: transparent;
+    --ion-item-divider-border: none;
+    --ion-item-background: none;
+
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+}
+
+/*IN ORDER TO REMOVE ALL THE ION ITEM DEFAULT CSS*/
+.unstyled-ion-item {
+    --background: transparent;
+    --color: inherit;
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --min-height: auto;
+    --border-width: 0;
+    --inner-border-width: 0;
+    --ripple-color: transparent;
+    --highlight-color-focused: transparent;
+    --highlight-color: transparent;
+    --detail-icon-color: transparent;
+    --detail-icon-opacity: 0;
+    --box-shadow: none;
+}
+
+.unstyled-ion-content {
+    --background: transparent;
+    --padding-start: 0;
+    --padding-end: 0;
+    --margin-top: 0;
+    --margin-bottom: 0;
+    --ion-safe-area-top: 0;
+    --ion-safe-area-bottom: 0;
+    --ion-item-border-color: transparent;
+    --ion-item-divider-border: none;
+    --ion-item-background: none;
+
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+
+}
+
+.custom-scroll-area {
+    height: 100%;
+    overflow-y: auto;
+}
+
+.custom-scroll-area::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scroll-area::-webkit-scrollbar-thumb {
+    background: #7c7c7c;
+    border-radius: 8px;
+}

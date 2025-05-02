@@ -35,6 +35,7 @@ import {About} from "./pages/About/About";
 import {AuthProvider} from "./providers/AuthProvider/AuthProvider";
 import {PrivateRoute} from "./components/PrivateRoute/PrivateRoute";
 import {Switch} from "react-router";
+import {ViewAllAccounts} from "./pages/ViewAllAccounts/ViewAllAccounts";
 
 
 setupIonicReact();
@@ -53,8 +54,9 @@ const App: React.FC = () => (
                         <Route path="/register" component={Register} exact={true}/>
 
                         <PrivateRoute path="/about" component={About} exact={true}/>
+                        <PrivateRoute path="/viewAllAccounts" component={ViewAllAccounts} exact={true}/>
 
-                        <Route exact path="/" render={() => <Redirect to="/home"/>}/>
+                        <Route exact path="/" render={() => <Redirect to="/about"/>}/>
                     </Switch>
                 </IonRouterOutlet>
             </IonReactRouter>
