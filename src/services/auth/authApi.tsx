@@ -16,3 +16,13 @@ export const loginApi: (username: string, password: string) => Promise<AuthProps
 export const registerApi: (username: string, password: string) => Promise<AuthProps> = (username, password) => {
   return withLogs(axios.post(`${authUrl}/signup`, { username, password }, config), 'register');
 }
+
+export const deleteApi: (username: string, password: string) => Promise<AuthProps> = (username, password) => {
+  return withLogs(
+      axios.delete(`${authUrl}/delete`, {
+        ...config,
+        data: { username, password }
+      }),
+      'delete'
+  );
+};

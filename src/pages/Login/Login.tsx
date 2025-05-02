@@ -4,7 +4,7 @@ import React, {useCallback, useContext, useEffect, useState} from "react";
 import './Login.css'
 import {AuthContext} from "../../providers/AuthProvider/AuthContext";
 import CirclesLoading from "../../components/CirclesLoading/CirclesLoading";
-import CustomAlert from "../../components/CustomAlert/CustomAlert";
+import CustomInfoAlert from "../../components/CustomInfoAlert/CustomInfoAlert";
 import {IonPage} from "@ionic/react";
 
 const log = getLogger('Login');
@@ -114,7 +114,7 @@ export const Login: React.FC<RouteComponentProps> = ({history}) => {
                 isOpen={isAuthenticating}
                 message="Login..."
             />
-            <CustomAlert
+            <CustomInfoAlert
                 isOpen={showAlert}
                 // isOpen={true}
                 header={"Login Failed"}

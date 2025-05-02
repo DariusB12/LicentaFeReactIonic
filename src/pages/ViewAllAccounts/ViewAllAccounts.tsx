@@ -9,8 +9,8 @@ import ViewAllAccountsList from "../../components/ViewAllAccountsList/ViewAllAcc
 
 const mockDataAccount: AccountDTO[] = [
     {id: 1, username: 'darius', profile_photo: undefined,no_followers:2000000,no_following:5,no_of_posts:12,analysed:true},
-    {id: 2, username: 'alex', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:true},
-    {id: 3, username: 'marian', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:false},
+    {id: 2, username: 'alex', profile_photo: undefined,no_followers:2,no_following:649777,no_of_posts:1230,analysed:true},
+    {id: 3, username: 'marian', profile_photo: undefined,no_followers:649777,no_following:649777,no_of_posts:649777,analysed:false},
     {id: 4, username: 'ionut', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:false},
     {id: 5, username: 'andrei', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:false},
     {id: 6, username: 'elena', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:false},

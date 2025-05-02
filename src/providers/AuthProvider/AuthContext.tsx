@@ -5,6 +5,7 @@ export type RegisterFn = (username: string, password: string) => Promise<void>;
 export type LogoutFn = () => Promise<void>;
 export type ClearAuthenticationErrorFn = () => Promise<void>;
 export type ClearIsRegisteredFn = () => Promise<void>;
+export type DeleteAccountFn = (username: string, password: string) => Promise<void>;
 
 export interface ErrorResponse {
     status_code: number,
@@ -17,6 +18,8 @@ export interface AuthState {
     login?: LoginFn;
     register?: RegisterFn;
     logout?: LogoutFn;
+    deleteAccount?: DeleteAccountFn;
+    isDeletingAccount: boolean;
     username: string | null;
     token: string | null;
     authenticationError: ErrorResponse | null;
@@ -28,6 +31,7 @@ export interface AuthState {
 
 export const initialState: AuthState = {
     isAuthenticating: false,
+    isDeletingAccount: false,
     isRegistered:false,
     token: '',
     username: '',

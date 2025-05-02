@@ -5,7 +5,7 @@ import {IonPage} from "@ionic/react";
 import './Register.css'
 import {AuthContext} from "../../providers/AuthProvider/AuthContext";
 import CirclesLoading from "../../components/CirclesLoading/CirclesLoading";
-import CustomAlert from "../../components/CustomAlert/CustomAlert";
+import CustomInfoAlert from "../../components/CustomInfoAlert/CustomInfoAlert";
 
 const log = getLogger('Register');
 
@@ -140,7 +140,7 @@ export const Register: React.FC<RouteComponentProps> = ({history}) => {
                 isOpen={isAuthenticating}
                 message="Register..."
             />
-            <CustomAlert
+            <CustomInfoAlert
                 isOpen={showAlert}
                 // isOpen={true}
                 header={"Register Failed"}
@@ -150,7 +150,7 @@ export const Register: React.FC<RouteComponentProps> = ({history}) => {
                     clearAuthenticationError?.().then(() => {
                     })
                 }}/>
-            <CustomAlert
+            <CustomInfoAlert
                 isOpen={showAlertSuccessRegister}
                 // isOpen={true}
                 header={"Registered Successfully"}

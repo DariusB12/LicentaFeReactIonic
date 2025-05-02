@@ -2,12 +2,12 @@ import React, {useCallback, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {getLogger} from "../../assets";
 import {Preferences} from '@capacitor/preferences';
-import {loginApi, registerApi} from "../../services/auth/authApi";
+import {deleteApi, loginApi, registerApi} from "../../services/auth/authApi";
 import {
     AuthContext,
     AuthState,
     ClearAuthenticationErrorFn,
-    ClearIsRegisteredFn,
+    ClearIsRegisteredFn, DeleteAccountFn,
     initialState,
     LoginFn,
     LogoutFn,
@@ -23,7 +23,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     const [state, setState] = useState<AuthState>(initialState);
-    const {username, isAuthenticated, isAuthenticating,isRegistered, authenticationError, token, isAuthResolved} = state;
+    const {username, isAuthenticated,isDeletingAccount, isAuthenticating,isRegistered, authenticationError, token, isAuthResolved} = state;
 
     //FUNCTIONS
     const login = useCallback<LoginFn>(loginCallback, []);
@@ -31,6 +31,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     const logout = useCallback<LogoutFn>(logoutCallback, []);
     const clearAuthenticationError = useCallback<ClearAuthenticationErrorFn>(clearAuthenticationErrorCallback, [])
     const clearIsRegistered = useCallback<ClearIsRegisteredFn>(clearIsRegisteredCallback, [])
+    const deleteAccount = useCallback<DeleteAccountFn>(deleteAccountCallback, [])
 
     useEffect(() => {
         loadToken().then(() => {});
@@ -49,7 +50,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
         authenticationError,
         isAuthenticating,
         isAuthResolved,
-        isRegistered
+        isRegistered,
+        isDeletingAccount,
+        deleteAccount,
     };
     log('render');
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -77,11 +80,47 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
         }
     }
 
+    async function deleteAccountCallback(username: string, password: string): Promise<void> {
+        log('trying to delete account');
+        try {
+            setState(prev=>({
+                ...prev,
+                isDeletingAccount: true,
+            }));
+            await deleteApi(username, password);
+            setState(prev=>({
+                ...prev,
+                isDeletingAccount: false,
+            }));
+
+        } catch (error) {
+            //AXIOS ERROR IF SERVER RESPONDED WITH A REQUEST DIFFERENT THAN 200OK
+            if (axios.isAxiosError(error)) {
+                log('delete failed error:', error.response?.data.message);
+                setState(prev=>({
+                    ...prev,
+                    authenticationError: {status_code:error.response?.data.status_code,message:error.response?.data.message},
+                    isDeletingAccount: false,
+                }));
+            } else {
+                //OTHERWISE IT IS A SERVER CRASH OR CONNECTION ERROR
+                setState(prev=> ({
+                    ...prev,
+                    authenticationError: {status_code:500, message:"Server Error"},
+                    isDeletingAccount: false,
+                }));
+            }
+        }
+    }
     async function logoutCallback(): Promise<void> {
         log('logout');
         await Preferences.remove({key: 'authToken'});
         await Preferences.remove({key: 'username'});
         setState(initialState)
+        setState(prevState => ({
+            ...prevState,
+            isAuthResolved:true
+        }))
     }
 
     async function loginCallback(username: string, password: string): Promise<void> {

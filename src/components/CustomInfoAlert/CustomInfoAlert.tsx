@@ -1,5 +1,5 @@
 import React from 'react';
-import "./CustomAlert.css"
+import "./CustomInfoAlert.css"
 
 interface CirclesLoading {
     isOpen:boolean,
@@ -8,7 +8,7 @@ interface CirclesLoading {
     onDismiss: () => void
 }
 
-const CustomAlert: React.FC<CirclesLoading> = ({ isOpen,header, message,onDismiss }) => {
+const CustomInfoAlert: React.FC<CirclesLoading> = ({ isOpen,header, message,onDismiss }) => {
     if (!isOpen) return null;
 
     return (
@@ -28,4 +28,4 @@ const CustomAlert: React.FC<CirclesLoading> = ({ isOpen,header, message,onDismis
     );
 };
 
-export default CustomAlert;
+export default CustomInfoAlert;
