@@ -143,3 +143,32 @@
     width: 100%;
     margin-top: 0.5rem;
 }
+
+@media (min-width: 1350px) {
+    .account-details-content-container-view-posts-button {
+        display: none;
+    }
+    .account-details-content-container-view-profile-button {
+        display: none;
+    }
+}
+
+@media (max-width: 1350px) {
+    .account-details-content-posts-container {
+        display: none;
+    }
+    .account-details-content-container{
+        flex-direction: column;
+    }
+    .account-details-content-posts-container {
+        align-self: center;
+        width: 100%;
+    }
+        .account-details-content-profile-container{
+        width: 100%;
+    }
+    .account-details-content-container-view-profile-button {
+        display: none;
+    }
+}
+

@@ -54,18 +54,22 @@ const AccountDetailsItem: React.FC<AccountDetailsItemProps> = ({post}) => {
                 </div>
                 <div className="account-details-item-no-comments-likes-container">
                     <div className="account-details-item-no-likes-container roboto-style">
-                        <img src="/icons/heart.png" alt="heart_img"
-                             className="account-details-item-no-likes-hear-iocn icon-size"/>
-                        {formatNumber(post.no_likes)} likes
+                        {post.no_likes != -1 && <img src="/icons/heart.png" alt="heart_img"
+                              className="account-details-item-no-likes-hear-iocn icon-size"/>}
+                        {post.no_likes != -1 ? formatNumber(post.no_likes) : <img src="/icons/lock.png"
+                                                                                       alt={`lock_img`}
+                                                                                       className="icon-size"/>} likes
                     </div>
                     <button
                         className={`account-details-item-no-comments-button ${commentsButtonIsActive ? 'active' : ''} roboto-style`}
                         onClick={() => setCommentsButtonIsActive(prev => !prev)}
                     >
-                        <img src={`/icons/${commentsButtonIsActive ? 'blue_chat' : 'chat'}.png`}
-                             alt={`${commentsButtonIsActive ? 'chat' : 'blue_chat'}_img`}
-                             className="account-details-item-no-comments-chat-iocn icon-size"/>
-                        {formatNumber(post.no_comments)} comments
+                        {post.no_comments!=-1 && <img src={`/icons/chat.png`}
+                              alt={`chat_img`}
+                              className="account-details-item-no-comments-chat-iocn icon-size"/>}
+                        {post.no_comments != -1 ? formatNumber(post.no_comments) : <img src="/icons/lock.png"
+                                                                                       alt={`lock_img`}
+                                                                                       className="icon-size"/>} comments
                     </button>
                 </div>
                 <div className="account-details-item-description roboto-style">

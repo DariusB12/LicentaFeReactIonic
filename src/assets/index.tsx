@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 
 export const baseUrl = '127.0.0.1:8000';
 
@@ -47,4 +48,18 @@ export function formatNumber(num:number) {
         return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
     }
     return num.toString();
+}
+
+
+export function useWindowWidth() {
+    const [width, setWidth] = useState(window.innerWidth);
+
+    useEffect(() => {
+        const handleResize = () => setWidth(window.innerWidth);
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize); // cleanup
+    }, []);
+
+    return width;
 }
