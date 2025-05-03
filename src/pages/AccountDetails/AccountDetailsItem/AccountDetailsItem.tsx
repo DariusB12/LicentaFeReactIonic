@@ -1,25 +1,55 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {IonItem} from "@ionic/react";
 import './AccountDetailsItem.css'
 import {formatNumber} from "../../../assets";
 import {Post} from "../../../assets/entities/Post";
+import {motion} from 'framer-motion';
 
 interface AccountDetailsItemProps {
     post: Post
 }
 
 const AccountDetailsItem: React.FC<AccountDetailsItemProps> = ({post}) => {
+    const [photoIndex, setPhotoIndex] = useState<number>(0);
+    const [commentsButtonIsActive, setCommentsButtonIsActive] = useState(false);
+
     //TODO: DE VAZUT CE ATRIBUTE POT FI UNDEFINED
     return (
         <IonItem className="account-details-item unstyled-ion-item roboto-style">
             <div className="account-details-item-container">
                 <div className="account-details-item-photos-container">
                     <div className="account-details-item-photo">
-                        <img
-                            src={`data:image/jpeg;base64,${post.photos.at(0)}`}
+                        <motion.img
+                            key={photoIndex} // This triggers re-animation when photoIndex changes
+                            src={`data:image/jpeg;base64,${post.photos.at(photoIndex)}`}
                             alt="post_img"
                             className="account-details-item-photo-image"
+                            initial={{x: 0, opacity: 0}}
+                            animate={{x: 0, opacity: 1}}
+                            exit={{x: 0, opacity: 0}}
+                            transition={{duration: 0.2}}
                         />
+                        <button className="account-details-item-edit-post-button roboto-style">
+                            <img src="/icons/edit.png" alt="edit_img"
+                                 className="account-details-item-edit-post-icon icon-size"/>
+                            Edit post
+                        </button>
+                        {photoIndex != 0 &&
+                            <button className="account-details-item-arrow-back-button" onClick={() => {
+                                setPhotoIndex(prevState => prevState - 1);
+                            }}>
+                                <img src="/icons/arrow_back.png" alt="back_img"
+                                     className="account-details-item-arrow-back-icon icon-size"/>
+                            </button>
+                        }
+                        {photoIndex != post.photos.length - 1 &&
+                            <button className="account-details-item-arrow-forward-button" onClick={() => {
+                                setPhotoIndex(prevState => prevState + 1);
+                            }}>
+                                <img src="/icons/arrow_forward.png" alt="forward_img"
+                                     className="account-details-item-arrow-forward-icon icon-size"/>
+                            </button>
+                        }
                     </div>
                 </div>
                 <div className="account-details-item-no-comments-likes-container">
@@ -28,8 +58,12 @@ const AccountDetailsItem: React.FC<AccountDetailsItemProps> = ({post}) => {
                              className="account-details-item-no-likes-hear-iocn icon-size"/>
                         {formatNumber(post.no_likes)} likes
                     </div>
-                    <button className="account-details-item-no-comments-button roboto-style">
-                        <img src="/icons/chat.png" alt="chat_img"
+                    <button
+                        className={`account-details-item-no-comments-button ${commentsButtonIsActive ? 'active' : ''} roboto-style`}
+                        onClick={() => setCommentsButtonIsActive(prev => !prev)}
+                    >
+                        <img src={`/icons/${commentsButtonIsActive ? 'blue_chat' : 'chat'}.png`}
+                             alt={`${commentsButtonIsActive ? 'chat' : 'blue_chat'}_img`}
                              className="account-details-item-no-comments-chat-iocn icon-size"/>
                         {formatNumber(post.no_comments)} comments
                     </button>
@@ -37,9 +71,19 @@ const AccountDetailsItem: React.FC<AccountDetailsItemProps> = ({post}) => {
                 <div className="account-details-item-description roboto-style">
                     {post.description}
                 </div>
-                <div className="account-details-item-comments-container">
-
-                </div>
+                {commentsButtonIsActive &&
+                    <>
+                        <hr className="account-details-item-divider-comments"/>
+                        <div className="account-details-item-comments-container">
+                            {post.comments.map((comment) =>
+                                <div className="account-details-item-comment">
+                                    {comment}
+                                    <hr className="account-details-item-divider-comments"/>
+                                </div>
+                            )}
+                        </div>
+                    </>
+                }
                 <div className="account-details-item-date-delete-container">
                     <div className="account-details-item-date roboto-style">
                         {new Date(post.date_posted).toLocaleDateString('en-GB', {

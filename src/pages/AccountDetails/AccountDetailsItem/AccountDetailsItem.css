@@ -13,16 +13,69 @@
     margin-top: 1rem;
 }
 .account-details-item-photo{
-    width: 100%;
+    min-width: 100%;
     height: 100%;
+    position: relative;
 }
 .account-details-item-photo-image{
     width: 100%;
     height: 100%;
 }
+.account-details-item-edit-post-button{
+    font-size: var(--font-sm);
+    background-color: rgb(0,0,0,0.5);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.3rem 0.7rem 0.3rem 0.5rem;
+    border-radius: 20px;
+    position: absolute;
+    right: 0.3rem;
+    top: 0.3rem;
+    transition: 0.2s ease-in-out;
+}
+.account-details-item-edit-post-button:hover {
+    background-color: rgb(0,0,0,0.8);
+}
+
+.account-details-item-arrow-back-button:hover {
+    background-color: rgb(0,0,0,0.8);
+}
+
+.account-details-item-arrow-back-icon{
+
+}
+.account-details-item-arrow-forward-button, .account-details-item-arrow-back-button{
+    font-size: var(--font-sm);
+    background-color: rgb(0,0,0,0.5);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem;
+    border-radius: 20px;
+    position: absolute;
+    transition: 0.2s ease-in-out;
+    top: 50%; /* Vertically center */
+    transform: translateY(-50%); /* Adjust position up by 50% of height */
+}
+.account-details-item-arrow-back-button{
+    left: 0.3rem;
+}
+.account-details-item-arrow-forward-button{
+    right: 0.3rem;
+}
+
+.account-details-item-arrow-forward-button:hover{
+    background-color: rgb(0,0,0,0.8);
+}
+.account-details-item-arrow-forward-icon{
+
+}
 .account-details-item-no-comments-likes-container{
     width: 100%;
     display: flex;
+    margin-top: 0.5rem;
     flex-direction: row;
     justify-content: space-between;
 }
@@ -43,9 +96,18 @@
     align-items: center;
     background-color: transparent;
     gap: 0.2rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.2rem;
+    transition: 0.2s ease-in-out;
 }
-.account-details-item-no-comments-chat-iocn{
+.account-details-item-no-comments-button:hover{
+    color: #00b5ff;
+}
+.account-details-item-no-comments-button.active{
+    color: #00b5ff;
+}
 
+.account-details-item-no-comments-chat-iocn{
 }
 .account-details-item-description{
     font-size: var(--font-sm);
@@ -54,7 +116,16 @@
     margin: 0.5rem 0;
 }
 .account-details-item-comments-container{
-
+    display: flex;
+    flex-direction:column;
+}
+.account-details-item-comment{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    word-break: break-word;
 }
 .account-details-item-date-delete-container{
     width: 100%;
@@ -73,7 +144,12 @@
     flex-direction: row;
     align-items: center;
     font-size: var(--font-sm);
-
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.2rem;
+    transition: 0.2s ease-in-out;
+}
+.account-details-item-delete-button:hover{
+    background-color: rgb(255,0,0,0.5);
 }
 .account-details-item-delete-button-icon{
 
@@ -83,4 +159,9 @@
     border-top: 1px solid #ccc;
     margin: 0.5rem 0 1rem 0;
     width: 100%;
+}
+.account-details-item-divider-comments{
+    border: none;
+    border-top: 1px solid #ccc;
+    width: 30%;
 }
