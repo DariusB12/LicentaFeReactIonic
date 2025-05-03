@@ -71,7 +71,7 @@
 
 .login-divider {
     border: none;
-    border-top: 1px solid #ccc; /* adjust color as needed */
-    margin: 16px 0; /* spacing above and below */
-    width: 6rem;    /* or a custom width */
+    border-top: 1px solid #ccc;
+    margin: 16px 0;
+    width: 6rem;
 }

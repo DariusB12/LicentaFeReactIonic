@@ -42,7 +42,7 @@
     padding: 0.4rem 0.8rem;
     border-radius: 50px;
     width: fit-content;
-    transition: background-color 0.2s ease; /* Smooth transition */
+    transition: background-color 0.2s ease;
 }
 
 .grey-button:hover {

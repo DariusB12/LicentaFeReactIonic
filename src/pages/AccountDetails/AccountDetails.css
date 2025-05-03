@@ -1,0 +1,122 @@
+.account-details-main-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+}
+
+.account-details-content-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+}
+
+.account-details-content-posts-container {
+    width: 40%;
+    height: 100vh;
+    border: 1px solid white;
+}
+
+.account-details-content-profile-container {
+    width: 60%;
+    border: 1px solid white;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.account-details-divider {
+    border: none;
+    border-top: 1px solid #ccc; /* adjust color as needed */
+    width: 90%; /* or a custom width */
+}
+
+.account-details-content-profile-top-content {
+    width: 90%;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    margin-top: 0.8rem;
+}
+
+.account-details-content-profile-buttons-bar {
+    display: flex;
+    flex-direction: row;
+    width: 90%;
+    justify-content: space-between;
+    align-items: center;
+    margin-top:0.7rem;
+}
+
+.account-details-edit-profile-button {
+    font-size: 0.688rem;
+    background-color: black;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.account-details-content-profile-edit-icon{
+    width: 1rem;
+    height: 1rem;
+}
+
+.account-details-add-new-post-button {
+    font-size: 0.688rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 1.5rem;
+    width: fit-content;
+    padding: 0 0.6rem 0 0.4rem;
+}
+.account-details-content-profile-add-icon{
+    width: 1rem;
+    height: 1rem;
+}
+
+.account-details-delete-profile-button {
+    font-size: 0.688rem;
+    background-color: black;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.account-details-content-profile-delete-icon{
+    width: 1rem;
+    height: 1rem;
+}
+
+.account-details-content-analysis-container{
+
+}
+.account-details-profile-image{
+    width: 4rem;
+    height: 4rem;
+    border-radius: 100%;
+}
+.account-details-content-profile-details{
+    width: 100%;
+}
+.account-details-content-profile-details-numbers{
+    margin-top: 0.2rem;
+    display: flex;
+    flex-direction: row;
+    gap: 0.3rem;
+}
+.account-details-content-profile-details-username{
+    font-size: 0.875rem;
+}
+.account-details-content-profile-details-no{
+    font-size: 0.688rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 0.2rem;
+}
+.account-details-content-profile-details-description{
+    font-size: 0.688rem;
+    width: 100%;
+    margin-top: 0.5rem;
+}
