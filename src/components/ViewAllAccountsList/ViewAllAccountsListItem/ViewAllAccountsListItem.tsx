@@ -50,14 +50,15 @@ const ViewAllAccountsListItem: React.FC<ViewAllAccountsListItemProps> = ({accoun
                 <div className="view-all-accounts-list-analised roboto-style">
                     {account.analysed ? (
                         <div className="view-all-accounts-list-analised-true roboto-style">
-                            analysed
-                            <img src="/icons/tick.png" alt="tick_img" className="view-all-accounts-list-analised-tick"/>
+                            <div className="view-all-accounts-list-analised-true-text"> analysed</div>
+                            <img src="/icons/tick.png" alt="tick_img" className="view-all-accounts-list-analised-tick icon-size"/>
                         </div>
                     ) : (
                         <div className="view-all-accounts-list-analised-false roboto-style">
-                            unanalysed
+                            <div className="view-all-accounts-list-analised-false-text">unanalysed</div>
+
                             <img src="/icons/cancel.png" alt="cancel_img"
-                                 className="view-all-accounts-list-analised-cancel"/>
+                                 className="view-all-accounts-list-analised-cancel icon-size"/>
                         </div>
                     )}
                 </div>
@@ -65,7 +66,7 @@ const ViewAllAccountsListItem: React.FC<ViewAllAccountsListItemProps> = ({accoun
                     <button className="view-all-accounts-list-delete-profile-button roboto-style">
                         <div className="view-all-accounts-list-delete-profile-text">delete profile</div>
                         <img src="/icons/delete.png" alt="delete_img"
-                             className="view-all-accounts-list-analised-delete"/>
+                             className="view-all-accounts-list-delete-profile-icon icon-size"/>
                     </button>
                 </div>
             </div>

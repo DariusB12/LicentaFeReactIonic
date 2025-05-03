@@ -273,14 +273,14 @@ const VerticalMenu: React.FC = () => {
                         SocialMind <button className="vertical-menu-info-button" onClick={handleOnClickInfo}><img
                         src="/icons/info.png"
                         alt="info_img"
-                        className="vertical-menu-info-img"/>
+                        className="vertical-menu-info-img icon-size"/>
                     </button>
                     </div>
                     <div className="vertical-menu-top-container-bottom roboto-style">
-                        <div style={{color: "#cccccc", fontSize: "0.688rem"}}>
+                        <div style={{color: "#cccccc", fontSize: "var(--font-sm)"}}>
                             You:
                         </div>
-                        <div style={{color: "white", fontSize: "0.688rem"}}>
+                        <div style={{color: "white", fontSize: "var(--font-sm)"}}>
                             {username}
                         </div>
                     </div>
@@ -297,7 +297,7 @@ const VerticalMenu: React.FC = () => {
                     <div className="vertical-menu-container-bottom-buttons">
                         <button className="vertical-menu-container-add-button blue-button">Add<img src="/icons/add.png"
                                                                                                    alt="add_img"
-                                                                                                   className="vertical-menu-add-img"/>
+                                                                                                   className="icon-size"/>
                         </button>
                         <button className="vertical-menu-container-view-button black-button"
                                 onClick={handleOnClickViewAllAccounts}>View All Accounts
@@ -314,6 +314,7 @@ const VerticalMenu: React.FC = () => {
                 className={`vertical-menu-container-grey-background-for-hamburger-menu ${isMobileMenuOpen ? 'open' : ''}`}
                 onClick={() => setIsMobileMenuOpen(false)}/>
 
+            {/*VERTICAL HAMBURGER MENU */}
             <div className="vertical-menu-hamburger-container">
                 <button className="vertical-menu-hamburger-button"
                         onClick={() => setIsMobileMenuOpen(prev => !prev)}

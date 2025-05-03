@@ -4,8 +4,9 @@
     flex-direction: row;
     gap: 0.2rem;
     justify-content: left;
+    align-items: center;
     padding: 0.5rem;
-    width: 8.5rem;
+    width: 12rem;
     margin-bottom: 0.2rem;
     border-radius: 0.2rem;
     transition: 0.1s ease;
@@ -14,12 +15,12 @@
     background-color: rgb(255, 255, 255, 0.2);
 }
 .accounts-list-item-username {
-    font-size: 0.688rem;
+    font-size: var(--font-sm);
     padding: 0.3rem;
 }
 
 .accounts-list-item-profile-image {
-    width: 1.3rem;
-    height: 1.3rem;
+    width: 2rem;
+    height: 2rem;
     border-radius: 100%;
 }

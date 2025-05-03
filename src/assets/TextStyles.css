@@ -1,3 +1,14 @@
+:root {
+    --font-sm: 1rem;       /* 16px */
+    --font-md: 1.25rem;    /* 20px */
+    --font-lg: 1.5rem;     /* 24px */
+    --font-xl: 1.875rem;     /* 30px */
+    --font-xxl: 2.5rem;
+}
+.icon-size{
+    width: 1.5rem;
+    height: 1.5rem;
+}
 /*TEXT FONTS*/
 .kaushan-script-style {
     font-family: "Kaushan Script", cursive;
@@ -22,8 +33,9 @@
     margin: 0;
     /*font-size: 11px;*/
     /*font-size: 2vh;*/
-    font-size: 0.688rem;
+    font-size: var(--font-sm);
     background-color: #00b5ff;
+    min-height: 2.3rem;
     /*padding: 6px 10px;*/
     padding: 0.4rem 0.8rem;
     border-radius: 50px;
@@ -37,7 +49,7 @@
 
 .grey-button {
     margin: 0;
-    font-size: 0.688rem; /*11px*/
+    font-size: var(--font-sm);
     background-color: rgb(255, 255, 255, 20%);
     padding: 0.4rem 0.8rem;
     border-radius: 50px;
@@ -51,7 +63,7 @@
 
 .black-button {
     margin: 0;
-    font-size: 0.688rem; /*11px*/
+    font-size: var(--font-sm);
     background-color: black;
     padding: 0.4rem 0.8rem;
     border-radius: 50px;

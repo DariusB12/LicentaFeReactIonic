@@ -1,0 +1,86 @@
+.account-details-item{
+    /*background-color: red;*/
+    width: 30vw;
+}
+.account-details-item-container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /*background-color: red;*/
+}
+.account-details-item-photos-container{
+    margin-top: 1rem;
+}
+.account-details-item-photo{
+    width: 100%;
+    height: 100%;
+}
+.account-details-item-photo-image{
+    width: 100%;
+    height: 100%;
+}
+.account-details-item-no-comments-likes-container{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.account-details-item-no-likes-container{
+    font-size: var(--font-sm);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.2rem;
+}
+.account-details-item-no-likes-hear-iocn{
+
+}
+.account-details-item-no-comments-button{
+    font-size: var(--font-sm);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: transparent;
+    gap: 0.2rem;
+}
+.account-details-item-no-comments-chat-iocn{
+
+}
+.account-details-item-description{
+    font-size: var(--font-sm);
+    width: 100%;
+    justify-items: flex-start;
+    margin: 0.5rem 0;
+}
+.account-details-item-comments-container{
+
+}
+.account-details-item-date-delete-container{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.account-details-item-date{
+    color: #606060;
+    font-size: var(--font-sm);
+}
+.account-details-item-delete-button{
+    background-color: transparent;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: var(--font-sm);
+
+}
+.account-details-item-delete-button-icon{
+
+}
+.account-details-item-divider{
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 0.5rem 0 1rem 0;
+    width: 100%;
+}

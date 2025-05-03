@@ -20,12 +20,12 @@
 }
 
 .delete-account-alert-header{
-    font-size: 0.875rem;
+    font-size: var(--font-md);
 }
 
 .delete-account-alert-message{
     margin-top: 0.3rem;
-    font-size: 0.688rem;
+    font-size: var(--font-sm);
 }
 
 .delete-account-alert-close-button-container{
@@ -38,7 +38,7 @@
     margin-top: 0.8rem;
 }
 .delete-account-alert-input{
-    font-size: 0.688rem; /*11px*/
+    font-size: var(--font-sm); /*11px*/
     border-radius: 20px;
     padding: 0.3rem 0.7rem;
     border: 1px solid white;

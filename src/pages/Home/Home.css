@@ -21,7 +21,7 @@
 .home-top-bar-container-up{
     /*font-size: 30px;*/
     /*font-size: 5vh;*/
-    font-size: 1.875rem;
+    font-size: var(--font-xxl);
     color: #00b5ff;
     margin-top: 20px;
 }
@@ -29,7 +29,7 @@
     color: white;
     /*font-size: 14px;*/
     /*font-size: 2.5vh;*/
-    font-size: 0.875rem;
+    font-size: var(--font-md);
 }
 
 /*MIDDLE CONTAINER*/
@@ -42,7 +42,7 @@
     align-items: center;      /* Center items horizontally */
     /*font-size: 11px;*/
     /*font-size: 2vh;*/
-    font-size: 0.68rem;
+    font-size: var(--font-sm);
     margin-bottom: 10px;
 }
 
@@ -64,6 +64,6 @@
     gap: 12px;                 /* specify exact space between buttons */
     /*font-size: 11px;*/
     /*font-size: 2vh;*/
-    font-size: 0.688rem;
+    font-size: var(--font-sm);
     margin:0;
 }

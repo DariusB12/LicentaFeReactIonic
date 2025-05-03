@@ -5,22 +5,22 @@
     gap: 0;
 }
 .about-content-container {
+    margin: 13rem 5rem;
     width: 100%;
     justify-items: center;
-    margin-top: 20vh;
 }
 
 .about-content-title{
-    font-size: 1.25rem; /*20px*/
+    font-size: var(--font-xl); /*20px*/
     font-style: italic;
     display: flex;
     justify-content: center;
 }
 
 .about-content-description{
-    font-size: 0.688rem;
+    font-size: var(--font-sm);
     font-style: italic;
-    width: 75vw;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -76,7 +76,7 @@ export const Login: React.FC<RouteComponentProps> = ({history}) => {
                 <button className="blue-button roboto-style login-home-button" onClick={handleOnClickHome}>Home <img
                     src="/icons/home.png"
                     alt="home_img"
-                    className="login-home-img"/>
+                    className="login-home-img icon-size"/>
                 </button>
             </div>
 

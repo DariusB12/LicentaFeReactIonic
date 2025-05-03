@@ -9,9 +9,8 @@
     align-items: flex-start;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 850px) {
     .view-all-accounts-list-container-content{
         width: 85vw;
     }
-
 }

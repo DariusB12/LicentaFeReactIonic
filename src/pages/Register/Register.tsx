@@ -99,7 +99,7 @@ export const Register: React.FC<RouteComponentProps> = ({history}) => {
                 <button className="register-home-button blue-button roboto-style" onClick={handleOnClickHome}>Home <img
                     src="/icons/home.png"
                     alt="home_img"
-                    className="register-home-img"/>
+                    className="register-home-img icon-size"/>
                 </button>
             </div>
 

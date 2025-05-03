@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: center;
     background-color: black;
-    width: 10rem;
+    min-width: 15rem;
     height: 100%;
     margin: 0;
     border-right: 0.03rem solid rgb(255, 255, 255, 0.4);
@@ -24,12 +24,10 @@
     gap: 0.4rem;
     justify-content: center;
     color: #00b5ff;
-    font-size: 1.25rem; /*20px*/
+    font-size: var(--font-xl);
 }
 
 .vertical-menu-info-img {
-    width: 1.2rem;
-    height: 1.2rem;
     border-radius: 100%;
     transition: 0.1s ease-out;
 }
@@ -52,9 +50,9 @@
 
 .vertical-menu-container-search-bar {
     margin: 0.7rem 0;
-    font-size: 0.688rem;
-    min-height: 1.3rem;
-    width: 9rem;
+    font-size: var(--font-sm);
+    min-height: 1.8rem;
+    width: 13rem;
     padding: 0 0.7rem;
     background-color: rgb(255, 255, 255, 0.1);
     border-radius: 1rem;
@@ -63,6 +61,7 @@
 .vertical-menu-container-bottom-buttons {
     display: flex;
     flex-direction: row;
+    align-items: center;
     height: 1.5rem;
     gap: 0.4rem;
 }
@@ -71,19 +70,20 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    font-size: 0.6rem;
-    padding: 0.7rem 0.1rem 0.7rem 0.5rem;
+    min-height: 2.3rem;
+    max-height: 2.3rem;
+    font-size: var(--font-sm);
+    padding: 0.8rem 0.1rem 0.8rem 0.5rem;
 }
 
-.vertical-menu-add-img {
-    width: 1.2rem;
-    height: 1.2rem;
-}
+
 
 .vertical-menu-container-view-button {
-    font-size: 0.6rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    font-size: var(--font-sm);
+    max-height: 2.3rem;
+    min-height: 2.3rem;
+    padding: 0 0.7rem 0 0.7rem;
+
 }
 
 .vertical-menu-container-bottom {
@@ -95,7 +95,7 @@
 }
 
 .vertical-menu-container-logout-button {
-    font-size: 0.688rem;
+    font-size: var(--font-sm);
     background-color: black;
     transition: 0.1s ease-in;
 
@@ -103,7 +103,7 @@
 
 .vertical-menu-container-delete-account-button {
     background-color: black;
-    font-size: 0.688rem;
+    font-size: var(--font-sm);
     transition: 0.1s ease-in;
 
 }
@@ -123,7 +123,7 @@
     gap: 1.5rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 850px) {
     .vertical-menu-container {
         position: fixed;
         z-index: 1000;
@@ -145,13 +145,13 @@
     }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 850px) {
     .vertical-menu-hamburger-container {
         display: none;
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 850px) {
     .vertical-menu-hamburger-container {
         display: flex;
         flex-direction: column;
@@ -162,14 +162,16 @@
     }
 
     .vertical-menu-hamburger_image {
-        width: 1.2rem;
-        height: 1.2rem;
+        width: 2rem;
     }
 
     .vertical-menu-hamburger-button {
         background-color: black;
         min-width: 1.2rem;
         min-height: 1.2rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
         border-radius: 10%;
         transition: 0.15s ease-in;
         height: fit-content;
@@ -183,13 +185,16 @@
     .vertical-menu-hamburger-add-button {
         padding: 0;
         border-radius: 100%;
-        width: 1.2rem;
-        min-height: 1.2rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 2rem;
+        min-height: 2rem;
     }
 
     .vertical-menu-hamburger-add-img {
-        width: 1rem;
-        height: 1rem;
+        width: 2rem;
+        height: 2rem;
         border-radius: 100%;
         margin-top: 0.1rem;
     }
@@ -197,8 +202,8 @@
     .vertical-menu-hamburger-view-button {
         padding: 0;
         border-radius: 100%;
-        min-width: 1.2rem;
-        min-height: 1.2rem;
+        min-width: 2rem;
+        min-height: 2rem;
         transition: 0.1s ease-in;
     }
 
@@ -207,16 +212,16 @@
     }
 
     .vertical-menu-hamburger-view-img {
-        width: 0.7rem;
-        height: 0.7rem;
+        width: 1rem;
+        height: 1rem;
         border-radius: 100%;
         margin-top: 0.1rem;
     }
 
     .vertical-menu-hamburger-info-button {
         background-color: black;
-        width: 1.2rem;
-        height: 1.2rem;
+        width: 2rem;
+        height: 2rem;
         transition: 0.1s ease-in;
         border-radius: 100%;
     }
@@ -226,8 +231,8 @@
     }
 
     .vertical-menu-hamburger-info-img {
-        width: 1.2rem;
-        height: 1.2rem;
+        width: 2rem;
+        height: 2rem;
         border-radius: 100%;
     }
 

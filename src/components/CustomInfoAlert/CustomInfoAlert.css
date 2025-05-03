@@ -20,12 +20,12 @@
 }
 
 .custom-alert-header{
-    font-size: 0.875rem;
+    font-size: var(--font-md);
 }
 
 .custom-alert-message{
     margin-top: 0.3rem;
-    font-size: 0.688rem;
+    font-size: var(--font-sm);
 }
 
 .custom-alert-close-button-container{

@@ -22,14 +22,14 @@
 
 .view-all-accounts-content-search-bar{
     margin: 0.7rem 0;
-    font-size: 0.688rem;
-    min-height: 1.3rem;
+    font-size: var(--font-sm);
+    min-height: 2rem;
     width: 70vw;
     padding: 0 0.7rem;
     background-color: rgb(255, 255, 255, 0.1);
     border-radius: 1rem;
 }
-@media (max-width: 768px) {
+@media (max-width: 850px) {
     .view-all-accounts-content-search-bar{
         width: 85vw;
     }
