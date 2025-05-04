@@ -74,6 +74,12 @@
     width: fit-content;
     padding: 0 0.6rem 0 0.4rem;
 }
+@media (max-width: 695px) {
+    .account-details-add-new-post-button{
+        padding: 0 0.3rem 0 0.3rem;
+    }
+}
+
 
 
 .account-details-delete-profile-button {
@@ -127,6 +133,14 @@
     flex-direction: row;
     gap: 1rem;
 }
+@media (max-width: 695px) {
+    .account-details-content-profile-details-numbers{
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+    }
+}
 .account-details-content-profile-details-username{
     font-size: var(--font-md);
 }
@@ -140,7 +154,7 @@
 }
 .account-details-content-profile-details-description{
     font-size: var(--font-sm);
-    width: 100%;
+    width: 90%;
     margin-top: 0.5rem;
 }
 
@@ -151,6 +165,21 @@
     .account-details-content-container-view-profile-button {
         display: none;
     }
+}
+.account-details-content-container-view-posts-button,.account-details-content-container-view-profile-button {
+    background-color: transparent;
+    justify-content: center;
+    font-size: var(--font-sm);
+    padding: 0.8rem;
+    border: 1px solid white;
+    border-radius: 5px;
+    transition: 0.2s ease-in-out;
+    width: 90%;
+    align-self: center;
+}
+
+.account-details-content-container-view-posts-button:hover,.account-details-content-container-view-profile-button:hover {
+    background-color: rgb(255,255,255,0.2)  ;
 }
 
 @media (max-width: 1350px) {

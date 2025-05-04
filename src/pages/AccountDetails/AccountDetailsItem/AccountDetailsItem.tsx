@@ -13,7 +13,6 @@ const AccountDetailsItem: React.FC<AccountDetailsItemProps> = ({post}) => {
     const [photoIndex, setPhotoIndex] = useState<number>(0);
     const [commentsButtonIsActive, setCommentsButtonIsActive] = useState(false);
 
-    //TODO: DE VAZUT CE ATRIBUTE POT FI UNDEFINED
     return (
         <IonItem className="account-details-item unstyled-ion-item roboto-style">
             <div className="account-details-item-container">
@@ -77,8 +76,8 @@ const AccountDetailsItem: React.FC<AccountDetailsItemProps> = ({post}) => {
                 </div>
                 {commentsButtonIsActive &&
                     <>
-                        <hr className="account-details-item-divider-comments"/>
                         <div className="account-details-item-comments-container">
+                            <hr className="account-details-item-divider-comments"/>
                             {post.comments.map((comment) =>
                                 <div className="account-details-item-comment">
                                     {comment}

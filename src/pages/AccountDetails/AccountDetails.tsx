@@ -50,22 +50,26 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
             <VerticalMenu/>
             <div className="account-details-content-container">
                 <button className="account-details-content-container-view-posts-button roboto-style"
-                        style={width<=1350 ? {display:`${!showPosts ? 'flex':'none'}`} : {} }
-                        onClick={()=>{
-                    setShowPosts(prevState => !prevState)
-                }}>View Posts</button>
+                        style={width <= 1350 ? {display: `${!showPosts ? 'flex' : 'none'}`} : {}}
+                        onClick={() => {
+                            setShowPosts(prevState => !prevState)
+                        }}>View Posts
+                </button>
                 <button className="account-details-content-container-view-profile-button roboto-style"
-                        style={width<=1350 ? {display:`${showPosts ? 'flex':'none'}`} : {} }
-                        onClick={()=>{
-                    setShowPosts(prevState => !prevState)
-                }}>View Profile</button>
+                        style={width <= 1350 ? {display: `${showPosts ? 'flex' : 'none'}`} : {}}
+                        onClick={() => {
+                            setShowPosts(prevState => !prevState)
+                        }}>View Profile
+                </button>
 
-                <div className="account-details-content-posts-container" style={width<=1350 ? {display:`${showPosts ? 'flex':'none'}`} : {} }>
+                <div className="account-details-content-posts-container"
+                     style={width <= 1350 ? {display: `${showPosts ? 'flex' : 'none'}`} : {}}>
                     <GenericList items={socialAccount.posts.map((post) =>
                         <AccountDetailsItem key={post.id} post={post}/>
                     )}/>
                 </div>
-                <div className="account-details-content-profile-container" style={width<=1350 ? {display:`${!showPosts ? 'flex':'none'}`} : {} }>
+                <div className="account-details-content-profile-container"
+                     style={width <= 1350 ? {display: `${!showPosts ? 'flex' : 'none'}`} : {}}>
                     <div className="account-details-content-profile-top-content">
                         {socialAccount.profile_photo ?
                             <img
@@ -93,26 +97,30 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
                                     className="account-details-content-profile-details-no">{formatNumber(socialAccount.no_following)}
                                     <span style={{color: "#8c8c8c"}}>following</span></div>
                             </div>
-                            <div className="account-details-content-profile-details-description roboto-style">
+                            {width >= 695 && <div className="account-details-content-profile-details-description roboto-style">
                                 {socialAccount.profile_description}
-                            </div>
+                            </div>}
                         </div>
                     </div>
+                    {width <= 695 && <div className="account-details-content-profile-details-description roboto-style">
+                        {socialAccount.profile_description}
+                    </div>
+                    }
                     <div className="account-details-content-profile-buttons-bar">
                         <button className="account-details-edit-profile-button roboto-style">
                             <img src="/icons/edit.png" alt="edit_icon"
                                  className="account-details-content-profile-edit-icon icon-size"/>
-                            Edit profile
+                            {width >= 695 && <div>Edit profile</div>}
                         </button>
                         <button className="account-details-add-new-post-button grey-button roboto-style">
                             <img src="/icons/add.png" alt="add_icon"
                                  className="account-details-content-profile-add-icon icon-size"/>
-                            Add new post
+                            {width >= 695 && <div>Add new post</div>}
                         </button>
                         <button className="account-details-delete-profile-button roboto-style">
                             <img src="/icons/delete.png" alt="delete_icon"
                                  className="account-details-content-profile-delete-icon icon-size"/>
-                            Delete profile
+                            {width >= 695 && <div>Delete profile</div>}
                         </button>
                     </div>
                     <hr className="account-details-divider"/>
