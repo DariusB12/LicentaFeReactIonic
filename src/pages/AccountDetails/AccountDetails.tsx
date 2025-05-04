@@ -7,6 +7,7 @@ import VerticalMenu from "../../components/VerticalMenu/VerticalMenu";
 import {SocialAccount} from "../../assets/entities/SocialAccount";
 import GenericList from "../../components/GenericList/GenericList";
 import AccountDetailsItem from "./AccountDetailsItem/AccountDetailsItem";
+import EditProfilePopUp from "./EditProfilePopUp/EditProfilePopUp";
 
 
 const log = getLogger('AccountDetails');
@@ -39,6 +40,7 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
     const {id} = useParams<{ id: string }>(); // used to select from provider the social media account
     const width = useWindowWidth();
     const [showPosts, setShowPosts] = useState<boolean>(false)
+    const [showEditProfile, setShowEditProfile] = useState<boolean>(false);
 
 
     //TODO: DACA CONTUL A FOST STERS SI SE NAVIGHEAZA INAPOI LA PAGINA ASTA (BUTON BACK BROWSER)
@@ -97,9 +99,10 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
                                     className="account-details-content-profile-details-no">{formatNumber(socialAccount.no_following)}
                                     <span style={{color: "#8c8c8c"}}>following</span></div>
                             </div>
-                            {width >= 695 && <div className="account-details-content-profile-details-description roboto-style">
-                                {socialAccount.profile_description}
-                            </div>}
+                            {width >= 695 &&
+                                <div className="account-details-content-profile-details-description roboto-style">
+                                    {socialAccount.profile_description}
+                                </div>}
                         </div>
                     </div>
                     {width <= 695 && <div className="account-details-content-profile-details-description roboto-style">
@@ -107,7 +110,9 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
                     </div>
                     }
                     <div className="account-details-content-profile-buttons-bar">
-                        <button className="account-details-edit-profile-button roboto-style">
+                        <button className="account-details-edit-profile-button roboto-style" onClick={() => {
+                            setShowEditProfile(true)
+                        }}>
                             <img src="/icons/edit.png" alt="edit_icon"
                                  className="account-details-content-profile-edit-icon icon-size"/>
                             {width >= 695 && <div>Edit profile</div>}
@@ -133,11 +138,17 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
                     </div>
                 </div>
             </div>
-            {/*TODO: EDIT PROFILE*/}
-            {/*<EditProfilePopUp isOpen={showEditProfile} header={"ds"} message={"darius"} closeFn={()=>{*/}
-            {/*    setShowEditProfile(false)*/}
-            {/*}}></EditProfilePopUp>*/}
-            {/*const [showEditProfile, setShowEditProfile] = useState<boolean>(false);*/}
+            <EditProfilePopUp isOpen={showEditProfile}
+                              id={socialAccount.id}
+                              username={socialAccount.username}
+                              profile_description={socialAccount.profile_description}
+                              no_followers={socialAccount.no_followers}
+                              no_following={socialAccount.no_following}
+                              no_of_posts={socialAccount.no_of_posts}
+                              profile_photo={socialAccount.profile_photo}
+                              closeFn={() => {
+                                  setShowEditProfile(false)
+                              }}></EditProfilePopUp>
 
         </IonPage>
 

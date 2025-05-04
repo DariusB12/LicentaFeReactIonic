@@ -1,0 +1,134 @@
+.edit-profile-popup-container {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(255,255,255,0.1);
+    justify-items: center;
+    align-content: center;
+    z-index: 10000;
+}
+.edit-profile-popup-content{
+    background-color: black;
+    width: 80vw;
+    height: 70vh;
+    padding: 0.8rem 1rem;
+    border-radius: 0.3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+.edit-profile-popup-cancel-conatiner {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+}
+.edit-profile-popup-cancel-button {
+    font-size: var(--font-sm);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    padding: 0.3rem 0.5rem 0.3rem 0.9em;
+    border-radius: 20px;
+    transition: 0.2s ease-in-out;
+}
+.edit-profile-popup-cancel-button:hover {
+    background-color: rgb(255,255,255,0.2);
+}
+.edit-profile-popup-cancel-icon {}
+
+.edit-profile-popup-middle-content {
+    display: flex;
+    flex-direction: row;
+    gap: 3rem;
+    width: 100%;
+}
+
+.edit-profile-popup-profile-image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 40%
+    /*background-color: red;*/
+}
+.edit-profile-popup-profile-photo-container{
+    font-size: var(--font-md);
+}
+.edit-profile-popup-profile-image {
+    width: 25rem;
+    height: 25rem;
+    border-radius: 100%;
+}
+.edit-profile-popup-profile-buttons-bar {
+    display: flex;
+    flex-direction: row;
+    width: 80%;
+    justify-content: space-between;
+}
+.edit-profile-popup-profile-upload-button {
+    font-size: var(--font-sm);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.edit-profile-popup-upload-icon {}
+.edit-profile-popup-profile-delete-button {
+    font-size: var(--font-sm);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.edit-profile-popup-delete-icon {}
+
+.edit-profile-inputs{
+    border: 1px solid #606060;
+    padding: 0.3rem;
+}
+.edit-profile-popup-profile-details-container {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    font-size: var(--font-sm);
+    gap: 0.5rem;
+}
+.edit-profile-popup-profile-description-input {
+    width: 100%;
+    height: 40%;
+    font-size: var(--font-sm);
+}
+.edit-profile-popup-profile-posts-input {}
+.edit-profile-posts-container {}
+.edit-profile-popup-profile-followers-input {}
+.edit-profile-followers-container {}
+.edit-profile-popup-profile-following-input {}
+.edit-profile-following-container {}
+.edit-profile-popup-profile-username-input {}
+.edit-profile-username-container {}
+
+.edit-profile-popup-bottom-bar {
+    font-size: var(--font-sm);
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+}
+.edit-profile-popup-detect-from-image-button {
+    margin: 0 0.5rem 0 0.5rem;
+    padding: 0.65rem 1.2rem;
+}
+.edit-profile-popup-translate-to-english-button {
+    margin: 0 0.5rem 0 0.5rem;
+    padding: 0.65rem 1.2rem;
+}
+.edit-profile-popup-save-button{
+    margin: 0 0 0 0.5rem;
+    padding: 0.65rem 1.2rem;
+}
+
+.roboto-style {}
+.input-reset {}
+.icon-size {}
