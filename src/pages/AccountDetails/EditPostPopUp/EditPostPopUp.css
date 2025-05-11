@@ -1,0 +1,304 @@
+.edit-post-popup-container {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(255, 255, 255, 0.1);
+    justify-items: center;
+    align-content: center;
+    z-index: 10000;
+}
+
+.edit-post-popup-content {
+    background-color: black;
+    width: 80vw;
+    height: fit-content;
+    padding: 0.8rem 1rem;
+    border-radius: 0.3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-post-popup-cancel-conatiner {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+}
+
+.edit-post-popup-cancel-button {
+    font-size: var(--font-sm);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    padding: 0.3rem 0.5rem 0.3rem 0.9em;
+    border-radius: 20px;
+    transition: 0.2s ease-in-out;
+}
+
+.edit-post-popup-cancel-button:hover {
+    background-color: rgb(255, 255, 255, 0.2);
+}
+
+.edit-post-popup-middle-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 3rem;
+    width: 100%;
+}
+
+.edit-post-popup-content-left {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap:0.6rem;
+}
+.edit-post-popup-item-photo{
+    /*min-width: 100%;*/
+    /*height: 100%;*/
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.edit-post-popup-item-photo-image{
+    max-height: 300px;
+    max-width: 550px;
+}
+.edit-post-popup-edit-post-button{
+    font-size: var(--font-sm);
+    background-color: rgb(255,255,255,0.2);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.3rem 0.3rem;
+    border-radius: 20px;
+    position: absolute;
+    right: 0.3rem;
+    top: 0.3rem;
+    transition: 0.2s ease-in-out;
+}
+.edit-post-popup-edit-post-button:hover {
+    background-color: rgb(255, 0, 0, 0.5);
+}
+
+
+.edit-post-popup-content-right {
+    width: 50%;
+    /*background-color: red;*/
+    display: flex;
+    flex-direction: column;
+    font-size: var(--font-sm);
+    gap: 0.6rem;
+    height: 60vh;
+}
+.edit-post-popup-post-description-input{
+    width: 100%;
+    height: 20%;
+    font-size: var(--font-sm);
+}
+.edit-post-inputs{
+    border: 1px solid #606060;
+    padding: 0.3rem;
+}
+.edit-post-popup-date-input{
+
+}
+.edit-post-popup-date-posted-container{
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+}
+.edit-post-popup-date-input-and-message-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.3rem;
+}
+.edit-post-popup-likes-input{
+    width: 8rem;
+}
+.edit-post-popup-comments-input{
+    width: 8rem;
+}
+.edit-post-popup-bottom-bar {
+    font-size: var(--font-sm);
+    width: 100%;
+    display: flex;
+    margin-top: 1rem;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.edit-post-popup-delete-button {
+    font-size: var(--font-sm);
+    background-color: black;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.2rem;
+    transition: 0.2s ease-in-out;
+}
+.edit-post-popup-post-comments-button-content{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    font-size: var(--font-sm);
+    align-items: center;
+}
+.edit-post-popup-add-button{
+    font-size: var(--font-sm);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.edit-post-popup-add-photo-button{
+    font-size: var(--font-sm);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.edit-post-popup-add-icon{
+
+}
+.edit-post-popup-delete-button:hover {
+    background-color: rgb(255, 0, 0, 0.5);
+}
+
+.edit-post-popup-delete-icon {
+
+}
+
+.edit-post-popup-right-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.edit-post-popup-detect-from-image-button {
+    margin: 0 0.5rem 0 0.5rem;
+    padding: 0.65rem 1.2rem;
+}
+
+.edit-post-popup-translate-to-english-button {
+    margin: 0 0.5rem 0 0.5rem;
+    padding: 0.65rem 1.2rem;
+}
+
+.edit-post-popup-save-button {
+    margin: 0 0.5rem 0 0.5rem;
+    padding: 0.65rem 1.2rem;
+}
+.edit-post-popup-no-comments-likes-container{
+    font-size: var(--font-sm);
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    gap: 0.5rem;
+}
+.edit-post-popup-likes-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /*justify-content: center;*/
+    gap:0.2rem;
+}
+.edit-post-popup-comments-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /*justify-content: center;*/
+    gap:0.2rem;
+}
+
+.edit-post-popup-heart-icon{
+
+}
+.edit-post-popup-lock-icon{
+
+}
+.edit-post-popup-chat-icon{
+
+}
+.edit-post-popup-comments-list{
+    width: 100%;
+}
+
+.edit-post-popup-comment-button{
+    background-color: transparent;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.2rem 0.2rem;
+    border-radius: 0.2rem;
+    transition: 0.2s ease-in-out;
+}
+
+.edit-post-popup-comment-button:hover{
+    background-color: #008cc6;
+}
+.edit-post-popup-like-button{
+    background-color: transparent;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.2rem 0.2rem;
+    border-radius: 0.2rem;
+    transition: 0.2s ease-in-out;
+}
+.edit-post-popup-like-button:hover{
+    background-color: #008cc6;
+}
+.edit-post-popup-lock-clicked{
+    background-color: #008cc6;
+}
+.edit-post-popup-or-text{
+    font-size: var(--font-sm);
+}
+
+.edit-post-popup-item-arrow-forward-button, .edit-post-popup-item-arrow-back-button{
+    font-size: var(--font-sm);
+    background-color: rgb(255,255,255,0.1);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem;
+    border-radius: 20px;
+    position: absolute;
+    transition: 0.2s ease-in-out;
+    top: 50%; /* Vertically center */
+    transform: translateY(-50%); /* Adjust position up by 50% of height */
+}
+.edit-post-popup-item-arrow-back-button:hover {
+    background-color: rgb(255,255,255,0.2);
+}
+.edit-post-popup-item-arrow-back-button{
+    left: 0.3rem;
+}
+
+.edit-post-popup-item-arrow-forward-button{
+    right: 0.3rem;
+}
+
+.edit-post-popup-item-arrow-forward-button:hover{
+    background-color: rgb(255,255,255,0.2);
+}
+.edit-post-popup-error-messaage{
+    font-size: var(--font-sm);
+    color: red;
+}
+.red-border-input{
+    border-color: red;
+}
+.edit-post-popup-error-messaage{
+    font-size: var(--font-sm);
+    color: red;
+}

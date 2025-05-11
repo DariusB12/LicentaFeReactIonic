@@ -1,10 +1,12 @@
+import {PostPhoto} from "./PostPhoto";
+import {PostComment} from "./PostComment";
 
 export interface Post {
     id: number,
-    photos: string[],
+    photos: PostPhoto[],
     description: string,
     no_likes: number,
     no_comments: number,
-    comments: string[],
+    comments: PostComment[],
     date_posted: Date
 }

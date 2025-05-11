@@ -3,7 +3,11 @@
     flex-direction: row;
     gap: 0;
 }
-
+.account-details-list-div-for-center{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 .account-details-content-container {
     width: 100vw;
     height: 100vh;
@@ -176,6 +180,7 @@
     transition: 0.2s ease-in-out;
     width: 90%;
     align-self: center;
+    margin-top: 1rem;
 }
 
 .account-details-content-container-view-posts-button:hover,.account-details-content-container-view-profile-button:hover {

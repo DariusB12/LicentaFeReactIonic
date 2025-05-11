@@ -5,11 +5,14 @@ import {formatNumber} from "../../../assets";
 import {Post} from "../../../assets/entities/Post";
 import {motion} from 'framer-motion';
 
+export type EditFn = () => void;
+
 interface AccountDetailsItemProps {
     post: Post
+    onClickEdit: EditFn
 }
 
-const AccountDetailsItem: React.FC<AccountDetailsItemProps> = ({post}) => {
+const AccountDetailsItem: React.FC<AccountDetailsItemProps> = ({post,onClickEdit}) => {
     const [photoIndex, setPhotoIndex] = useState<number>(0);
     const [commentsButtonIsActive, setCommentsButtonIsActive] = useState(false);
 
@@ -20,7 +23,7 @@ const AccountDetailsItem: React.FC<AccountDetailsItemProps> = ({post}) => {
                     <div className="account-details-item-photo">
                         <motion.img
                             key={photoIndex} // This triggers re-animation when photoIndex changes
-                            src={`data:image/jpeg;base64,${post.photos.at(photoIndex)}`}
+                            src={`data:image/jpeg;base64,${post.photos.at(photoIndex)?.photo}`}
                             alt="post_img"
                             className="account-details-item-photo-image"
                             initial={{x: 0, opacity: 0}}
@@ -28,7 +31,7 @@ const AccountDetailsItem: React.FC<AccountDetailsItemProps> = ({post}) => {
                             exit={{x: 0, opacity: 0}}
                             transition={{duration: 0.2}}
                         />
-                        <button className="account-details-item-edit-post-button roboto-style">
+                        <button className="account-details-item-edit-post-button roboto-style" onClick={onClickEdit}>
                             <img src="/icons/edit.png" alt="edit_img"
                                  className="account-details-item-edit-post-icon icon-size"/>
                             Edit post
@@ -78,9 +81,9 @@ const AccountDetailsItem: React.FC<AccountDetailsItemProps> = ({post}) => {
                     <>
                         <div className="account-details-item-comments-container">
                             <hr className="account-details-item-divider-comments"/>
-                            {post.comments.map((comment) =>
+                            {post.comments.map((postComment) =>
                                 <div className="account-details-item-comment">
-                                    {comment}
+                                    {postComment.comment}
                                     <hr className="account-details-item-divider-comments"/>
                                 </div>
                             )}

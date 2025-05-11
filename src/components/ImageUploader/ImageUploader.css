@@ -1,0 +1,63 @@
+.image-uploader-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 60%
+}
+.image-uploader-drag-and-drop-container{
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: var(--font-sm);
+    color: #7c7c7c;
+    position: relative;
+}
+.image-uploader-drag-and-drop-preview-img{
+    max-width: 100%;
+    max-height: 200px;
+}
+.image-uploader-upload-button{
+    font-size: var(--font-sm);
+    background-color: rgb(255, 255, 255,0.2);
+    padding: 0.3rem;
+    width: 10rem;
+    border-radius:0.2rem;
+    transition: 0.2s ease-in-out;
+}
+.image-uploader-upload-button:hover{
+    background-color: rgb(255, 255, 255,0.4);
+}
+.image-uploader-or-text{
+    font-size: var(--font-sm);
+}
+.image-uploader-upload-input{
+    font-size: var(--font-sm);
+}
+
+.image-uploader-bottom-bar{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    min-width: 11rem;
+    justify-content: space-between;
+}
+
+.image-uploader-cancel-button {
+    font-size: var(--font-sm);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.image-uploader-cancel-button:hover {
+    background-color: rgb(255, 255, 255, 15%);
+}
+@media (max-width: 690px) {
+    .image-uploader-drag-and-drop-preview-img{
+        max-width: 70%;
+        max-height: 200px;
+    }
+}

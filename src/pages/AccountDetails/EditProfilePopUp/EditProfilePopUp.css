@@ -10,7 +10,7 @@
 .edit-profile-popup-content{
     background-color: black;
     width: 80vw;
-    height: 70vh;
+    height: fit-content;
     padding: 0.8rem 1rem;
     border-radius: 0.3rem;
     display: flex;
@@ -41,6 +41,7 @@
 .edit-profile-popup-middle-content {
     display: flex;
     flex-direction: row;
+    align-items: center;
     gap: 3rem;
     width: 100%;
 }
@@ -57,14 +58,16 @@
     font-size: var(--font-md);
 }
 .edit-profile-popup-profile-image {
-    width: 25rem;
-    height: 25rem;
+    width: 60%;
+    aspect-ratio: 1 / 1; /* makes height = width */
     border-radius: 100%;
+    object-fit: cover; /* optional: to ensure image scales well */
 }
 .edit-profile-popup-profile-buttons-bar {
     display: flex;
     flex-direction: row;
     width: 80%;
+    min-width: 13rem;
     justify-content: space-between;
 }
 .edit-profile-popup-profile-upload-button {
@@ -88,6 +91,7 @@
     border: 1px solid #606060;
     padding: 0.3rem;
 }
+
 .edit-profile-popup-profile-details-container {
     width: 60%;
     display: flex;
@@ -97,22 +101,46 @@
 }
 .edit-profile-popup-profile-description-input {
     width: 100%;
-    height: 40%;
+    height: 15rem;
     font-size: var(--font-sm);
 }
 .edit-profile-popup-profile-posts-input {}
-.edit-profile-posts-container {}
+.edit-popup-profile-error-messaage{
+    font-size: var(--font-sm);
+    color: red;
+}
+.edit-profile-posts-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0.4rem;
+    align-items: center;
+}
 .edit-profile-popup-profile-followers-input {}
-.edit-profile-followers-container {}
-.edit-profile-popup-profile-following-input {}
-.edit-profile-following-container {}
+.edit-profile-followers-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0.4rem;
+    align-items: center;
+}
+.edit-profile-following-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0.4rem;
+    align-items: center;
+}
 .edit-profile-popup-profile-username-input {}
-.edit-profile-username-container {}
+.edit-profile-username-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0.4rem;
+    align-items: center;
+}
 
 .edit-profile-popup-bottom-bar {
     font-size: var(--font-sm);
     width: 100%;
     display: flex;
+    margin-top: 1rem;
     flex-direction: row;
     justify-content: end;
 }
@@ -129,6 +157,56 @@
     padding: 0.65rem 1.2rem;
 }
 
-.roboto-style {}
-.input-reset {}
-.icon-size {}
+.edit-profile-upload-or{
+    font-size: var(--font-sm);
+}
+
+.edit-profile-popup-upload-cancel-icon{
+
+}
+
+
+.red-border-input{
+    border-color: red;
+}
+
+@media (max-width: 690px) {
+    .edit-profile-popup-middle-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+    }
+    .edit-profile-popup-profile-description-input {
+        width: 100%;
+        height: 8rem
+    }
+    .edit-profile-popup-profile-image-container {
+        width: 80%
+    }
+    .edit-profile-popup-profile-image {
+        min-width: 8rem;
+        max-width: 0;
+        width: 8rem;
+        height: 8rem;
+    }
+    .edit-profile-popup-cancel-button {
+        padding: 0;
+    }
+
+    .edit-profile-popup-profile-details-container {
+        width: 95%;
+    }
+    .edit-profile-popup-profile-following-input {
+        width: 8rem;
+    }
+    .edit-profile-popup-profile-followers-input {
+        width: 8rem;
+    }
+    .edit-profile-popup-profile-posts-input {
+        width: 8rem;
+    }
+    .edit-profile-popup-profile-username-input {
+        width: 8rem;
+    }
+}

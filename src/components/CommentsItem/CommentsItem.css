@@ -1,0 +1,57 @@
+.comments-item-container-box {
+    width: 100%;
+    border: 1px solid #606060;
+    margin-bottom: 0.5rem;
+    margin-right: 0.3rem;
+}
+
+.comments-item-container {
+    padding: 0.5rem 0.2rem 0.5rem 0.5rem;
+    display: flex;
+    flex-direction: row;
+
+    gap: 0.2rem;
+}
+
+.comments-item-comment {
+    width: 100%;
+
+    word-break: break-word;
+}
+
+.comments-item-buttons-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0.2rem;
+}
+
+.comments-item-edit-button {
+    font-size: var(--font-sm);
+    background-color: transparent;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.1rem 0.1rem;
+    border-radius: 0.2rem;
+    margin: 0;
+    transition: 0.2s ease-in-out;
+}
+.comments-item-edit-button:hover {
+    background-color: rgb(255, 255, 255, 0.2);
+
+}
+
+.comments-item-delete-button {
+    font-size: var(--font-sm);
+    background-color: transparent;
+    padding: 0.1rem 0.1rem;
+    border-radius: 0.2rem;
+    margin: 0;
+    transition: 0.2s ease-in-out;
+    height: 1.7rem;
+    min-width: 1.7rem;
+}
+
+.comments-item-delete-button:hover {
+    background-color: rgb(255, 0, 0, 0.5);
+}
