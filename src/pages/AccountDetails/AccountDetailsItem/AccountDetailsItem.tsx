@@ -7,6 +7,7 @@ import {motion} from 'framer-motion';
 
 export type EditFn = () => void;
 
+
 interface AccountDetailsItemProps {
     post: Post
     onClickEdit: EditFn

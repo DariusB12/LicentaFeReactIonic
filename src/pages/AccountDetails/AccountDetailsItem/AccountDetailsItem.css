@@ -180,9 +180,3 @@
     border-top: 1px solid #ccc;
     width: 30%;
 }
-.edit-post-popup-div-upload-image-options{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
-}

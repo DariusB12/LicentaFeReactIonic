@@ -1,25 +1,16 @@
-import React, {useCallback, useState} from 'react';
-import "./EditProfilePopUp.css"
-import {getLogger, useWindowWidth} from "../../../assets";
+import React, {useCallback, useEffect, useState} from 'react';
+import "./AddAccountScreen.css"
+import {getLogger, usePersistentState, useWindowWidth} from "../../../assets";
 import ImageUploader from "../../../components/ImageUploader/ImageUploader";
 
 interface EditProfilePopUpProps {
-    isOpen: boolean,
-
-    idProfile: number,
-    username: string,
-    profile_description: string,
-    profile_photo?: string,
-    no_followers: number,
-    no_following: number
-    no_of_posts: number,
-
-    closeFn: () => void
+    savedSuccessfully: () => void
 }
 
-const log = getLogger('EditProfilePopUp');
+const log = getLogger('AddAccountScreen');
 
-const EditProfilePopUp: React.FC<EditProfilePopUpProps> = (props) => {
+const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
+
     //useStates FOR INPUT ERRORS
     const [noOfPostsError, setNoOfPostsError] = useState<boolean>(false);
     const [noOfPostsErrorMessage, setNoOfPostsErrorMessage] = useState<string>('');
@@ -31,12 +22,12 @@ const EditProfilePopUp: React.FC<EditProfilePopUpProps> = (props) => {
     const [usernameErrorMessage, setUsernameErrorMessage] = useState<string>('');
 
     //useStates FOR INITIALIZING DATA
-    const [profilePhotoState, setProfilePhotoState] = useState<string | undefined>(props.profile_photo);
-    const [descriptionState, setDescriptionState] = useState<string>(props.profile_description);
-    const [noOfPosts, setNoOfPosts] = useState<number | null>(props.no_of_posts);
-    const [noOfFollowers, setNoOfFollowers] = useState<number | null>(props.no_followers);
-    const [noOfFollowing, setNoOfFollowing] = useState<number | null>(props.no_following);
-    const [usernameState, setUsernameState] = useState<string>(props.username);
+    const [usernameState, setUsernameState] = usePersistentState<string>('username', '');
+    const [descriptionState, setDescriptionState] = usePersistentState<string>('description', '');
+    const [noOfPosts, setNoOfPosts] = usePersistentState<number | null>('noOfPosts', null);
+    const [noOfFollowers, setNoOfFollowers] = usePersistentState<number | null>('noOfFollowers', null);
+    const [noOfFollowing, setNoOfFollowing] = usePersistentState<number | null>('noOfFollowing', null);
+    const [profilePhotoState, setProfilePhotoState] = usePersistentState<string | undefined>('profilePhoto', undefined);
 
     const [profileToBeSaved, setProfileToBeSaved] = useState<boolean>(false);
     const [profileToBeTranslated, setProfileToBeTranslated] = useState<boolean>(false);
@@ -101,68 +92,65 @@ const EditProfilePopUp: React.FC<EditProfilePopUpProps> = (props) => {
         log('save edited profile');
         validateInputs().then((result)=>{
             if(result){
-                //IF INPUTS ARE VALID, THEN SAVE THE EDITED PROFILE
-                //todo: API pentru salvarea profilului, CAND EXTRAG INPUTURILE NUMBER DACA SUNT GOALE LE PUN BY DEFAULT 0 (chiar daca validarea nu lasa userul sa lase inputurile goale la numbers/username),
+                //IF INPUTS ARE VALID, THEN ADD THE EDITED PROFILE
+                //todo: API pentru ADAUGAREA profilului, CAND EXTRAG INPUTURILE NUMBER DACA SUNT GOALE LE PUN BY DEFAULT 0 (chiar daca validarea nu lasa userul sa lase inputurile goale la numbers/username),
                 // AFISEZ LOADING ICON CAND ON CLICK SAVE
-                props.closeFn()
+
+                //todo: DACA APIUL E SUCCES, DOAR ATUNCI APELAM FUNCTIA DE SAVED_SUCCESSFULLY
+                props.savedSuccessfully()
             }
         })
-    }, [props, validateInputs]);
+    }, [props,validateInputs]);
 
-    //TODO: DETECT FROM IMAGE--------------------------------------------------------------------
-    const resetBackValuesOnCancel = useCallback(async () => {
-        //RESET BACK ALL THE VALUES IF THE EDIT PROFILE IS CANCELED
-        setDescriptionState(props.profile_description)
-        setNoOfPosts(props.no_of_posts)
-        setNoOfFollowers(props.no_followers)
-        setNoOfFollowing(props.no_following)
-        setUsernameState(props.username)
-        setUploadPhoto(false)
-        setProfileToBeSaved(false)
-        setProfileToBeTranslated(false)
-        setProfilePhotoState(props.profile_photo)
-    },[props])
+    //FUNCTIE CARE STERGE DIN LOCAL STORAGE DATELE PERSISTATE
+    const resetProfileForm = () => {
+        localStorage.removeItem('username');
+        localStorage.removeItem('description');
+        localStorage.removeItem('noOfPosts');
+        localStorage.removeItem('noOfFollowers');
+        localStorage.removeItem('noOfFollowing');
+        localStorage.removeItem('profilePhoto');
+    };
 
-    if (!props.isOpen) return null;
+    //PENTRU A STERGE DIN LOCAL STORAGE ATUNCI CAND SE PARASESTE PAGINA
+    useEffect(() => {
+        return () => {
+            resetProfileForm()
+        };
+    }, []);
 
+
+    //TODO: BUTTONS LOGIC
+    //TODO: LOADING ICON/ADDED SUCCESSFULLY - ion modal /NETWORK ERRROR - ion modal
+    //TODO: DETECT FROM IMAGE
     return (
-        <div className="edit-profile-popup-container">
-            <div className="edit-profile-popup-content">
+            <div className="add-account-screen-content">
+                <div className='add-account-screen-title roboto-style'>Add profile data</div>
 
-                <div className="edit-profile-popup-cancel-conatiner">
-                    <button className="edit-profile-popup-cancel-button roboto-style"
-                            onClick={ ()=> {
-                                props.closeFn()
-                                resetBackValuesOnCancel().then(()=>{})
-                            }
-                    }>Cancel <img src="/icons/close.png" alt="close_img"
-                                                                className="edit-profile-popup-cancel-icon icon-size"/>
-                    </button>
-                </div>
-                <div className="edit-profile-popup-middle-content">
-                    {!uploadPhoto && <div className="edit-profile-popup-profile-image-container">
-                        <div className="edit-profile-popup-profile-photo-container roboto-style">Profile Photo</div>
+                <div className="add-account-screen-middle-content">
+                    {!uploadPhoto && <div className="add-account-screen-profile-image-container">
+                        <div className="add-account-screen-profile-photo-container roboto-style">Profile Photo</div>
                         {profilePhotoState ?
                             <img
                                 src={`data:image/jpeg;base64,${profilePhotoState}`}
                                 alt="profile_img"
-                                className="edit-profile-popup-profile-image"
+                                className="add-account-screen-profile-image"
                             /> :
                             <img
                                 src="/icons/anonim_image.png"
                                 alt="anonim_image"
-                                className="edit-profile-popup-profile-image"
+                                className="add-account-screen-profile-image"
                             />
                         }
-                        <div className="edit-profile-popup-profile-buttons-bar">
-                            <button className="edit-profile-popup-profile-upload-button grey-button roboto-style"
+                        <div className="add-account-screen-profile-buttons-bar">
+                            <button className="add-account-screen-profile-upload-button grey-button roboto-style"
                                     onClick={() => {
                                         setUploadPhoto(true)
                                     }}>
                                 <img src="/icons/upload.png" alt="upload_img"
-                                     className="edit-profile-popup-upload-icon icon-size"/> Upload
+                                     className="add-account-screen-upload-icon icon-size"/> Upload
                             </button>
-                            <button className="edit-profile-popup-profile-delete-button grey-button roboto-style"
+                            <button className="add-account-screen-profile-delete-button grey-button roboto-style"
                                     onClick={() => {
                                         setProfilePhotoState(undefined)
                                         if (!profileToBeTranslated) {
@@ -171,13 +159,13 @@ const EditProfilePopUp: React.FC<EditProfilePopUpProps> = (props) => {
                                     }}
                             >
                                 <img src="/icons/delete.png" alt="delete_img"
-                                     className="edit-profile-popup-delete-icon icon-size"/> Delete
+                                     className="add-account-screen-delete-icon icon-size"/> Delete
                             </button>
                         </div>
                     </div>}
                     {uploadPhoto &&
-                        <div className="edit-profile-popup-profile-image-container">
-                            <div className="edit-profile-popup-profile-photo-container roboto-style">Upload Profile
+                        <div className="add-account-screen-profile-image-container">
+                            <div className="add-account-screen-profile-photo-container roboto-style">Upload Profile
                                 Photo
                             </div>
                             <ImageUploader
@@ -193,10 +181,10 @@ const EditProfilePopUp: React.FC<EditProfilePopUpProps> = (props) => {
                                 }}
                             />
                         </div>}
-                    <div className="edit-profile-popup-profile-details-container">
+                    <div className="add-account-screen-profile-details-container">
                         <div className="roboto-style">Description</div>
                         <textarea
-                            className="edit-profile-popup-profile-description-input edit-profile-inputs input-reset roboto-style"
+                            className="add-account-screen-profile-description-input add-account-screen-inputs input-reset roboto-style"
                             placeholder="profile description"
                             value={descriptionState}
                             onChange={(e) => {
@@ -205,10 +193,10 @@ const EditProfilePopUp: React.FC<EditProfilePopUpProps> = (props) => {
                                 setProfileToBeSaved(false)
                             }}
                         />
-                        <div className="edit-profile-posts-container roboto-style">
+                        <div className="add-account-screen-posts-container roboto-style">
                             <input type="number"
                                    min="0"
-                                   className={`edit-profile-popup-profile-posts-input edit-profile-inputs ${noOfPostsError ? 'red-border-input' : ''} input-reset roboto-style`}
+                                   className={`add-account-screen-profile-posts-input edit-profile-inputs ${noOfPostsError ? 'red-border-input' : ''} input-reset roboto-style`}
                                    value={noOfPosts === null ? '' : noOfPosts}
                                    onChange={(e) => {
                                        const val = e.target.value;
@@ -224,13 +212,13 @@ const EditProfilePopUp: React.FC<EditProfilePopUpProps> = (props) => {
                                    }}
                                    placeholder="posts no"/>
                             posts
-                            {windowWidth>=1100 && noOfPostsError && <div className="edit-popup-profile-error-messaage">{noOfPostsErrorMessage}</div>}
+                            {windowWidth>=1100 && noOfPostsError && <div className="add-account-screen-error-messaage">{noOfPostsErrorMessage}</div>}
                         </div>
 
-                        <div className="edit-profile-followers-container roboto-style">
+                        <div className="add-account-screen-followers-container roboto-style">
                             <input type="number"
                                    min="0"
-                                   className={`edit-profile-popup-profile-followers-input edit-profile-inputs ${noOfFollowersError ? 'red-border-input' : ''} input-reset roboto-style`}
+                                   className={`add-account-screen-profile-followers-input add-account-screen-inputs ${noOfFollowersError ? 'red-border-input' : ''} input-reset roboto-style`}
                                    value={noOfFollowers === null ? '' : noOfFollowers}
                                    onChange={(e) => {
                                        const val = e.target.value;
@@ -246,14 +234,14 @@ const EditProfilePopUp: React.FC<EditProfilePopUpProps> = (props) => {
                                    }}
                                    placeholder="followers no"/>
                             followers
-                            {windowWidth>=1100 && noOfFollowersError && <div className="edit-popup-profile-error-messaage">{noOfFollowersErrorMessage}</div>}
+                            {windowWidth>=1100 && noOfFollowersError && <div className="add-account-screen-error-messaage">{noOfFollowersErrorMessage}</div>}
 
                         </div>
 
-                        <div className="edit-profile-following-container">
+                        <div className="add-account-screen-following-container">
                             <input type="number"
                                    min="0"
-                                   className={`edit-profile-popup-profile-following-input edit-profile-inputs ${noOfFollowingError ? 'red-border-input' : ''} input-reset roboto-style`}
+                                   className={`add-account-screen-profile-following-input add-account-screen-inputs ${noOfFollowingError ? 'red-border-input' : ''} input-reset roboto-style`}
                                    value={noOfFollowing === null ? '' : noOfFollowing}
                                    onChange={(e) => {
                                        const val = e.target.value;
@@ -269,11 +257,11 @@ const EditProfilePopUp: React.FC<EditProfilePopUpProps> = (props) => {
                                    }}
                                    placeholder="following no"/>
                             following
-                            {windowWidth>=1100 && noOfFollowingError && <div className="edit-popup-profile-error-messaage">{noOfFollowingErrorMessage}</div>}
+                            {windowWidth>=1100 && noOfFollowingError && <div className="add-account-screen-error-messaage">{noOfFollowingErrorMessage}</div>}
                         </div>
-                        <div className="edit-profile-username-container">
+                        <div className="add-account-screen-username-container">
                             Username <input type="text"
-                                            className={`edit-profile-popup-profile-username-input edit-profile-inputs ${usernameError ? 'red-border-input' : ''} input-reset roboto-style`}
+                                            className={`add-account-screen-profile-username-input add-account-screen-inputs ${usernameError ? 'red-border-input' : ''} input-reset roboto-style`}
                                             value={usernameState}
                                             onChange={(e) => {
                                                 setUsernameState(e.target.value)
@@ -282,31 +270,30 @@ const EditProfilePopUp: React.FC<EditProfilePopUpProps> = (props) => {
                                                 }
                                             }}
                                             placeholder="username"/>
-                            {windowWidth>=1100 && usernameError && <div className="edit-popup-profile-error-messaage">{usernameErrorMessage}</div>}
+                            {windowWidth>=1100 && usernameError && <div className="add-account-screen-error-messaage">{usernameErrorMessage}</div>}
                         </div>
 
                     </div>
                 </div>
-                <div className="edit-profile-popup-bottom-bar">
-                    <button className="edit-profile-popup-detect-from-image-button grey-button roboto-style">
+                <div className="add-account-screen-bottom-bar">
+                    <button className="add-account-screen-detect-from-image-button black-button roboto-style">
                         { windowWidth <= 690 ? "Detect" :"Detect From Image" }
                     </button>
                     {profileToBeTranslated &&
-                        < button className="edit-profile-popup-translate-to-english-button grey-button roboto-style"
+                        < button className="add-account-screen-translate-to-english-button black-button roboto-style"
                                  onClick={handleTranslateToEnglish}
                         >
                             {windowWidth <= 690 ? "Translate" : "Translate to english"}
                         </button>}
                     {profileToBeSaved &&
-                        <button className="edit-profile-popup-save-button grey-button roboto-style"
+                        <button className="add-account-screen-save-button black-button roboto-style"
                                 onClick={handleSaveOnClick}>
-                            Save
+                            Add
                         </button>}
                 </div>
             </div>
 
-        </div>
     );
 };
 
-export default EditProfilePopUp;
+export default AddAccountScreen;

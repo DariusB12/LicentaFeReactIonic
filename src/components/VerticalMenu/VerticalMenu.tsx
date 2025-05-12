@@ -263,6 +263,10 @@ const VerticalMenu: React.FC = () => {
         history.push("/home");
     }, [logout,history]);
 
+    const handleAddAccountClicked = useCallback(async () => {
+        log('redirecting to /addAccount page')
+        history.push("/addAccount");
+    }, [history]);
 
 
     return (
@@ -295,7 +299,7 @@ const VerticalMenu: React.FC = () => {
 
                 <div className="vertical-menu-container-bottom-conatiner">
                     <div className="vertical-menu-container-bottom-buttons">
-                        <button className="vertical-menu-container-add-button blue-button">Add<img src="/icons/add.png"
+                        <button className="vertical-menu-container-add-button blue-button" onClick={handleAddAccountClicked}>Add<img src="/icons/add.png"
                                                                                                    alt="add_img"
                                                                                                    className="icon-size"/>
                         </button>
@@ -324,7 +328,7 @@ const VerticalMenu: React.FC = () => {
                          className="vertical-menu-hamburger_image"/>
                 </button>
 
-                <button className="vertical-menu-hamburger-add-button blue-button"><img src="/icons/add.png"
+                <button className="vertical-menu-hamburger-add-button blue-button" onClick={handleAddAccountClicked}><img src="/icons/add.png"
                                                                                         alt="add_img"
                                                                                         className="vertical-menu-hamburger-add-img"/>
                 </button>

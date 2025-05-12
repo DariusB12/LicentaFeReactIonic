@@ -43,10 +43,11 @@ const socialAccount: SocialAccount = {
             id: 1
         }, {comment: `Loved this!`, id: 2}, {comment: `Loved this!`, id: 3},
             {comment: `Loved this!`, id: 4}, {comment: `Loved this!`, id: 5}, {comment: `Loved this!`, id: 6}, {
-            comment: `Loved this!`, id: 7}, {comment: `Loved this!`, id: 8}, {comment: `Loved this!`, id: 9}, {
-            comment: `Loved this!`,
-            id: 10
-        }, {comment: `🔥🔥🔥`, id: 11}],
+                comment: `Loved this!`, id: 7
+            }, {comment: `Loved this!`, id: 8}, {comment: `Loved this!`, id: 9}, {
+                comment: `Loved this!`,
+                id: 10
+            }, {comment: `🔥🔥🔥`, id: 11}],
         date_posted: new Date(Date.now() - i * 86400000) // one post per previous day
     }))
 };
@@ -59,6 +60,7 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
     const [showEditProfile, setShowEditProfile] = useState<boolean>(false);
     const [editClickedPost, setEditClickedPost] = useState<Post | undefined>(undefined)
     const [showEditPost, setShowEditPost] = useState<boolean>(false);
+    const [showAddPost, setShowAddPost] = useState<boolean>(false);
 
     const handleEditPostClicked = useCallback(async (post: Post) => {
         log('edit post clicked');
@@ -95,7 +97,8 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
                                 handleEditPostClicked(post).then(() => {
                                     setShowEditPost(true)
                                 })
-                            }}/>
+                            }}
+                            />
                         </div>
                     )}/>
                 </div>
@@ -146,7 +149,11 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
                                  className="account-details-content-profile-edit-icon icon-size"/>
                             {width >= 695 && <div>Edit profile</div>}
                         </button>
-                        <button className="account-details-add-new-post-button grey-button roboto-style">
+                        <button className="account-details-add-new-post-button grey-button roboto-style"
+                                onClick={() => {
+                                    setShowAddPost(true)
+                                }}
+                        >
                             <img src="/icons/add.png" alt="add_icon"
                                  className="account-details-content-profile-add-icon icon-size"/>
                             {width >= 695 && <div>Add new post</div>}
@@ -183,9 +190,10 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
 
             {showEditPost && <EditPostPopUp
                 isOpen={showEditPost}
+                forAdd={false}
+                forEdit={true}
                 idProfile={socialAccount.id}
                 idPost={editClickedPost?.id}
-
                 photos={editClickedPost?.photos}
                 description={editClickedPost?.description}
                 no_likes={editClickedPost?.no_likes}
@@ -195,9 +203,19 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
 
                 closeFn={() => {
                     setShowEditPost(false)
-                }}>
+                }}/>
+            }
+            {showAddPost && <EditPostPopUp
+                isOpen={showAddPost}
+                forAdd={true}
+                forEdit={false}
 
-            </EditPostPopUp>}
+                idProfile={socialAccount.id}
+
+                closeFn={() => {
+                    setShowAddPost(false)
+                }}/>
+            }
         </IonPage>
 
     )

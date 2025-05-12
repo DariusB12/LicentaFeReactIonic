@@ -56,7 +56,6 @@ const ViewAllAccountsListItem: React.FC<ViewAllAccountsListItemProps> = ({accoun
                     ) : (
                         <div className="view-all-accounts-list-analised-false roboto-style">
                             <div className="view-all-accounts-list-analised-false-text">unanalysed</div>
-
                             <img src="/icons/cancel.png" alt="cancel_img"
                                  className="view-all-accounts-list-analised-cancel icon-size"/>
                         </div>

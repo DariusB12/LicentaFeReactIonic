@@ -6,8 +6,10 @@
     --font-xxl: 2.5rem;
 }
 .icon-size{
-    width: 1.5rem;
-    height: 1.5rem;
+    max-width: 1.5rem;
+    min-width: 1.5rem;
+    max-height: 1.5rem;
+    min-height: 1.5rem;
 }
 /*TEXT FONTS*/
 .kaushan-script-style {
@@ -142,6 +144,7 @@
     --box-shadow: none;
 }
 
+
 .unstyled-ion-content {
     --background: transparent;
     --padding-start: 0;
@@ -175,5 +178,3 @@
     background: #7c7c7c;
     border-radius: 8px;
 }
-
-

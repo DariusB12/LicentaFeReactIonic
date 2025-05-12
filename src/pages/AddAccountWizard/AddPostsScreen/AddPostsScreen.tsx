@@ -1,5 +1,5 @@
 import React, {useCallback, useRef, useState} from 'react';
-import "./EditPostPopUp.css"
+import "./AddPostsScreen.css"
 import {getLogger, useWindowWidth} from "../../../assets";
 import {motion} from "framer-motion";
 import GenericList from "../../../components/GenericList/GenericList";
@@ -27,9 +27,9 @@ interface EditPostPopUpProps {
     closeFn: () => void
 }
 
-const log = getLogger('EditPostPopUp');
+const log = getLogger('AddPostsScreen');
 
-const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
+const AddPostsScreen: React.FC<EditPostPopUpProps> = (props) => {
     const [photoIndex, setPhotoIndex] = useState<number>(0);
 
     const [photos, setPhotos] = useState<PostPhoto[]>(props.photos != undefined ? props.photos : []);
@@ -191,7 +191,7 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
         }
     };
     const uploadButtonSection = (
-        <div className='edit-post-popup-div-upload-image-options'>
+        <div className='add-posts-screen-div-upload-image-options'>
             <input
                 type="file"
                 accept=".png,.jpg,.jpeg"
@@ -199,28 +199,28 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                 style={{display: 'none'}}
                 onChange={handleFileChange}
             />
-            <button className='edit-post-popup-add-photo-button grey-button roboto-style'
+            <button className='add-posts-screen-add-photo-button grey-button roboto-style'
                     onClick={openFileDialog}>
                 <img src="/icons/add.png" alt="add_img"
-                     className="edit-post-popup-add-icon icon-size"/>
+                     className="add-posts-screen-add-icon icon-size"/>
                 {windowWidth >= 1100 ? 'add another photo' : 'add photo'}
             </button>
-            <div className='edit-post-popup-or-text roboto-style'>or</div>
+            <div className='add-posts-screen-or-text roboto-style'>or</div>
             <input
                 ref={inputRef}
                 value=''
                 onChange={() => {
                 }}
-                className="edit-post-popup-input-ctrl-v input-reset roboto-style"
+                className="add-posts-screen-input-ctrl-v input-reset roboto-style"
                 placeholder="Ctrl+V in this input"
                 onPaste={handlePaste}
             />
         </div>)
-    const likesSection = (<div className='edit-post-popup-likes-container'>
+    const likesSection = (<div className='add-posts-screen-likes-container'>
         <img src="/icons/heart.png" alt="heart_img"
-             className="edit-post-popup-heart-icon icon-size"/>
+             className="add-posts-screen-heart-icon icon-size"/>
         <input type="number"
-               className={`edit-post-popup-likes-input edit-post-inputs input-reset roboto-style ${noOfLikesError ? 'red-border-input' : ''}`}
+               className={`add-posts-screen-likes-input add-posts-screen-inputs input-reset roboto-style ${noOfLikesError ? 'red-border-input' : ''}`}
                value={noLikes == -1 ? '' : noLikes == null ? '' : noLikes}
                disabled={noLikes == -1}
                onChange={(e) => {
@@ -238,7 +238,7 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                placeholder={noLikes == -1 ? 'private' : `likes no`}/>
         {windowWidth >= 1100 && 'likes'}
         <button
-            className={`edit-post-popup-like-button ${lockedLikes ? 'edit-post-popup-lock-clicked' : ''}`}
+            className={`add-posts-screen-like-button ${lockedLikes ? 'add-posts-screen-lock-clicked' : ''}`}
             onClick={() => {
                 if (lockedLikes) {
                     setNoLikes(null)
@@ -252,17 +252,17 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                 }
             }}>
             <img src="/icons/lock.png" alt="lock_img"
-                 className="edit-post-popup-lock-icon icon-size"/>
+                 className="add-posts-screen-lock-icon icon-size"/>
         </button>
         {windowWidth>=700 && noOfLikesError &&
-            <div className="edit-post-popup-error-messaage">{noOfLikesErrorMessage}</div>}
+            <div className="add-posts-screen-error-messaage">{noOfLikesErrorMessage}</div>}
 
     </div>)
-    const commentsSection = (<div className='edit-post-popup-comments-container'>
+    const commentsSection = (<div className='add-posts-screen-comments-container'>
         <img src="/icons/chat.png" alt="chat_img"
-             className="edit-post-popup-chat-icon icon-size"/>
+             className="add-posts-screen-chat-icon icon-size"/>
         <input type="number"
-               className={`edit-post-popup-comments-input edit-post-inputs input-reset roboto-style ${noOfCommentsError ? 'red-border-input' : ''}`}
+               className={`add-posts-screen-comments-input add-posts-screen-inputs input-reset roboto-style ${noOfCommentsError ? 'red-border-input' : ''}`}
                value={noComments == -1 ? '' : noComments == null ? '' : noComments}
                disabled={noComments == -1}
                onChange={(e) => {
@@ -280,7 +280,7 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                placeholder={noComments == -1 ? 'private' : (windowWidth >= 1100 ? 'comments no' : 'comm no') }/>
         {windowWidth >= 1100 && 'comments'}
         <button
-            className={`edit-post-popup-comment-button ${lockedComments ? 'edit-post-popup-lock-clicked' : ''}`}
+            className={`add-posts-screen-comment-button ${lockedComments ? 'add-posts-screen-lock-clicked' : ''}`}
             onClick={() => {
                 if (lockedComments) {
                     setNoComments(null)
@@ -294,16 +294,16 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                 }
             }}>
             <img src="/icons/lock.png" alt="lock_img"
-                 className="edit-post-popup-lock-icon icon-size"/>
+                 className="add-posts-screen-lock-icon icon-size"/>
         </button>
         {windowWidth>=700 && noOfCommentsError &&
-            <div className="edit-post-popup-error-messaage">{noOfCommentsErrorMessage}</div>}
+            <div className="add-posts-screen-error-messaage">{noOfCommentsErrorMessage}</div>}
 
     </div>)
-    const dateSection = (<div className='edit-post-popup-date-posted-container'>
+    const dateSection = (<div className='add-posts-screen-date-posted-container'>
         {windowWidth >= 1100 && 'Date posted'}
 
-        <div className="edit-post-popup-date-input-and-message-container">
+        <div className="add-posts-screen-date-input-and-message-container">
             <IonDatetimeButton datetime="datetime"></IonDatetimeButton>
 
             <IonModal keepContentsMounted={true}>
@@ -311,7 +311,7 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                     id="datetime"
                     presentation="date"
                     value={datePosted.toISOString()}
-                    className={`edit-post-popup-date-input edit-post-inputs input-reset roboto-style ${dateError ? 'red-border-input' : ''}`}
+                    className={`add-posts-screen-date-input add-posts-screen-inputs input-reset roboto-style ${dateError ? 'red-border-input' : ''}`}
                     onIonChange={(e) => {
                         const val = e.detail.value;
                         if (val) {
@@ -323,45 +323,43 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                     }}
                 />
             </IonModal>
-            {windowWidth>=700 && dateError && <div className="edit-post-popup-error-messaage">{dateErrorMessage}</div>}
+            {windowWidth>=700 && dateError && <div className="add-posts-screen-error-messaage">{dateErrorMessage}</div>}
         </div>
     </div>)
 
+    //TODO: sterg cancel button, adaug titlu Add Post
+    //TODO: RESPONSIVE MOBILE CU TOT CU ERRORS
+    //TODO: LA REFRESH RAMANE STATE-UL CURENT, LA PRESS ORICE BUTTON DIN VERTICAL MENU, SE FACE REMOVE LA STATE
+    //TODO: design butoane sa fie black
+    //TODO: BUTTONS LOGIC
+    //TODO: LOADING ICON/ADDED SUCCESSFULLY/NETWORK ERRROR
+    //TODO: DETECT FROM IMAGE
     return (
-        <div className="edit-post-popup-container">
-            <div className="edit-post-popup-content">
-                <div className="edit-post-popup-cancel-conatiner">
-                    <button className="edit-post-popup-cancel-button roboto-style"
-                            onClick={() => {
-                                props.closeFn()
-                            }
-                            }>Cancel <img src="/icons/close.png" alt="close_img"
-                                          className="icon-size"/>
-                    </button>
-                </div>
+            <div className="add-posts-screen-content">
 
-                <div className="edit-post-popup-middle-content">
-                    <div className='edit-post-popup-content-left'>
 
-                        <div className="edit-post-popup-item-photo">
+                <div className="add-posts-screen-middle-content">
+                    <div className='add-posts-screen-content-left'>
+
+                        <div className="add-posts-screen-item-photo">
                             {photos.length == 0 &&
                                 <div>No photos uploaded</div>
                             }
                             {photosError && photos.length == 0 &&
-                                <div className='edit-popup-profile-error-messaage'>{photosErrorMessage}</div>
+                                <div className='add-posts-screen-error-messaage'>{photosErrorMessage}</div>
                             }
                             {photos.length != 0 &&
                                 <motion.img
                                     key={photoIndex} // This triggers re-animation when photoIndex changes
                                     src={`data:image/jpeg;base64,${photos?.at(photoIndex)?.photo}`}
                                     alt="post_img"
-                                    className="edit-post-popup-item-photo-image"
+                                    className="add-posts-screen-item-photo-image"
                                     initial={{x: 0, opacity: 0}}
                                     animate={{x: 0, opacity: 1}}
                                     exit={{x: 0, opacity: 0}}
                                     transition={{duration: 0.2}}
                                 />}
-                            {photos.length != 0 && <button className="edit-post-popup-edit-post-button roboto-style"
+                            {photos.length != 0 && <button className="add-posts-screen-edit-post-button roboto-style"
                                                            onClick={() => {
                                                                const toDeletePhoto = photos.at(photoIndex);
                                                                setPhotoIndex(prevState => {
@@ -384,19 +382,19 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                                      className="icon-size"/>
                             </button>}
                             {photoIndex > 0 &&
-                                <button className="edit-post-popup-item-arrow-back-button" onClick={() => {
+                                <button className="add-posts-screen-item-arrow-back-button" onClick={() => {
                                     setPhotoIndex(prevState => prevState - 1);
                                 }}>
                                     <img src="/icons/arrow_back.png" alt="back_img"
-                                         className="account-details-item-arrow-back-icon icon-size"/>
+                                         className="add-posts-screen-item-arrow-back-icon icon-size"/>
                                 </button>
                             }
                             {photoIndex < photos.length - 1  &&
-                                <button className="edit-post-popup-item-arrow-forward-button" onClick={() => {
+                                <button className="add-posts-screen-item-arrow-forward-button" onClick={() => {
                                     setPhotoIndex(prevState => prevState + 1);
                                 }}>
                                     <img src="/icons/arrow_forward.png" alt="forward_img"
-                                         className="account-details-item-arrow-forward-icon icon-size"/>
+                                         className="add-posts-screen-item-arrow-forward-icon icon-size"/>
                                 </button>
                             }
 
@@ -409,22 +407,22 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                     </div>
                     <div style={windowWidth > 700 ? {display: 'none'} : {}}>
                         {windowWidth < 700 && dateError &&
-                            <div className="edit-post-popup-error-messaage">{dateErrorMessage}</div>}
+                            <div className="add-posts-screen-error-messaage">{dateErrorMessage}</div>}
                     </div>
-                    <div className='edit-post-mobile-responsive-div' style={windowWidth > 1100 ? {display: 'none'} : {}}>
-                        <div className='edit-post-popup-mobile-responsive-add-and-date-container'>
+                    <div className='add-posts-screen-mobile-responsive-div' style={windowWidth > 1100 ? {display: 'none'} : {}}>
+                        <div className='add-posts-screen-mobile-responsive-add-and-date-container'>
                             {windowWidth < 1100 && uploadButtonSection}
                             {windowWidth < 1100 && dateSection}
                         </div>
-                        <div className='edit-post-popup-mobile-responsive-likes-and-comments-container'>
+                        <div className='add-posts-screen-mobile-responsive-likes-and-comments-container'>
                             {windowWidth < 1100 && likesSection}
                             {windowWidth < 1100 && commentsSection}
                         </div>
                     </div>
-                    <div className='edit-post-popup-content-right'>
+                    <div className='add-posts-screen-content-right'>
                         <div className='roboto-style'>Description</div>
                         <textarea
-                            className="edit-post-popup-post-description-input edit-post-inputs input-reset roboto-style"
+                            className="add-posts-screen-post-description-input add-posts-screen-inputs input-reset roboto-style"
                             value={description}
                             onChange={(e) => {
                                 setDescription(e.target.value)
@@ -433,9 +431,9 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                             }}
                             placeholder="post description"
                         />
-                        <div className='edit-post-popup-post-comments-button-content roboto-style'>
+                        <div className='add-posts-screen-post-comments-button-content roboto-style'>
                             Comments
-                            <button className='edit-post-popup-add-button grey-button roboto-style' onClick={
+                            <button className='add-posts-screen-add-button grey-button roboto-style' onClick={
                                 () => {
                                     const newComment = {id: commentsGeneratedId, comment: ''};
                                     setComments(prev => [newComment, ...prev]);
@@ -443,14 +441,14 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                                 }
                             }>
                                 <img src="/icons/add.png" alt="add_img"
-                                     className="edit-post-popup-add-icon icon-size"/>
+                                     className="add-posts-screen-add-icon icon-size"/>
                                 {windowWidth >= 1100 ? 'add comment' : 'add'}
                             </button>
                             {commentsError &&
-                                <div className='edit-post-popup-error-messaage'>{commentsErrorMessage}</div>}
+                                <div className='add-posts-screen-error-messaage'>{commentsErrorMessage}</div>}
                         </div>
 
-                        <GenericList className='edit-post-popup-comments-list' items={comments.map((comment) =>
+                        <GenericList className='add-posts-screen-comments-list' items={comments.map((comment) =>
                             <CommentsItem
                                 key={comment.id}
                                 comment={comment}
@@ -477,25 +475,25 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                     </div>
                 </div>
 
-                <div className="edit-post-popup-bottom-bar">
-                    <button className="edit-post-popup-delete-button roboto-style">
-                    <img src="/icons/delete.png" alt="delete_img"
-                             className="edit-post-popup-delete-icon icon-size"/>
+                <div className="add-posts-screen-bottom-bar">
+                    <button className="add-posts-screen-delete-button roboto-style">
+                        <img src="/icons/delete.png" alt="delete_img"
+                             className="add-posts-screen-delete-icon icon-size"/>
                         {windowWidth >= 1100 && 'Delete Post'}
                     </button>
 
-                    <div className='edit-post-popup-right-content'>
-                        <button className="edit-post-popup-detect-from-image-button grey-button roboto-style">
+                    <div className='add-posts-screen-right-content'>
+                        <button className="add-posts-screen-detect-from-image-button black-button roboto-style">
                             {windowWidth >= 1100 ? 'Detect From Image' : 'Detect'}
                         </button>
                         {profileToBeTranslated &&
-                            < button className="edit-post-popup-translate-to-english-button grey-button roboto-style"
+                            < button className="add-posts-screen-translate-to-english-button black-button roboto-style"
                                      onClick={handleTranslateToEnglish}>
                                 {windowWidth >= 1100 ? 'Translate to english' : 'Translate'}
                             </button>
                         }
                         {profileToBeSaved &&
-                            <button className="edit-post-popup-save-button grey-button roboto-style"
+                            <button className="add-posts-screen-save-button black-button roboto-style"
                                     onClick={handleSaveOnClick}>
                                 {props.forAdd ? 'Add' : 'Save'}
                             </button>
@@ -504,8 +502,7 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
 
                 </div>
             </div>
-        </div>
     );
 };
 
-export default EditPostPopUp;
+export default AddPostsScreen;
