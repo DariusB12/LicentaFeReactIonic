@@ -1,52 +1,42 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import "./AddPostsScreen.css"
-import {getLogger, useWindowWidth} from "../../../assets";
+import {getLogger, usePersistentState, useWindowWidth} from "../../../assets";
 import {motion} from "framer-motion";
 import GenericList from "../../../components/GenericList/GenericList";
 import {PostPhoto} from "../../../assets/entities/PostPhoto";
 import {PostComment} from "../../../assets/entities/PostComment";
 import CommentsItem from "../../../components/CommentsItem/CommentsItem";
 import {IonDatetime, IonDatetimeButton, IonModal} from "@ionic/react";
+import * as H from "history";
+import DetectFromImage from "../../../components/DetectFromImage/DetectFromImage";
 
-interface EditPostPopUpProps {
-    isOpen: boolean,
-
-    forAdd:boolean,
-    forEdit:boolean,
-
-    idPost?: number,
+interface AddPostsScreenProps {
     idProfile: number,
-
-    photos?: PostPhoto[],
-    description?: string,
-    no_likes?: number,
-    no_comments?: number,
-    comments?: PostComment[],
-    date_posted?: Date
-
-    closeFn: () => void
+    accountPhoto: string | undefined,
+    accountUsername: string
+    history: H.History<unknown>;
 }
 
 const log = getLogger('AddPostsScreen');
 
-const AddPostsScreen: React.FC<EditPostPopUpProps> = (props) => {
-    const [photoIndex, setPhotoIndex] = useState<number>(0);
+const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUsername, accountPhoto, history}) => {
+    const [photoIndex, setPhotoIndex] = usePersistentState<number>('postScreenPhotoIndex', 0);
 
-    const [photos, setPhotos] = useState<PostPhoto[]>(props.photos != undefined ? props.photos : []);
-    const [description, setDescription] = useState<string>(props.description != undefined ? props.description : '');
-    const [noLikes, setNoLikes] = useState<number | null>(props.no_likes != undefined ? props.no_likes : null);
-    const [noComments, setNoComments] = useState<number | null>(props.no_comments != undefined ? props.no_comments : null);
-    const [comments, setComments] = useState<PostComment[]>(props.comments != undefined ? props.comments : []);
-    const [datePosted, setDatePosted] = useState<Date>(props.date_posted != undefined ? props.date_posted : new Date());
+    const [photos, setPhotos] = usePersistentState<PostPhoto[]>('postScreenPhotos', []);
+    const [description, setDescription] = usePersistentState<string>('postScreenDescription','');
+    const [noLikes, setNoLikes] = usePersistentState<number | null>('postScreenNoLikes',null);
+    const [noComments, setNoComments] = usePersistentState<number | null>('postScreenNoComments',null);
+    const [comments, setComments] = usePersistentState<PostComment[]>('postScreenComments',[]);
+    const [datePosted, setDatePosted] = usePersistentState<Date>('postScreenDatePosted',new Date());
 
-    const [commentsGeneratedId, setCommentsGeneratedId] = useState<number>(-1);
-    const [photosGeneratedId, setPhotosGeneratedId] = useState<number>(-1);
+    const [commentsGeneratedId, setCommentsGeneratedId] = usePersistentState<number>('postScreenCommentsGeneratedId',-1);
+    const [photosGeneratedId, setPhotosGeneratedId] = usePersistentState<number>('postScreenPhotosGeneratedId',-1);
 
     const [lockedLikes, setLockedLikes] = useState<boolean>(noLikes == -1);
     const [lockedComments, setLockedComments] = useState<boolean>(noComments == -1);
 
-    const [profileToBeSaved, setProfileToBeSaved] = useState<boolean>(false);
-    const [profileToBeTranslated, setProfileToBeTranslated] = useState<boolean>(false);
+    const [profileToBeSaved, setProfileToBeSaved] = usePersistentState<boolean>('postScreenProfileToBeSaved',false);
+    const [profileToBeTranslated, setProfileToBeTranslated] = usePersistentState<boolean>('postScreenProfileToBeTranslated',false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const inputRef = useRef(null);
@@ -62,14 +52,54 @@ const AddPostsScreen: React.FC<EditPostPopUpProps> = (props) => {
     const [commentsErrorMessage, setCommentsErrorMessage] = useState('');
     const [commentsError, setCommentsError] = useState(false);
 
+    const [detectFromImage, setDetectFromImage] = useState<boolean>(false);
     const windowWidth = useWindowWidth()
+    //FUNCTIE CARE STERGE DIN LOCAL STORAGE DATELE PERSISTATE
+    const resetPostsForm = useCallback (async () => {
+        localStorage.removeItem('postScreenPhotoIndex');
+        localStorage.removeItem('postScreenPhotos');
+        localStorage.removeItem('postScreenDescription');
+        localStorage.removeItem('postScreenNoLikes');
+        localStorage.removeItem('postScreenNoComments');
+        localStorage.removeItem('postScreenComments');
+        localStorage.removeItem('postScreenDatePosted')
+        localStorage.removeItem('postScreenCommentsGeneratedId')
+        localStorage.removeItem('postScreenPhotosGeneratedId')
+        localStorage.removeItem('postScreenProfileToBeSaved')
+        localStorage.removeItem('postScreenProfileToBeTranslated')
+    },[])
+    //RESETS ALL THE STATES TO DEFAULT VALUES IF THE USER WANTS TO ADD ANOTHER POST
+    const resetAllStates = useCallback(async () => {
+        setPhotoIndex(0);
+        setPhotos([]);
+        setDescription('');
+        setNoLikes(null);
+        setNoComments(null);
+        setComments([]);
+        setDatePosted(new Date());
+        setCommentsGeneratedId(-1);
+        setPhotosGeneratedId(-1);
+        setLockedLikes(noLikes == -1);
+        setLockedComments(noComments == -1);
+        setProfileToBeSaved(false);
+        setProfileToBeTranslated(false);
+
+    },[noComments, noLikes, setComments, setCommentsGeneratedId, setDatePosted, setDescription, setNoComments, setNoLikes, setPhotoIndex, setPhotos, setPhotosGeneratedId, setProfileToBeSaved, setProfileToBeTranslated])
+
+
+    //PENTRU A STERGE DIN LOCAL STORAGE ATUNCI CAND SE PARASESTE PAGINA
+    useEffect(() => {
+        return () => {
+            resetPostsForm().then()
+        };
+    }, [resetPostsForm]);
 
     const handleTranslateToEnglish = useCallback(async () => {
         log('translate the description');
         //todo: api pentru traducerea in engleza doar a descrierii (mai intai verific daca e empty si apoi daca trebuie tradus) si comentariilor
         setProfileToBeSaved(true)
         setProfileToBeTranslated(false)
-    }, []);
+    }, [setProfileToBeSaved,setProfileToBeTranslated]);
 
     const validateInputs = useCallback(async (): Promise<boolean> => {
         log('validating the inputs')
@@ -123,24 +153,28 @@ const AddPostsScreen: React.FC<EditPostPopUpProps> = (props) => {
     }, [noLikes, noComments, datePosted, photos, comments]);
 
     const handleSaveOnClick = useCallback(async () => {
-        log('save edited post');
+        log('save post');
         validateInputs().then((result) => {
             if (result) {
                 //IF INPUTS ARE VALID, THEN SAVE THE EDITED POST
 
-                //todo: API pentru salvarea profilului, CAND EXTRAG INPUTURILE NUMBER DACA SUNT GOALE LE PUN BY DEFAULT 0 (chiar daca validarea nu lasa userul sa lase inputurile goale la likes/comments),
-                //TODO: CAND SE SALVEAZA - lista cu comentarii/fotografii se trimite asa cum a fost modificata si pe server in DB se inlocuieste cea veche cu asta noua
+                //todo: API pentru salvarea postarii, CAND EXTRAG INPUTURILE NUMBER DACA SUNT GOALE LE PUN BY DEFAULT 0 (chiar daca validarea nu lasa userul sa lase inputurile goale la likes/comments),
+                //TODO: Se adauga postarea noua la cont
                 // AFISEZ LOADING ICON CAND ON CLICK SAVE
-                // forAdd?:boolean,
-                //     forEdit?:boolean, folosesc atributele astea ca sa stiu daca fac update sau add de postare
-                props.closeFn()
+                // daca e cu success, se face refresh la toate atributele si apare un alert cum ca s-a salvat cu success si poate introduce alta postare
+                resetPostsForm()
+                resetAllStates()
             }
         })
-    }, [props, validateInputs]);
+    }, [validateInputs,resetPostsForm,resetAllStates]);
     log('render')
 
 
-    if (!props.isOpen) return null;
+    const handleOnClickCancel = useCallback(async () => {
+        log('cancel add post');
+        resetPostsForm().then()
+        history.push(`/accountDetails/${idProfile}`)
+    }, [history,idProfile,resetPostsForm]);
 
     const isValidImageFile = (file: File): boolean => {
         const validTypes = ['image/jpeg', 'image/png'];
@@ -190,6 +224,7 @@ const AddPostsScreen: React.FC<EditPostPopUpProps> = (props) => {
             }
         }
     };
+
     const uploadButtonSection = (
         <div className='add-posts-screen-div-upload-image-options'>
             <input
@@ -254,7 +289,7 @@ const AddPostsScreen: React.FC<EditPostPopUpProps> = (props) => {
             <img src="/icons/lock.png" alt="lock_img"
                  className="add-posts-screen-lock-icon icon-size"/>
         </button>
-        {windowWidth>=700 && noOfLikesError &&
+        {windowWidth >= 700 && noOfLikesError &&
             <div className="add-posts-screen-error-messaage">{noOfLikesErrorMessage}</div>}
 
     </div>)
@@ -277,7 +312,7 @@ const AddPostsScreen: React.FC<EditPostPopUpProps> = (props) => {
                        e.preventDefault();
                    }
                }}
-               placeholder={noComments == -1 ? 'private' : (windowWidth >= 1100 ? 'comments no' : 'comm no') }/>
+               placeholder={noComments == -1 ? 'private' : (windowWidth >= 1100 ? 'comments no' : 'comm no')}/>
         {windowWidth >= 1100 && 'comments'}
         <button
             className={`add-posts-screen-comment-button ${lockedComments ? 'add-posts-screen-lock-clicked' : ''}`}
@@ -296,7 +331,7 @@ const AddPostsScreen: React.FC<EditPostPopUpProps> = (props) => {
             <img src="/icons/lock.png" alt="lock_img"
                  className="add-posts-screen-lock-icon icon-size"/>
         </button>
-        {windowWidth>=700 && noOfCommentsError &&
+        {windowWidth >= 700 && noOfCommentsError &&
             <div className="add-posts-screen-error-messaage">{noOfCommentsErrorMessage}</div>}
 
     </div>)
@@ -323,185 +358,211 @@ const AddPostsScreen: React.FC<EditPostPopUpProps> = (props) => {
                     }}
                 />
             </IonModal>
-            {windowWidth>=700 && dateError && <div className="add-posts-screen-error-messaage">{dateErrorMessage}</div>}
+            {windowWidth >= 700 && dateError &&
+                <div className="add-posts-screen-error-messaage">{dateErrorMessage}</div>}
         </div>
     </div>)
 
-    //TODO: sterg cancel button, adaug titlu Add Post
-    //TODO: RESPONSIVE MOBILE CU TOT CU ERRORS
-    //TODO: LA REFRESH RAMANE STATE-UL CURENT, LA PRESS ORICE BUTTON DIN VERTICAL MENU, SE FACE REMOVE LA STATE
-    //TODO: design butoane sa fie black
-    //TODO: BUTTONS LOGIC
-    //TODO: LOADING ICON/ADDED SUCCESSFULLY/NETWORK ERRROR
+    //TODO: LOADING ICON/ADDED SUCCESSFULLY - ION MODAL BTTM/NETWORK ERRROR - ION MODAL BTTM
     //TODO: DETECT FROM IMAGE
     return (
-            <div className="add-posts-screen-content">
+        <div className="add-posts-screen-content">
+            <div className='add-posts-screen-title'>
+                Add post
+            </div>
 
+            <div className="add-posts-screen-middle-content">
 
-                <div className="add-posts-screen-middle-content">
-                    <div className='add-posts-screen-content-left'>
-
-                        <div className="add-posts-screen-item-photo">
-                            {photos.length == 0 &&
-                                <div>No photos uploaded</div>
+                <div className='add-posts-screen-content-left'>
+                    <div className='add-posts-screen-photo-username-container roboto-style'>
+                        <div className='add-posts-screen-photo-container'>
+                            {accountPhoto ?
+                                <img
+                                    src={`data:image/jpeg;base64,${accountPhoto}`}
+                                    alt="profile_img"
+                                    className="add-post-screen-profile-image"
+                                /> :
+                                <img
+                                    src="/icons/anonim_image.png"
+                                    alt="anonim_image"
+                                    className="add-post-screen-profile-image"
+                                />
                             }
-                            {photosError && photos.length == 0 &&
-                                <div className='add-posts-screen-error-messaage'>{photosErrorMessage}</div>
-                            }
-                            {photos.length != 0 &&
-                                <motion.img
-                                    key={photoIndex} // This triggers re-animation when photoIndex changes
-                                    src={`data:image/jpeg;base64,${photos?.at(photoIndex)?.photo}`}
-                                    alt="post_img"
-                                    className="add-posts-screen-item-photo-image"
-                                    initial={{x: 0, opacity: 0}}
-                                    animate={{x: 0, opacity: 1}}
-                                    exit={{x: 0, opacity: 0}}
-                                    transition={{duration: 0.2}}
-                                />}
-                            {photos.length != 0 && <button className="add-posts-screen-edit-post-button roboto-style"
-                                                           onClick={() => {
-                                                               const toDeletePhoto = photos.at(photoIndex);
-                                                               setPhotoIndex(prevState => {
-                                                                   if (prevState == 0 && photos.length > 1)
-                                                                       return prevState
-                                                                   if (prevState == photos.length - 1 && photos.length > 1)
-                                                                       return prevState - 1
-                                                                   if (photos.length > 1)
-                                                                       return prevState
-                                                                   else return -1
-                                                               });
-                                                               setPhotos(prevState =>
-                                                                   prevState.filter(p => p.id !== toDeletePhoto?.id)
-                                                               );
-                                                               if (!profileToBeTranslated) {
-                                                                   setProfileToBeSaved(true)
-                                                               }
-                                                           }}>
-                                <img src="/icons/delete.png" alt="delete_img"
-                                     className="icon-size"/>
-                            </button>}
-                            {photoIndex > 0 &&
-                                <button className="add-posts-screen-item-arrow-back-button" onClick={() => {
-                                    setPhotoIndex(prevState => prevState - 1);
-                                }}>
-                                    <img src="/icons/arrow_back.png" alt="back_img"
-                                         className="add-posts-screen-item-arrow-back-icon icon-size"/>
-                                </button>
-                            }
-                            {photoIndex < photos.length - 1  &&
-                                <button className="add-posts-screen-item-arrow-forward-button" onClick={() => {
-                                    setPhotoIndex(prevState => prevState + 1);
-                                }}>
-                                    <img src="/icons/arrow_forward.png" alt="forward_img"
-                                         className="add-posts-screen-item-arrow-forward-icon icon-size"/>
-                                </button>
-                            }
-
                         </div>
-                        {windowWidth >= 1100 && uploadButtonSection}
-                        {windowWidth >= 1100 && likesSection}
-                        {windowWidth >= 1100 && commentsSection}
-                        {windowWidth >= 1100 && dateSection}
 
-                    </div>
-                    <div style={windowWidth > 700 ? {display: 'none'} : {}}>
-                        {windowWidth < 700 && dateError &&
-                            <div className="add-posts-screen-error-messaage">{dateErrorMessage}</div>}
-                    </div>
-                    <div className='add-posts-screen-mobile-responsive-div' style={windowWidth > 1100 ? {display: 'none'} : {}}>
-                        <div className='add-posts-screen-mobile-responsive-add-and-date-container'>
-                            {windowWidth < 1100 && uploadButtonSection}
-                            {windowWidth < 1100 && dateSection}
-                        </div>
-                        <div className='add-posts-screen-mobile-responsive-likes-and-comments-container'>
-                            {windowWidth < 1100 && likesSection}
-                            {windowWidth < 1100 && commentsSection}
+                        <div className='add-posts-screen-username-container'>
+                            {accountUsername}
                         </div>
                     </div>
-                    <div className='add-posts-screen-content-right'>
-                        <div className='roboto-style'>Description</div>
-                        <textarea
-                            className="add-posts-screen-post-description-input add-posts-screen-inputs input-reset roboto-style"
-                            value={description}
-                            onChange={(e) => {
-                                setDescription(e.target.value)
+
+                    <div className="add-posts-screen-item-photo">
+                        {photos.length == 0 &&
+                            <div>No photos uploaded</div>
+                        }
+                        {photosError && photos.length == 0 &&
+                            <div className='add-posts-screen-error-messaage'>{photosErrorMessage}</div>
+                        }
+                        {photos.length != 0 &&
+                            <motion.img
+                                key={photoIndex} // This triggers re-animation when photoIndex changes
+                                src={`data:image/jpeg;base64,${photos?.at(photoIndex)?.photo}`}
+                                alt="post_img"
+                                className="add-posts-screen-item-photo-image"
+                                initial={{x: 0, opacity: 0}}
+                                animate={{x: 0, opacity: 1}}
+                                exit={{x: 0, opacity: 0}}
+                                transition={{duration: 0.2}}
+                            />}
+                        {photos.length != 0 && <button className="add-posts-screen-edit-post-button roboto-style"
+                                                       onClick={() => {
+                                                           const toDeletePhoto = photos.at(photoIndex);
+                                                           setPhotoIndex(prevState => {
+                                                               if (prevState == 0 && photos.length > 1)
+                                                                   return prevState
+                                                               if (prevState == photos.length - 1 && photos.length > 1)
+                                                                   return prevState - 1
+                                                               if (photos.length > 1)
+                                                                   return prevState
+                                                               else return -1
+                                                           });
+                                                           setPhotos(prevState =>
+                                                               prevState.filter(p => p.id !== toDeletePhoto?.id)
+                                                           );
+                                                           if (!profileToBeTranslated) {
+                                                               setProfileToBeSaved(true)
+                                                           }
+                                                       }}>
+                            <img src="/icons/delete.png" alt="delete_img"
+                                 className="icon-size"/>
+                        </button>}
+                        {photoIndex > 0 &&
+                            <button className="add-posts-screen-item-arrow-back-button" onClick={() => {
+                                setPhotoIndex(prevState => prevState - 1);
+                            }}>
+                                <img src="/icons/arrow_back.png" alt="back_img"
+                                     className="add-posts-screen-item-arrow-back-icon icon-size"/>
+                            </button>
+                        }
+                        {photoIndex < photos.length - 1 &&
+                            <button className="add-posts-screen-item-arrow-forward-button" onClick={() => {
+                                setPhotoIndex(prevState => prevState + 1);
+                            }}>
+                                <img src="/icons/arrow_forward.png" alt="forward_img"
+                                     className="add-posts-screen-item-arrow-forward-icon icon-size"/>
+                            </button>
+                        }
+
+                    </div>
+                    {windowWidth >= 1100 && uploadButtonSection}
+                    {windowWidth >= 1100 && likesSection}
+                    {windowWidth >= 1100 && commentsSection}
+                    {windowWidth >= 1100 && dateSection}
+
+                </div>
+                <div style={windowWidth > 700 ? {display: 'none'} : {}}>
+                    {windowWidth < 700 && dateError &&
+                        <div className="add-posts-screen-error-messaage">{dateErrorMessage}</div>}
+                </div>
+                <div className='add-posts-screen-mobile-responsive-div'
+                     style={windowWidth > 1100 ? {display: 'none'} : {}}>
+                    <div className='add-posts-screen-mobile-responsive-add-and-date-container'>
+                        {windowWidth < 1100 && uploadButtonSection}
+                        {windowWidth < 1100 && dateSection}
+                    </div>
+                    <div className='add-posts-screen-mobile-responsive-likes-and-comments-container'>
+                        {windowWidth < 1100 && likesSection}
+                        {windowWidth < 1100 && commentsSection}
+                    </div>
+                </div>
+                <div className='add-posts-screen-content-right'>
+                    <div className='roboto-style'>Description</div>
+                    <textarea
+                        className="add-posts-screen-post-description-input add-posts-screen-inputs input-reset roboto-style"
+                        value={description}
+                        onChange={(e) => {
+                            setDescription(e.target.value)
+                            setProfileToBeTranslated(true)
+                            setProfileToBeSaved(false)
+                        }}
+                        placeholder="post description"
+                    />
+                    <div className='add-posts-screen-post-comments-button-content roboto-style'>
+                        Comments
+                        <button className='add-posts-screen-add-button grey-button roboto-style' onClick={
+                            () => {
+                                const newComment = {id: commentsGeneratedId, comment: ''};
+                                setComments(prev => [newComment, ...prev]);
+                                setCommentsGeneratedId(prevId => prevId - 1);
+                            }
+                        }>
+                            <img src="/icons/add.png" alt="add_img"
+                                 className="add-posts-screen-add-icon icon-size"/>
+                            {windowWidth >= 1100 ? 'add comment' : 'add'}
+                        </button>
+                        {commentsError &&
+                            <div className='add-posts-screen-error-messaage'>{commentsErrorMessage}</div>}
+                    </div>
+
+                    <GenericList className='add-posts-screen-comments-list' items={comments.map((comment) =>
+                        <CommentsItem
+                            key={comment.id}
+                            comment={comment}
+                            onDelete={(id) => {
+                                setComments(prevState =>
+                                    prevState.filter(c => c.id !== id)
+                                );
+                                if (!profileToBeTranslated) {
+                                    setProfileToBeSaved(true)
+                                }
+                            }}
+                            onCommentChanged={(id, newText) => {
+                                setComments(prevState =>
+                                    prevState.map(c =>
+                                        c.id === id ? {...c, comment: newText} : c
+                                    )
+                                );
                                 setProfileToBeTranslated(true)
                                 setProfileToBeSaved(false)
                             }}
-                            placeholder="post description"
+                            showErrorBorder={commentsError && comment.comment.trim() === ''}
                         />
-                        <div className='add-posts-screen-post-comments-button-content roboto-style'>
-                            Comments
-                            <button className='add-posts-screen-add-button grey-button roboto-style' onClick={
-                                () => {
-                                    const newComment = {id: commentsGeneratedId, comment: ''};
-                                    setComments(prev => [newComment, ...prev]);
-                                    setCommentsGeneratedId(prevId => prevId - 1);
-                                }
-                            }>
-                                <img src="/icons/add.png" alt="add_img"
-                                     className="add-posts-screen-add-icon icon-size"/>
-                                {windowWidth >= 1100 ? 'add comment' : 'add'}
-                            </button>
-                            {commentsError &&
-                                <div className='add-posts-screen-error-messaage'>{commentsErrorMessage}</div>}
-                        </div>
-
-                        <GenericList className='add-posts-screen-comments-list' items={comments.map((comment) =>
-                            <CommentsItem
-                                key={comment.id}
-                                comment={comment}
-                                onDelete={(id) => {
-                                    setComments(prevState =>
-                                        prevState.filter(c => c.id !== id)
-                                    );
-                                    if (!profileToBeTranslated) {
-                                        setProfileToBeSaved(true)
-                                    }
-                                }}
-                                onCommentChanged={(id, newText) => {
-                                    setComments(prevState =>
-                                        prevState.map(c =>
-                                            c.id === id ? {...c, comment: newText} : c
-                                        )
-                                    );
-                                    setProfileToBeTranslated(true)
-                                    setProfileToBeSaved(false)
-                                }}
-                                showErrorBorder={commentsError && comment.comment.trim() === ''}
-                            />
-                        )}/>
-                    </div>
-                </div>
-
-                <div className="add-posts-screen-bottom-bar">
-                    <button className="add-posts-screen-delete-button roboto-style">
-                        <img src="/icons/delete.png" alt="delete_img"
-                             className="add-posts-screen-delete-icon icon-size"/>
-                        {windowWidth >= 1100 && 'Delete Post'}
-                    </button>
-
-                    <div className='add-posts-screen-right-content'>
-                        <button className="add-posts-screen-detect-from-image-button black-button roboto-style">
-                            {windowWidth >= 1100 ? 'Detect From Image' : 'Detect'}
-                        </button>
-                        {profileToBeTranslated &&
-                            < button className="add-posts-screen-translate-to-english-button black-button roboto-style"
-                                     onClick={handleTranslateToEnglish}>
-                                {windowWidth >= 1100 ? 'Translate to english' : 'Translate'}
-                            </button>
-                        }
-                        {profileToBeSaved &&
-                            <button className="add-posts-screen-save-button black-button roboto-style"
-                                    onClick={handleSaveOnClick}>
-                                {props.forAdd ? 'Add' : 'Save'}
-                            </button>
-                        }
-                    </div>
-
+                    )}/>
                 </div>
             </div>
+
+            <div className="add-posts-screen-bottom-bar">
+
+                <div className='add-posts-screen-right-content'>
+                    <button className="add-posts-screen-cancel-button roboto-style"
+                            onClick={handleOnClickCancel}>
+                        <img src="/icons/close.png" alt="close_img"
+                             className="icon-size"/>
+                        {windowWidth >= 1100 && 'Cancel'}
+                    </button>
+                    <button className="add-posts-screen-detect-from-image-button black-button roboto-style"
+                    onClick={()=>{setDetectFromImage(true)}}>
+                        {windowWidth >= 1100 ? 'Detect From Image' : 'Detect'}
+                    </button>
+                    {profileToBeTranslated &&
+                        < button className="add-posts-screen-translate-to-english-button black-button roboto-style"
+                                 onClick={handleTranslateToEnglish}>
+                            {windowWidth >= 1100 ? 'Translate to english' : 'Translate'}
+                        </button>
+                    }
+                    {profileToBeSaved &&
+                        <button className="add-posts-screen-save-button black-button roboto-style"
+                                onClick={handleSaveOnClick}>
+                            Add
+                        </button>
+                    }
+                </div>
+
+            </div>
+            {detectFromImage && <DetectFromImage forPost={true} forProfile={false} onCancel={() => {
+                setDetectFromImage(false)
+            }}/>
+            }
+        </div>
     );
 };
 

@@ -1,0 +1,107 @@
+.detect-from-image-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(255, 255, 255, 0.05);
+    justify-items: center;
+    align-content: center;
+    z-index: 10000;
+}
+
+.detect-from-image-content {
+    background-color: black;
+    width: auto;
+    height: auto;
+    margin: 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 0.3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.detect-from-image-buttons-container {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+
+}
+
+.detect-from-image-close-button {
+    margin-top: 0.8rem;
+}
+
+.detect-from-image-no-image-error {
+    font-size: var(--font-sm);
+    color: red;
+}
+
+/*--------------------------------------------------*/
+.detect-from-image-uploader-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 60%
+}
+.detect-from-image-uploader-drag-and-drop-container{
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: var(--font-sm);
+    color: #7c7c7c;
+    position: relative;
+}
+.detect-from-image-uploader-drag-and-drop-preview-img{
+    max-width: 100%;
+    max-height: 300px;
+}
+.detect-from-image-uploader-upload-button{
+    font-size: var(--font-sm);
+    background-color: rgb(255, 255, 255,0.2);
+    padding: 0.3rem;
+    width: 10rem;
+    border-radius:0.2rem;
+    transition: 0.2s ease-in-out;
+}
+.detect-from-image-uploader-upload-button:hover{
+    background-color: rgb(255, 255, 255,0.4);
+}
+.detect-from-image-uploader-or-text{
+    font-size: var(--font-sm);
+}
+.detect-from-image-uploader-upload-input{
+    font-size: var(--font-sm);
+}
+
+.detect-from-image-uploader-bottom-bar{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    min-width: 11rem;
+    justify-content: space-between;
+}
+
+.detect-from-image-uploader-cancel-button {
+    font-size: var(--font-sm);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.detect-from-image-uploader-cancel-button:hover {
+    background-color: rgb(255, 255, 255, 15%);
+}
+@media (max-width: 690px) {
+    .detect-from-image-uploader-drag-and-drop-preview-img{
+        max-width: 100%;
+        max-height: 100%;
+    }
+}
+
+

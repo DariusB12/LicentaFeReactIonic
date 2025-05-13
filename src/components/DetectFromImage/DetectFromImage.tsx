@@ -1,0 +1,155 @@
+import React, {useCallback, useRef, useState} from 'react';
+import "./DetectFromImage.css"
+import {getLogger, useWindowWidth} from "../../assets";
+
+interface DetectFromImageProps {
+    forPost:boolean,
+    forProfile:boolean,
+    onCancel: () => void
+}
+
+const log = getLogger('DetectFromImage');
+
+const DetectFromImage: React.FC<DetectFromImageProps> = ({forPost,forProfile,onCancel }) => {
+    const [imageToDetect, setImageToDetect] = useState<string | undefined>('')
+    const [noImageError, setNoImageError] = useState<boolean>(false);
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef(null);
+    const windowWidth = useWindowWidth();
+
+    const handleOnClickDetect = useCallback(async () => {
+        log('handle detect image');
+        setNoImageError(false)
+        if(imageToDetect){
+            if(forPost){
+                //TODO: api call pentru detect din postari
+                onCancel()
+            }
+            if(forProfile){
+                //TODO: api call pentru detect din profiles
+                onCancel()
+            }
+        }else{
+            setNoImageError(true)
+        }
+    }, [imageToDetect,forProfile,forPost,onCancel]);
+
+    const handlePaste = (e:React.ClipboardEvent<HTMLInputElement>) => {
+        const items = e.clipboardData.items;
+        for (const item of items) {
+            if (item.type.startsWith('image/')) {
+                const file= item.getAsFile();
+                if(file)
+                    handleFile(file);
+                break;
+            }
+        }
+    };
+    const isValidImageFile = (file: File): boolean => {
+        const validTypes = ['image/jpeg', 'image/png'];
+        return validTypes.includes(file.type);
+    };
+
+    const handleFile = (file:File) => {
+        if (!isValidImageFile(file)) {
+            alert('Only .png, .jpg, or .jpeg files are allowed.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const result = reader.result as string;
+            const base64 = result.split(',')[1]; // removes "data:image/...;base64,"
+            setImageToDetect(base64);
+            setNoImageError(false)
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleDrop = (e:React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleFile(e.dataTransfer.files[0]);
+            e.dataTransfer.clearData();
+        }
+    };
+
+    const handleFileChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            handleFile(e.target.files[0]);
+        }
+    };
+
+    const openFileDialog = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+    return (
+        <div className="detect-from-image-container">
+            <div className="detect-from-image-content">
+
+                <div className="detect-from-image-uploader-drag-and-drop-container roboto-style"
+                     onDragOver={(e) => e.preventDefault()}
+                     onDrop={handleDrop}>
+                    {imageToDetect ? (
+                        <img
+                            src={`data:image/jpeg;base64,${imageToDetect}`}
+                            alt="profile_img"
+                            className="detect-from-image-uploader-drag-and-drop-preview-img"
+                        />
+                    ) : (
+                        <>
+                            {windowWidth > 690 && <p className="roboto-style">Drag and drop an image here</p>}
+                        </>
+                    )}
+                </div>
+
+                <input
+                    type="file"
+                    accept=".png,.jpg,.jpeg"
+                    ref={fileInputRef}
+                    style={{display: 'none'}}
+                    onChange={handleFileChange}
+                />
+                <button className="detect-from-image-uploader-upload-button" type="button" onClick={openFileDialog}
+                        style={{marginTop: '10px'}}>
+                    Upload From Device
+                </button>
+                {windowWidth > 690 && <div className="detect-from-image-uploader-or-text roboto-style">
+                    or
+                </div>}
+                {windowWidth > 690 && <div className="detect-from-image-uploader-upload-input roboto-style">
+                    <input
+                        ref={inputRef}
+                        value=''
+                        onChange={() => {
+                        }}
+                        className="input-reset roboto-style"
+                        placeholder="Ctrl+V inside this input"
+                        onPaste={handlePaste}
+                    />
+                </div>}
+
+                {noImageError && <div className='detect-from-image-no-image-error' >
+                        No image uploaded
+                </div>}
+
+                <div className="detect-from-image-buttons-container">
+                    <button onClick={()=>{
+                        setNoImageError(false)
+                        onCancel()
+                    }}
+                            className="detect-from-image-close-button grey-button roboto-style">Close
+                    </button>
+                    <button onClick={handleOnClickDetect}
+                            className="detect-from-image-close-button grey-button roboto-style">Detect
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default DetectFromImage;

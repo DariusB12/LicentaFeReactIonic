@@ -67,14 +67,32 @@ export function useWindowWidth() {
 export function usePersistentState<T>(key: string, defaultValue: T): [T, React.Dispatch<React.SetStateAction<T>>] {
     const [state, setState] = useState<T>(() => {
         const saved = localStorage.getItem(key);
-        return saved ? JSON.parse(saved) : defaultValue;
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                // Custom fix: if default is Date and parsed is string, return Date object
+                if (defaultValue instanceof Date && typeof parsed === 'string') {
+                    return new Date(parsed) as T;
+                }
+                return parsed;
+            } catch (e) {
+                console.warn(`Failed to parse sessionStorage key "${key}":`, e);
+                return defaultValue;
+            }
+        }
+        return defaultValue;
     });
 
     useEffect(() => {
-        if(state != undefined )
-            localStorage.setItem(key, JSON.stringify(state));
-        else
-            localStorage.removeItem(key);
+        try {
+            if (state !== undefined) {
+                localStorage.setItem(key, JSON.stringify(state));
+            } else {
+                localStorage.removeItem(key);
+            }
+        } catch (e) {
+            console.warn(`Failed to save sessionStorage key "${key}":`, e);
+        }
     }, [key, state]);
 
     return [state, setState];

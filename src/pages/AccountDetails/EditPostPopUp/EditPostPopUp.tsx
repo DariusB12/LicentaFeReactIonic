@@ -7,6 +7,7 @@ import {PostPhoto} from "../../../assets/entities/PostPhoto";
 import {PostComment} from "../../../assets/entities/PostComment";
 import CommentsItem from "../../../components/CommentsItem/CommentsItem";
 import {IonDatetime, IonDatetimeButton, IonModal} from "@ionic/react";
+import DetectFromImage from "../../../components/DetectFromImage/DetectFromImage";
 
 interface EditPostPopUpProps {
     isOpen: boolean,
@@ -62,6 +63,7 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
     const [commentsErrorMessage, setCommentsErrorMessage] = useState('');
     const [commentsError, setCommentsError] = useState(false);
 
+    const [detectFromImage, setDetectFromImage] = useState<boolean>(false);
     const windowWidth = useWindowWidth()
 
     const handleTranslateToEnglish = useCallback(async () => {
@@ -326,7 +328,7 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
             {windowWidth>=700 && dateError && <div className="edit-post-popup-error-messaage">{dateErrorMessage}</div>}
         </div>
     </div>)
-
+    //TODO: DETECT FROM IMAGE
     return (
         <div className="edit-post-popup-container">
             <div className="edit-post-popup-content">
@@ -485,7 +487,11 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                     </button>
 
                     <div className='edit-post-popup-right-content'>
-                        <button className="edit-post-popup-detect-from-image-button grey-button roboto-style">
+                        <button className="edit-post-popup-detect-from-image-button grey-button roboto-style"
+                                onClick={()=>{
+                                    setDetectFromImage(true)
+                                }}
+                        >
                             {windowWidth >= 1100 ? 'Detect From Image' : 'Detect'}
                         </button>
                         {profileToBeTranslated &&
@@ -504,6 +510,10 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
 
                 </div>
             </div>
+            {detectFromImage && <DetectFromImage forPost={true} forProfile={false} onCancel={() => {
+                setDetectFromImage(false)
+            }}/>
+            }
         </div>
     );
 };

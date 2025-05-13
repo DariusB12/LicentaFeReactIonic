@@ -2,6 +2,7 @@ import React, {useCallback, useState} from 'react';
 import "./EditProfilePopUp.css"
 import {getLogger, useWindowWidth} from "../../../assets";
 import ImageUploader from "../../../components/ImageUploader/ImageUploader";
+import DetectFromImage from "../../../components/DetectFromImage/DetectFromImage";
 
 interface EditProfilePopUpProps {
     isOpen: boolean,
@@ -42,6 +43,7 @@ const EditProfilePopUp: React.FC<EditProfilePopUpProps> = (props) => {
     const [profileToBeTranslated, setProfileToBeTranslated] = useState<boolean>(false);
 
     const [uploadPhoto, setUploadPhoto] = useState<boolean>(false);
+    const [detectFromImage, setDetectFromImage] = useState<boolean>(false);
     const windowWidth = useWindowWidth()
 
     const handleTranslateToEnglish = useCallback(async () => {
@@ -109,7 +111,6 @@ const EditProfilePopUp: React.FC<EditProfilePopUpProps> = (props) => {
         })
     }, [props, validateInputs]);
 
-    //TODO: DETECT FROM IMAGE--------------------------------------------------------------------
     const resetBackValuesOnCancel = useCallback(async () => {
         //RESET BACK ALL THE VALUES IF THE EDIT PROFILE IS CANCELED
         setDescriptionState(props.profile_description)
@@ -125,6 +126,7 @@ const EditProfilePopUp: React.FC<EditProfilePopUpProps> = (props) => {
 
     if (!props.isOpen) return null;
 
+    //TODO: DETECT FROM IMAGE--------------------------------------------------------------------
     return (
         <div className="edit-profile-popup-container">
             <div className="edit-profile-popup-content">
@@ -288,7 +290,10 @@ const EditProfilePopUp: React.FC<EditProfilePopUpProps> = (props) => {
                     </div>
                 </div>
                 <div className="edit-profile-popup-bottom-bar">
-                    <button className="edit-profile-popup-detect-from-image-button grey-button roboto-style">
+                    <button className="edit-profile-popup-detect-from-image-button grey-button roboto-style"
+                    onClick={()=>{
+                        setDetectFromImage(true)
+                    }}>
                         { windowWidth <= 690 ? "Detect" :"Detect From Image" }
                     </button>
                     {profileToBeTranslated &&
@@ -304,7 +309,10 @@ const EditProfilePopUp: React.FC<EditProfilePopUpProps> = (props) => {
                         </button>}
                 </div>
             </div>
-
+            {detectFromImage && <DetectFromImage forPost={false} forProfile={true} onCancel={() => {
+                setDetectFromImage(false)
+            }}/>
+            }
         </div>
     );
 };

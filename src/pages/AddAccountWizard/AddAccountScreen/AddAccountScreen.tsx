@@ -2,9 +2,10 @@ import React, {useCallback, useEffect, useState} from 'react';
 import "./AddAccountScreen.css"
 import {getLogger, usePersistentState, useWindowWidth} from "../../../assets";
 import ImageUploader from "../../../components/ImageUploader/ImageUploader";
+import DetectFromImage from "../../../components/DetectFromImage/DetectFromImage";
 
 interface EditProfilePopUpProps {
-    savedSuccessfully: () => void
+    savedSuccessfully: (photo: string, username: string, idProfile: number) => void
 }
 
 const log = getLogger('AddAccountScreen');
@@ -29,10 +30,11 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
     const [noOfFollowing, setNoOfFollowing] = usePersistentState<number | null>('noOfFollowing', null);
     const [profilePhotoState, setProfilePhotoState] = usePersistentState<string | undefined>('profilePhoto', undefined);
 
-    const [profileToBeSaved, setProfileToBeSaved] = useState<boolean>(false);
-    const [profileToBeTranslated, setProfileToBeTranslated] = useState<boolean>(false);
+    const [profileToBeSaved, setProfileToBeSaved] = usePersistentState<boolean>('addAccountScreenProfileToBeSaved', false);
+    const [profileToBeTranslated, setProfileToBeTranslated] = usePersistentState<boolean>('addAccountScreenProfileToBeTranslated', false);
 
     const [uploadPhoto, setUploadPhoto] = useState<boolean>(false);
+    const [detectFromImage, setDetectFromImage] = useState<boolean>(false);
     const windowWidth = useWindowWidth()
 
     const handleTranslateToEnglish = useCallback(async () => {
@@ -40,7 +42,7 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
         //todo: api pentru traducerea doar a descrierii in engleza (mai intai verific daca e empty si apoi daca trebuie tradus)
         setProfileToBeSaved(true)
         setProfileToBeTranslated(false)
-    }, []);
+    }, [setProfileToBeTranslated,setProfileToBeSaved]);
 
     const validateInputs = useCallback(async (): Promise<boolean> => {
         log('validating the inputs')
@@ -59,17 +61,17 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
         if (!Number.isInteger(noOfPosts)) {
             setNoOfPostsErrorMessage('Must be >=0')
             setNoOfPostsError(true)
-            hasError=true;
+            hasError = true;
         }
         if (!Number.isInteger(noOfFollowers)) {
             setNoOfFollowersErrorMessage('Must be >=0')
             setNoOfFollowersError(true)
-            hasError=true
+            hasError = true
         }
         if (!Number.isInteger(noOfFollowing)) {
             setNoOfFollowingErrorMessage('Must be >=0')
             setNoOfFollowingError(true)
-            hasError=true
+            hasError = true
         }
 
         // USERNAME CANNOT START WITH WHITE SPACES, AND CANNOT BE NULL
@@ -77,7 +79,7 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
         if (trimmed.length === 0) {
             setUsernameErrorMessage('Username cannot be empty.')
             setUsernameError(true)
-            hasError=true
+            hasError = true
         }
         if (usernameState.startsWith(' ') || usernameState.endsWith(' ')) {
             setUsernameErrorMessage('Username cannot start/end with a whitespace.');
@@ -86,21 +88,21 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
         }
         return !hasError;
 
-    }, [noOfPosts,noOfFollowing,noOfFollowers,usernameState]);
+    }, [noOfPosts, noOfFollowing, noOfFollowers, usernameState]);
 
     const handleSaveOnClick = useCallback(async () => {
         log('save edited profile');
-        validateInputs().then((result)=>{
-            if(result){
+        validateInputs().then((result) => {
+            if (result) {
                 //IF INPUTS ARE VALID, THEN ADD THE EDITED PROFILE
                 //todo: API pentru ADAUGAREA profilului, CAND EXTRAG INPUTURILE NUMBER DACA SUNT GOALE LE PUN BY DEFAULT 0 (chiar daca validarea nu lasa userul sa lase inputurile goale la numbers/username),
                 // AFISEZ LOADING ICON CAND ON CLICK SAVE
 
                 //todo: DACA APIUL E SUCCES, DOAR ATUNCI APELAM FUNCTIA DE SAVED_SUCCESSFULLY
-                props.savedSuccessfully()
+                props.savedSuccessfully(profilePhotoState ? profilePhotoState : '', usernameState, -2)
             }
         })
-    }, [props,validateInputs]);
+    }, [usernameState, profilePhotoState, props, validateInputs]);
 
     //FUNCTIE CARE STERGE DIN LOCAL STORAGE DATELE PERSISTATE
     const resetProfileForm = () => {
@@ -110,6 +112,8 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
         localStorage.removeItem('noOfFollowers');
         localStorage.removeItem('noOfFollowing');
         localStorage.removeItem('profilePhoto');
+        localStorage.removeItem('addAccountScreenProfileToBeSaved')
+        localStorage.removeItem('addAccountScreenProfileToBeTranslated')
     };
 
     //PENTRU A STERGE DIN LOCAL STORAGE ATUNCI CAND SE PARASESTE PAGINA
@@ -120,7 +124,6 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
     }, []);
 
 
-    //TODO: BUTTONS LOGIC
     //TODO: LOADING ICON/ADDED SUCCESSFULLY - ion modal /NETWORK ERRROR - ion modal
     //TODO: DETECT FROM IMAGE
     return (
@@ -212,7 +215,8 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
                                    }}
                                    placeholder="posts no"/>
                             posts
-                            {windowWidth>=1100 && noOfPostsError && <div className="add-account-screen-error-messaage">{noOfPostsErrorMessage}</div>}
+                            {windowWidth >= 1100 && noOfPostsError &&
+                                <div className="add-account-screen-error-messaage">{noOfPostsErrorMessage}</div>}
                         </div>
 
                         <div className="add-account-screen-followers-container roboto-style">
@@ -234,7 +238,8 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
                                    }}
                                    placeholder="followers no"/>
                             followers
-                            {windowWidth>=1100 && noOfFollowersError && <div className="add-account-screen-error-messaage">{noOfFollowersErrorMessage}</div>}
+                            {windowWidth >= 1100 && noOfFollowersError &&
+                                <div className="add-account-screen-error-messaage">{noOfFollowersErrorMessage}</div>}
 
                         </div>
 
@@ -257,7 +262,8 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
                                    }}
                                    placeholder="following no"/>
                             following
-                            {windowWidth>=1100 && noOfFollowingError && <div className="add-account-screen-error-messaage">{noOfFollowingErrorMessage}</div>}
+                            {windowWidth >= 1100 && noOfFollowingError &&
+                                <div className="add-account-screen-error-messaage">{noOfFollowingErrorMessage}</div>}
                         </div>
                         <div className="add-account-screen-username-container">
                             Username <input type="text"
@@ -270,14 +276,18 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
                                                 }
                                             }}
                                             placeholder="username"/>
-                            {windowWidth>=1100 && usernameError && <div className="add-account-screen-error-messaage">{usernameErrorMessage}</div>}
+                            {windowWidth >= 1100 && usernameError &&
+                                <div className="add-account-screen-error-messaage">{usernameErrorMessage}</div>}
                         </div>
 
                     </div>
                 </div>
                 <div className="add-account-screen-bottom-bar">
-                    <button className="add-account-screen-detect-from-image-button black-button roboto-style">
-                        { windowWidth <= 690 ? "Detect" :"Detect From Image" }
+                    <button className="add-account-screen-detect-from-image-button black-button roboto-style"
+                            onClick={() => {
+                                setDetectFromImage(true)
+                            }}>
+                        {windowWidth <= 690 ? "Detect" : "Detect From Image"}
                     </button>
                     {profileToBeTranslated &&
                         < button className="add-account-screen-translate-to-english-button black-button roboto-style"
@@ -291,7 +301,12 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
                             Add
                         </button>}
                 </div>
+                {detectFromImage && <DetectFromImage forPost={false} forProfile={true} onCancel={() => {
+                    setDetectFromImage(false)
+                }}/>
+                }
             </div>
+
 
     );
 };
