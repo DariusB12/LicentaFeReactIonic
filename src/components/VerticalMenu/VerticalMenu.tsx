@@ -6,6 +6,7 @@ import MenuAccountsList from "./MenuAccountsList/MenuAccountsList";
 import {AccountDTO} from "../../assets/entities/AccountDTO";
 import DeleteAccountAlert from "./DeleteAccountAlert/DeleteAccountAlert";
 import {useHistory} from "react-router";
+import ExpiredSessionPopUp from "../ExpiredSessionPopUp/ExpiredSessionPopUp";
 
 const log = getLogger('VerticalMenu');
 
@@ -235,11 +236,11 @@ const VerticalMenu: React.FC = () => {
 
     const history = useHistory();
 
-    const {logout} = useContext(AuthContext);
+    const {logout,tokenExpired} = useContext(AuthContext);
     const {username} = useContext(AuthContext);
     const [searchValue, setSearchValue] = useState('');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [showDeleteAccount,setShowDeleteAccount] = useState(false)
+    const [showDeleteAccount, setShowDeleteAccount] = useState(false)
 
     const filteredAccounts = mockDataAccount.filter(account =>
         account.username.toLowerCase().includes(searchValue.toLowerCase())
@@ -247,25 +248,35 @@ const VerticalMenu: React.FC = () => {
 
     const handleOnClickInfo = useCallback(async () => {
         log('redirecting to /about page')
-        history.push("/about");
+        if (history.location.pathname !== '/about') {
+            history.push("/about");
+        }
     }, [history]);
 
 
     const handleOnClickViewAllAccounts = useCallback(async () => {
         log('redirecting to /viewAllAccounts page')
-        history.push("/viewAllAccounts");
+        if (history.location.pathname !== "/viewAllAccounts") {
+            history.push("/viewAllAccounts");
+        }
     }, [history]);
 
     const handleOnClickLogout = useCallback(async () => {
         log('logout clicked')
         await logout?.();
         log('logout successfully - redirecting to home page')
-        history.push("/home");
-    }, [logout,history]);
+        if (history.location.pathname !== "/home") {
+            history.push("/home");
+        }
+
+    }, [logout, history]);
 
     const handleAddAccountClicked = useCallback(async () => {
         log('redirecting to /addAccount page')
-        history.push("/addAccount");
+        if (history.location.pathname !== "/addAccount") {
+            history.push("/addAccount");
+        }
+
     }, [history]);
 
 
@@ -299,17 +310,23 @@ const VerticalMenu: React.FC = () => {
 
                 <div className="vertical-menu-container-bottom-conatiner">
                     <div className="vertical-menu-container-bottom-buttons">
-                        <button className="vertical-menu-container-add-button blue-button" onClick={handleAddAccountClicked}>Add<img src="/icons/add.png"
-                                                                                                   alt="add_img"
-                                                                                                   className="icon-size"/>
+                        <button className="vertical-menu-container-add-button blue-button"
+                                onClick={handleAddAccountClicked}>Add<img src="/icons/add.png"
+                                                                          alt="add_img"
+                                                                          className="icon-size"/>
                         </button>
                         <button className="vertical-menu-container-view-button black-button"
                                 onClick={handleOnClickViewAllAccounts}>View All Accounts
                         </button>
                     </div>
                     <div className="vertical-menu-container-bottom">
-                        <button className="vertical-menu-container-logout-button" onClick={handleOnClickLogout}>- Logout -</button>
-                        <button className="vertical-menu-container-delete-account-button" onClick={()=>{setShowDeleteAccount(true)}}>- Delete Account -</button>
+                        <button className="vertical-menu-container-logout-button" onClick={handleOnClickLogout}>- Logout
+                            -
+                        </button>
+                        <button className="vertical-menu-container-delete-account-button" onClick={() => {
+                            setShowDeleteAccount(true)
+                        }}>- Delete Account -
+                        </button>
                     </div>
                 </div>
 
@@ -328,25 +345,30 @@ const VerticalMenu: React.FC = () => {
                          className="vertical-menu-hamburger_image"/>
                 </button>
 
-                <button className="vertical-menu-hamburger-add-button blue-button" onClick={handleAddAccountClicked}><img src="/icons/add.png"
-                                                                                        alt="add_img"
-                                                                                        className="vertical-menu-hamburger-add-img"/>
+                <button className="vertical-menu-hamburger-add-button blue-button" onClick={handleAddAccountClicked}>
+                    <img src="/icons/add.png"
+                         alt="add_img"
+                         className="vertical-menu-hamburger-add-img"/>
                 </button>
-                <button className="vertical-menu-hamburger-view-button black-button" onClick={handleOnClickViewAllAccounts}><img src="/icons/view_icon.png"
-                                                                                          alt="view_img"
-                                                                                          className="vertical-menu-hamburger-view-img"/>
+                <button className="vertical-menu-hamburger-view-button black-button"
+                        onClick={handleOnClickViewAllAccounts}><img src="/icons/view_icon.png"
+                                                                    alt="view_img"
+                                                                    className="vertical-menu-hamburger-view-img"/>
                 </button>
                 <div className="vertical-menu-hamburger-empty-div">
 
                 </div>
-                <button className="vertical-menu-hamburger-info-button" onClick={handleOnClickInfo}><img src="/icons/info.png"
-                                                                             alt="info_img"
-                                                                             className="vertical-menu-hamburger-info-img"/>
+                <button className="vertical-menu-hamburger-info-button" onClick={handleOnClickInfo}><img
+                    src="/icons/info.png"
+                    alt="info_img"
+                    className="vertical-menu-hamburger-info-img"/>
                 </button>
             </div>
-            <DeleteAccountAlert isOpen={showDeleteAccount} header={"Delete your account"} message={"Please type your password"} closeAlert={()=> {
+            <DeleteAccountAlert isOpen={showDeleteAccount} header={"Delete your account"}
+                                message={"Please type your password"} closeAlert={() => {
                 setShowDeleteAccount(false)
             }}/>
+            {tokenExpired && <ExpiredSessionPopUp/>}
         </>
     );
 };

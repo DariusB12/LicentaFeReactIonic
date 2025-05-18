@@ -2,12 +2,13 @@
     position: fixed;
     width: 100%;
     height: 100%;
-    background-color: rgb(255,255,255,0.1);
+    background-color: rgb(255, 255, 255, 0.1);
     justify-items: center;
     align-content: center;
     z-index: 10000;
 }
-.edit-profile-popup-content{
+
+.edit-profile-popup-content {
     background-color: black;
     width: 80vw;
     height: fit-content;
@@ -18,11 +19,13 @@
     justify-content: space-between;
     align-items: center;
 }
+
 .edit-profile-popup-cancel-conatiner {
     width: 100%;
     display: flex;
     justify-content: end;
 }
+
 .edit-profile-popup-cancel-button {
     font-size: var(--font-sm);
     display: flex;
@@ -33,10 +36,13 @@
     border-radius: 20px;
     transition: 0.2s ease-in-out;
 }
+
 .edit-profile-popup-cancel-button:hover {
-    background-color: rgb(255,255,255,0.2);
+    background-color: rgb(255, 255, 255, 0.2);
 }
-.edit-profile-popup-cancel-icon {}
+
+.edit-profile-popup-cancel-icon {
+}
 
 .edit-profile-popup-middle-content {
     display: flex;
@@ -54,15 +60,18 @@
     width: 40%
     /*background-color: red;*/
 }
-.edit-profile-popup-profile-photo-container{
+
+.edit-profile-popup-profile-photo-container {
     font-size: var(--font-md);
 }
+
 .edit-profile-popup-profile-image {
     width: 60%;
     aspect-ratio: 1 / 1; /* makes height = width */
     border-radius: 100%;
     object-fit: cover; /* optional: to ensure image scales well */
 }
+
 .edit-profile-popup-profile-buttons-bar {
     display: flex;
     flex-direction: row;
@@ -70,6 +79,7 @@
     min-width: 13rem;
     justify-content: space-between;
 }
+
 .edit-profile-popup-profile-upload-button {
     font-size: var(--font-sm);
     display: flex;
@@ -77,7 +87,10 @@
     justify-content: center;
     align-items: center;
 }
-.edit-profile-popup-upload-icon {}
+
+.edit-profile-popup-upload-icon {
+}
+
 .edit-profile-popup-profile-delete-button {
     font-size: var(--font-sm);
     display: flex;
@@ -85,9 +98,11 @@
     justify-content: center;
     align-items: center;
 }
-.edit-profile-popup-delete-icon {}
 
-.edit-profile-inputs{
+.edit-profile-popup-delete-icon {
+}
+
+.edit-profile-inputs {
     border: 1px solid #606060;
     padding: 0.3rem;
 }
@@ -99,36 +114,48 @@
     font-size: var(--font-sm);
     gap: 0.5rem;
 }
+
 .edit-profile-popup-profile-description-input {
     width: 100%;
     height: 15rem;
     font-size: var(--font-sm);
 }
-.edit-profile-popup-profile-posts-input {}
-.edit-popup-profile-error-messaage{
+
+.edit-profile-popup-profile-posts-input {
+}
+
+.edit-popup-profile-error-messaage {
     font-size: var(--font-sm);
     color: red;
 }
+
 .edit-profile-posts-container {
     display: flex;
     flex-direction: row;
     gap: 0.4rem;
     align-items: center;
 }
-.edit-profile-popup-profile-followers-input {}
+
+.edit-profile-popup-profile-followers-input {
+}
+
 .edit-profile-followers-container {
     display: flex;
     flex-direction: row;
     gap: 0.4rem;
     align-items: center;
 }
+
 .edit-profile-following-container {
     display: flex;
     flex-direction: row;
     gap: 0.4rem;
     align-items: center;
 }
-.edit-profile-popup-profile-username-input {}
+
+.edit-profile-popup-profile-username-input {
+}
+
 .edit-profile-username-container {
     display: flex;
     flex-direction: row;
@@ -144,29 +171,32 @@
     flex-direction: row;
     justify-content: end;
 }
+
 .edit-profile-popup-detect-from-image-button {
     margin: 0 0.5rem 0 0.5rem;
     padding: 0.65rem 1.2rem;
 }
+
 .edit-profile-popup-translate-to-english-button {
     margin: 0 0.5rem 0 0.5rem;
     padding: 0.65rem 1.2rem;
 }
-.edit-profile-popup-save-button{
+
+.edit-profile-popup-save-button {
     margin: 0 0 0 0.5rem;
     padding: 0.65rem 1.2rem;
 }
 
-.edit-profile-upload-or{
+.edit-profile-upload-or {
     font-size: var(--font-sm);
 }
 
-.edit-profile-popup-upload-cancel-icon{
+.edit-profile-popup-upload-cancel-icon {
 
 }
 
 
-.red-border-input{
+.red-border-input {
     border-color: red;
 }
 
@@ -177,36 +207,53 @@
         align-items: center;
         gap: 0;
     }
+
+    .edit-profile-popup-description-text {
+        display: none;
+    }
+
     .edit-profile-popup-profile-description-input {
         width: 100%;
         height: 8rem
     }
+
     .edit-profile-popup-profile-image-container {
         width: 80%
     }
+
     .edit-profile-popup-profile-image {
         min-width: 8rem;
         max-width: 0;
         width: 8rem;
         height: 8rem;
     }
+
     .edit-profile-popup-cancel-button {
         padding: 0;
     }
 
     .edit-profile-popup-profile-details-container {
         width: 95%;
+        gap: 0.2rem;
     }
+
     .edit-profile-popup-profile-following-input {
         width: 8rem;
     }
+
     .edit-profile-popup-profile-followers-input {
         width: 8rem;
     }
+
     .edit-profile-popup-profile-posts-input {
         width: 8rem;
     }
+
     .edit-profile-popup-profile-username-input {
         width: 8rem;
+    }
+
+    .edit-profile-popup-bottom-bar {
+        margin-top: 0.2rem;
     }
 }

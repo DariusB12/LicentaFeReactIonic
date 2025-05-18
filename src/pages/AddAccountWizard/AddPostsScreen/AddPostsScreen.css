@@ -530,6 +530,9 @@
         margin-left: 0;
         margin-bottom: 0.1rem;
     }
+    .add-posts-screen-description-text{
+        display: none;
+    }
 
     .add-posts-screen-content-left {
         width: 50%;

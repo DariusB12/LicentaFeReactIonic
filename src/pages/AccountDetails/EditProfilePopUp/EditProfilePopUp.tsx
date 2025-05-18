@@ -196,7 +196,7 @@ const EditProfilePopUp: React.FC<EditProfilePopUpProps> = (props) => {
                             />
                         </div>}
                     <div className="edit-profile-popup-profile-details-container">
-                        <div className="roboto-style">Description</div>
+                        <div className="edit-profile-popup-description-text roboto-style">Description</div>
                         <textarea
                             className="edit-profile-popup-profile-description-input edit-profile-inputs input-reset roboto-style"
                             placeholder="profile description"

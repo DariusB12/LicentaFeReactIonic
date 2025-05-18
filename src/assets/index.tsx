@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
+import * as H from "history";
 
 export const baseUrl = '127.0.0.1:8000';
 
-export const config = {
+export const configNoToken = {
     headers: {
         'Content-Type': 'application/json'
     }
 };
 
-export const authConfig = (token?: string) => ({
+export const configToken = (token?: string|null) => ({
     headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
@@ -64,6 +65,14 @@ export function useWindowWidth() {
     return width;
 }
 
+//redirecting to the path location only if the current location is different
+//if it is the same location we don't want to push again the page on the history
+export function handleRedirect(path: string, history:H.History<unknown>)  {
+    if (history.location.pathname !== path) {
+        history.push(path);
+    }
+}
+
 export function usePersistentState<T>(key: string, defaultValue: T): [T, React.Dispatch<React.SetStateAction<T>>] {
     const [state, setState] = useState<T>(() => {
         const saved = localStorage.getItem(key);
@@ -96,4 +105,6 @@ export function usePersistentState<T>(key: string, defaultValue: T): [T, React.D
     }, [key, state]);
 
     return [state, setState];
+
 }
+

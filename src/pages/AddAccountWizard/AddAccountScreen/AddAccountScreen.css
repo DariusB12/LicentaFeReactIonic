@@ -2,12 +2,13 @@
     position: fixed;
     width: 100%;
     height: 100%;
-    background-color: rgb(255,255,255,0.1);
+    background-color: rgb(255, 255, 255, 0.1);
     justify-items: center;
     align-content: center;
     z-index: 10000;
 }
-.add-account-screen-content{
+
+.add-account-screen-content {
     background-color: black;
     width: 100%;
     height: 100%;
@@ -19,7 +20,8 @@
     align-items: center;
 
 }
-.add-account-screen-title{
+
+.add-account-screen-title {
     margin-top: 2rem;
     font-size: var(--font-md);
 }
@@ -29,6 +31,7 @@
     display: flex;
     justify-content: end;
 }
+
 .add-account-screen-cancel-button {
     font-size: var(--font-sm);
     display: flex;
@@ -39,10 +42,13 @@
     border-radius: 20px;
     transition: 0.2s ease-in-out;
 }
+
 .add-account-screen-cancel-button:hover {
-    background-color: rgb(255,255,255,0.2);
+    background-color: rgb(255, 255, 255, 0.2);
 }
-.add-account-screen-cancel-icon {}
+
+.add-account-screen-cancel-icon {
+}
 
 .add-account-screen-middle-content {
     display: flex;
@@ -60,15 +66,18 @@
     width: 40%
     /*background-color: red;*/
 }
-.add-account-screen-profile-photo-container{
+
+.add-account-screen-profile-photo-container {
     font-size: var(--font-md);
 }
+
 .add-account-screen-profile-image {
     width: 60%;
     aspect-ratio: 1 / 1; /* makes height = width */
     border-radius: 100%;
     object-fit: cover; /* optional: to ensure image scales well */
 }
+
 .add-account-screen-profile-buttons-bar {
     display: flex;
     flex-direction: row;
@@ -76,6 +85,7 @@
     min-width: 13rem;
     justify-content: space-between;
 }
+
 .add-account-screen-profile-upload-button {
     font-size: var(--font-sm);
     display: flex;
@@ -83,7 +93,10 @@
     justify-content: center;
     align-items: center;
 }
-.add-account-screen-upload-icon {}
+
+.add-account-screen-upload-icon {
+}
+
 .add-account-screen-profile-delete-button {
     font-size: var(--font-sm);
     display: flex;
@@ -91,9 +104,11 @@
     justify-content: center;
     align-items: center;
 }
-.add-account-screen-delete-icon {}
 
-.add-account-screen-inputs{
+.add-account-screen-delete-icon {
+}
+
+.add-account-screen-inputs {
     border: 1px solid #606060;
     padding: 0.3rem;
 }
@@ -105,36 +120,48 @@
     font-size: var(--font-sm);
     gap: 0.5rem;
 }
+
 .add-account-screen-profile-description-input {
     width: 100%;
     height: 15rem;
     font-size: var(--font-sm);
 }
-.add-account-screen-profile-posts-input {}
-.add-account-screen-error-messaage{
+
+.add-account-screen-profile-posts-input {
+}
+
+.add-account-screen-error-messaage {
     font-size: var(--font-sm);
     color: red;
 }
+
 .add-account-screen-posts-container {
     display: flex;
     flex-direction: row;
     gap: 0.4rem;
     align-items: center;
 }
-.add-account-screen-profile-followers-input {}
+
+.add-account-screen-profile-followers-input {
+}
+
 .add-account-screen-followers-container {
     display: flex;
     flex-direction: row;
     gap: 0.4rem;
     align-items: center;
 }
+
 .add-account-screen-following-container {
     display: flex;
     flex-direction: row;
     gap: 0.4rem;
     align-items: center;
 }
-.add-account-screen-profile-username-input {}
+
+.add-account-screen-profile-username-input {
+}
+
 .add-account-screen-username-container {
     display: flex;
     flex-direction: row;
@@ -150,29 +177,32 @@
     flex-direction: row;
     justify-content: end;
 }
+
 .add-account-screen-detect-from-image-button {
     margin: 0 0.5rem 0 0.5rem;
     padding: 0.65rem 1.2rem;
 }
+
 .add-account-screen-translate-to-english-button {
     margin: 0 0.5rem 0 0.5rem;
     padding: 0.65rem 1.2rem;
 }
-.add-account-screen-save-button{
+
+.add-account-screen-save-button {
     margin: 0 0 0 0.5rem;
     padding: 0.65rem 1.2rem;
 }
 
-.add-account-screen-upload-or{
+.add-account-screen-upload-or {
     font-size: var(--font-sm);
 }
 
-.add-account-screen-upload-cancel-icon{
+.add-account-screen-upload-cancel-icon {
 
 }
 
 
-.red-border-input{
+.red-border-input {
     border-color: red;
 }
 
@@ -183,35 +213,48 @@
         align-items: center;
         gap: 0;
     }
-    .add-account-screen-profile-description-input {
+    .add-account-screen-bottom-bar {
+        margin-top: 0.2rem;
+    }
+
+        .add-account-screen-profile-description-input {
         width: 100%;
-        height: 8rem
+        height: 5rem
     }
+
     .add-account-screen-profile-image-container {
-        width: 80%
+        width: 80%;
+        gap: 0.1rem;
     }
+
     .add-account-screen-profile-image {
         min-width: 8rem;
         max-width: 0;
         width: 8rem;
         height: 8rem;
     }
+
     .add-account-screen-cancel-button {
         padding: 0;
     }
 
     .add-account-screen-profile-details-container {
         width: 95%;
+        gap: 0.2rem;
     }
+
     .add-account-screen-profile-following-input {
         width: 8rem;
     }
+
     .add-account-screen-profile-followers-input {
         width: 8rem;
     }
+
     .add-account-screen-profile-posts-input {
         width: 8rem;
     }
+
     .add-account-screen-profile-username-input {
         width: 8rem;
     }

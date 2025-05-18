@@ -6,6 +6,7 @@ export type LogoutFn = () => Promise<void>;
 export type ClearAuthenticationErrorFn = () => Promise<void>;
 export type ClearIsRegisteredFn = () => Promise<void>;
 export type DeleteAccountFn = (username: string, password: string) => Promise<void>;
+export type SetTokenExpiredFn = (val:boolean) => Promise<void>;
 
 export interface ErrorResponse {
     status_code: number,
@@ -27,6 +28,9 @@ export interface AuthState {
     clearIsRegistered?: ClearIsRegisteredFn;
     isAuthenticating: boolean;
     isAuthResolved: boolean;
+
+    setTokenExpired?: SetTokenExpiredFn;
+    tokenExpired: boolean;
 }
 
 export const initialState: AuthState = {
@@ -38,6 +42,7 @@ export const initialState: AuthState = {
     isAuthenticated: false,
     authenticationError: null,
     isAuthResolved: false,
+    tokenExpired: false
 };
 
 export const AuthContext = React.createContext<AuthState>(initialState);

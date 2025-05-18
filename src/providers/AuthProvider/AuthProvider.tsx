@@ -11,7 +11,8 @@ import {
     initialState,
     LoginFn,
     LogoutFn,
-    RegisterFn
+    RegisterFn,
+    SetTokenExpiredFn
 } from "./AuthContext";
 import axios from "axios";
 
@@ -23,15 +24,16 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     const [state, setState] = useState<AuthState>(initialState);
-    const {username, isAuthenticated,isDeletingAccount, isAuthenticating,isRegistered, authenticationError, token, isAuthResolved} = state;
+    const {username, isAuthenticated,isDeletingAccount, isAuthenticating,isRegistered, authenticationError, token, isAuthResolved, tokenExpired} = state;
 
     //FUNCTIONS
     const login = useCallback<LoginFn>(loginCallback, []);
     const register = useCallback<RegisterFn>(registerCallback, []);
-    const logout = useCallback<LogoutFn>(logoutCallback, []);
+    const setTokenExpired = useCallback<SetTokenExpiredFn>(setTokenExpiredCallback, []);
     const clearAuthenticationError = useCallback<ClearAuthenticationErrorFn>(clearAuthenticationErrorCallback, [])
     const clearIsRegistered = useCallback<ClearIsRegisteredFn>(clearIsRegisteredCallback, [])
-    const deleteAccount = useCallback<DeleteAccountFn>(deleteAccountCallback, [])
+    const deleteAccount = useCallback<DeleteAccountFn>(deleteAccountCallback, [token])
+    const logout = useCallback<LogoutFn>(logoutCallback, []);
 
     useEffect(() => {
         loadToken().then(() => {});
@@ -53,6 +55,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
         isRegistered,
         isDeletingAccount,
         deleteAccount,
+        tokenExpired,
+        setTokenExpired
     };
     log('render');
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -80,6 +84,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
         }
     }
 
+    async function setTokenExpiredCallback(val:boolean): Promise<void> {
+        log('set token expired');
+        setState(prevState => ({
+            ...prevState,
+            tokenExpired: val
+        }))
+    }
+
     async function deleteAccountCallback(username: string, password: string): Promise<void> {
         log('trying to delete account');
         try {
@@ -87,7 +99,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
                 ...prev,
                 isDeletingAccount: true,
             }));
-            await deleteApi(username, password);
+            await deleteApi(username, password,token);
             setState(prev=>({
                 ...prev,
                 isDeletingAccount: false,

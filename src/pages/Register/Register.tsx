@@ -34,7 +34,10 @@ export const Register: React.FC<RouteComponentProps> = ({history}) => {
     const handleRedirect = useCallback((path: string) => {
         // Add exit class
         setTransitionClass('page-transition-exit');
-        history.push(path);
+
+        if (history.location.pathname !== path) {
+            history.push(path);
+        }
     },[history]);
 
     const handleOnClickHome = useCallback(async () => {

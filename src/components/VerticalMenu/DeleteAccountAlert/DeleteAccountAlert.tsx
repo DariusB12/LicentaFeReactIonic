@@ -22,7 +22,9 @@ const DeleteAccountAlert: React.FC<DeleteAccountAlertProps> = ({isOpen, header, 
         username,
         authenticationError,
         clearAuthenticationError,
-        logout
+        logout,
+        setTokenExpired,
+        tokenExpired
     } = useContext(AuthContext);
     const history = useHistory();
     const [password, setPassword] = useState('');
@@ -44,13 +46,23 @@ const DeleteAccountAlert: React.FC<DeleteAccountAlertProps> = ({isOpen, header, 
             log('error trying delete account', authenticationError.message);
             if (authenticationError.status_code === 400) {
                 setErrorMessage('Invalid credentials');
+            } else if(authenticationError.status_code === 403){
+                log('authentication code ========403')
+                // 403 means that the server indicated an expired token
+                setTokenExpired?.(true)
+                // RESET ALL THE VALUES OF THIS COMPONENT, BECAUSE IF THE TOKEN IS EXPIRED
+                // THEN THE EXPIRED TOKEN ALERT WILL POPUP
+                setShowAlertError(false)
+                setShowSuccess(false)
+                closeAlert() // should be a function to close the alert
+                clearAuthenticationError?.() //clear the error state
             } else {
                 setErrorMessage('Network Error');
             }
             setShowAlertError(true);
             setPassword('');
         }
-    }, [authenticationError,isDeletingAccount]);
+    }, [closeAlert,authenticationError,isDeletingAccount,setTokenExpired,clearAuthenticationError]);
 
 
     if (!isOpen) return null;
@@ -84,7 +96,7 @@ const DeleteAccountAlert: React.FC<DeleteAccountAlertProps> = ({isOpen, header, 
                 }
                 {showAlertError &&
                     <>
-                        <div className="delete-account-alert-header roboto-style">
+                        <div className="delete-account-alert-header-error roboto-style">
                             Error
                         </div>
                         <div className="delete-account-alert-message roboto-style">
@@ -102,9 +114,9 @@ const DeleteAccountAlert: React.FC<DeleteAccountAlertProps> = ({isOpen, header, 
                         </div>
                     </>
                 }
-                {showSuccess && !showAlertError &&
+                {showSuccess && !showAlertError && !tokenExpired &&
                     <>
-                        <div className="delete-account-alert-header roboto-style">
+                        <div className="delete-account-alert-header-success roboto-style">
                             Account Deleted
                         </div>
                         <div className="delete-account-alert-message roboto-style">
@@ -117,7 +129,9 @@ const DeleteAccountAlert: React.FC<DeleteAccountAlertProps> = ({isOpen, header, 
                                 clearAuthenticationError?.()
                                 logout?.()
                                 closeAlert() // should be a function to close the alert
+                                if (history.location.pathname !== '/home') {
                                 history.push('/home')
+                                }
                             }}
                                     className="delete-account-alert-close-button grey-button roboto-style">Go Home
                             </button>

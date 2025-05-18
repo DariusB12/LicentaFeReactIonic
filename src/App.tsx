@@ -38,6 +38,7 @@ import {Switch} from "react-router";
 import {ViewAllAccounts} from "./pages/ViewAllAccounts/ViewAllAccounts";
 import {AccountDetails} from "./pages/AccountDetails/AccountDetails";
 import {AddAccountWizard} from "./pages/AddAccountWizard/AddAccountWizard";
+import {YoloDetectionProvider} from "./providers/YoloDetectionProvider/YoloDetectionProvider";
 
 
 setupIonicReact();
@@ -48,22 +49,26 @@ const App: React.FC = () => (
         <AuthProvider>
 
             <IonReactRouter>
-                <IonRouterOutlet style={{ backgroundColor: '#000000' }}>
+                <IonRouterOutlet style={{backgroundColor: '#000000'}}>
                     {/*USING SWITCH SO THAT NO MORE PAGES ARE MOUNTED AT THE SAME TIME*/}
                     <Switch>
+
                         <Route path="/home" component={Home} exact={true}/>
                         <Route path="/login" component={Login} exact={true}/>
                         <Route path="/register" component={Register} exact={true}/>
 
-                        <PrivateRoute path="/about" component={About} exact={true}/>
-                        <PrivateRoute path="/viewAllAccounts" component={ViewAllAccounts} exact={true}/>
-                        <PrivateRoute path="/accountDetails/:id" component={AccountDetails} exact={true}/>
-                        <PrivateRoute path="/addAccount" component={AddAccountWizard} exact={true}/>
+                        <YoloDetectionProvider>
+                            <PrivateRoute path="/about" component={About} exact={true}/>
+                            <PrivateRoute path="/viewAllAccounts" component={ViewAllAccounts} exact={true}/>
+                            <PrivateRoute path="/accountDetails/:id" component={AccountDetails} exact={true}/>
+                            <PrivateRoute path="/addAccount" component={AddAccountWizard} exact={true}/>
 
-                        <Route exact path="/" render={() => <Redirect to="/about"/>}/>
+                            <Route exact path="/" render={() => <Redirect to="/about"/>}/>
+                        </YoloDetectionProvider>
                     </Switch>
                 </IonRouterOutlet>
             </IonReactRouter>
+
 
         </AuthProvider>
 

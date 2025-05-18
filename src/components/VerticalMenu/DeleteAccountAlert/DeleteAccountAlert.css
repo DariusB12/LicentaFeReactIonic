@@ -22,6 +22,14 @@
 .delete-account-alert-header{
     font-size: var(--font-md);
 }
+.delete-account-alert-header-success{
+    font-size: var(--font-md);
+    color: green;
+}
+.delete-account-alert-header-error{
+    font-size: var(--font-md);
+    color: red;
+}
 
 .delete-account-alert-message{
     margin-top: 0.3rem;

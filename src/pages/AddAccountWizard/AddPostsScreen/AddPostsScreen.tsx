@@ -9,6 +9,7 @@ import CommentsItem from "../../../components/CommentsItem/CommentsItem";
 import {IonDatetime, IonDatetimeButton, IonModal} from "@ionic/react";
 import * as H from "history";
 import DetectFromImage from "../../../components/DetectFromImage/DetectFromImage";
+import {DetectPostResponse} from "../../../assets/Responses/DetectPostResponse";
 
 interface AddPostsScreenProps {
     idProfile: number,
@@ -94,6 +95,87 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
         };
     }, [resetPostsForm]);
 
+    //TODO: TESTEZ DACA MERGE IN TOATE CAZURILE DACA NU E NICIUN LABEL PREZENT IN POZA
+    const handlePostDataDetected = useCallback(async (postData: DetectPostResponse) => {
+        log('setting the detected post data');
+        //RESET ALL THE ERRORS, PROPOSING NO ERROR EXISTS
+        setNoOfLikesErrorMessage('')
+        setNoOfLikesError(false)
+        setNoOfCommentsErrorMessage('')
+        setNoOfCommentsError(false)
+        setDateErrorMessage('')
+        setDateError(false)
+        setPhotosErrorMessage('')
+        setPhotosError(false)
+        setCommentsErrorMessage('')
+        setCommentsError(false)
+
+        if (postData.description || postData.comments.length>0) {
+            setProfileToBeTranslated(true)
+            setProfileToBeSaved(false)
+        } else if(postData.post_photo || postData.no_comments || postData.no_likes || postData.date){
+            setProfileToBeSaved(true)
+            setProfileToBeTranslated(false)
+        }
+
+        if(postData.post_photo){
+            //if a photo exists, reset the photos list
+            const postPhoto: PostPhoto = {id: -1, photo: postData.post_photo}
+            setPhotosGeneratedId(-2)
+            setPhotos([postPhoto])
+            setPhotoIndex(0)
+        }else{
+            //set empty photos list
+            setPhotoIndex(0)
+            setPhotosGeneratedId(-1)
+            setPhotos([])
+        }
+
+        setDescription(postData.description ? postData.description : '')
+
+        if (postData.no_comments !== undefined && postData.no_comments  !== -1) {
+            setNoComments(postData.no_comments)
+            setLockedComments(false);
+        }
+        else {
+            setNoComments(-1)
+            setLockedComments(true);
+        }
+
+        if (postData.no_likes  !== undefined && postData.no_likes != -1) {
+            setNoLikes(postData.no_likes)
+            setLockedLikes(false);
+        }
+        else {
+            setNoLikes(-1)
+            setLockedLikes(true);
+        }
+
+        if (postData.date)
+            setDatePosted(new Date(postData.date))
+        else
+            setDatePosted(new Date())
+        
+        if (postData.comments.length > 0) {
+            setCommentsGeneratedId(-1);
+            setComments([]);
+
+            let tempId = -1;
+            const newComments = postData.comments.map(comm => {
+                const newComment = { id: tempId, comment: comm };
+                tempId--; 
+                return newComment;
+            });
+
+            setComments(newComments); 
+            setCommentsGeneratedId(tempId); 
+        }else{
+            setCommentsGeneratedId(-1);
+            setComments([]);
+        }
+
+    }, [setComments, setCommentsGeneratedId, setDatePosted, setDescription, setNoComments, setNoLikes, setPhotoIndex, setPhotos, setPhotosGeneratedId, setProfileToBeSaved, setProfileToBeTranslated]);
+
     const handleTranslateToEnglish = useCallback(async () => {
         log('translate the description');
         //todo: api pentru traducerea in engleza doar a descrierii (mai intai verific daca e empty si apoi daca trebuie tradus) si comentariilor
@@ -173,7 +255,10 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
     const handleOnClickCancel = useCallback(async () => {
         log('cancel add post');
         resetPostsForm().then()
-        history.push(`/accountDetails/${idProfile}`)
+        if (history.location.pathname !== `/accountDetails/${idProfile}`) {
+            history.push(`/accountDetails/${idProfile}`)
+        }
+
     }, [history,idProfile,resetPostsForm]);
 
     const isValidImageFile = (file: File): boolean => {
@@ -190,11 +275,12 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
         const reader = new FileReader();
         reader.onloadend = () => {
             const result = reader.result as string;
-            const base64 = result.split(',')[1]; // removes "data:image/...;base64,"
-            const postPhoto: PostPhoto = {id: photosGeneratedId, photo: base64}
+
+            const postPhoto: PostPhoto = {id: photosGeneratedId, photo: result}
             setPhotosGeneratedId(prevState => prevState - 1)
             setPhotos(prev => [postPhoto, ...prev])
             setPhotoIndex(0)
+
             if (!profileToBeTranslated) {
                 setProfileToBeSaved(true)
             }
@@ -378,7 +464,7 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
                         <div className='add-posts-screen-photo-container'>
                             {accountPhoto ?
                                 <img
-                                    src={`data:image/jpeg;base64,${accountPhoto}`}
+                                    src={accountPhoto}
                                     alt="profile_img"
                                     className="add-post-screen-profile-image"
                                 /> :
@@ -405,7 +491,7 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
                         {photos.length != 0 &&
                             <motion.img
                                 key={photoIndex} // This triggers re-animation when photoIndex changes
-                                src={`data:image/jpeg;base64,${photos?.at(photoIndex)?.photo}`}
+                                src={photos?.at(photoIndex)?.photo}
                                 alt="post_img"
                                 className="add-posts-screen-item-photo-image"
                                 initial={{x: 0, opacity: 0}}
@@ -475,7 +561,7 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
                     </div>
                 </div>
                 <div className='add-posts-screen-content-right'>
-                    <div className='roboto-style'>Description</div>
+                    <div className='add-posts-screen-description-text roboto-style'>Description</div>
                     <textarea
                         className="add-posts-screen-post-description-input add-posts-screen-inputs input-reset roboto-style"
                         value={description}
@@ -558,9 +644,11 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
                 </div>
 
             </div>
-            {detectFromImage && <DetectFromImage forPost={true} forProfile={false} onCancel={() => {
-                setDetectFromImage(false)
-            }}/>
+            {detectFromImage &&
+                <DetectFromImage forPost={true} forProfile={false} onPostDetected={handlePostDataDetected} onProfileDetected={async ()=>{}}
+                                 onCancel={() => {
+                                     setDetectFromImage(false)
+                                 }}/>
             }
         </div>
     );

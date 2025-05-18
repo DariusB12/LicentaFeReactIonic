@@ -19,12 +19,13 @@ export const PrivateRoute: React.FC<PrivateRouteProps> = ({component: Component,
     log('render, isAuthResolved', isAuthResolved);
 
     if (!isAuthResolved) {
-        return null; // or show a loading spinner
+        return null;
     }
 
     return (
         //PRIVATE ROUTE - IF IS NOT AUTHENTICATED THEN ALL THE PRIVATE ROUTES WILL REDIRECT TO HOME
         <Route {...rest} render={props => {
+            log('redirect to private route');
             if (isAuthenticated) {
                 return <Component {...props} />;
             }

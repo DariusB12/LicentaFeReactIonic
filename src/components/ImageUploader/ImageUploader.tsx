@@ -1,11 +1,13 @@
 import React, {useRef, useState} from 'react';
 import './ImageUploader.css'
-import {useWindowWidth} from "../../assets";
+import {getLogger, useWindowWidth} from "../../assets";
 
 interface ImageUploaderProps {
     cancelFn: () => void
     saveFn: (image:string|undefined) => void
 }
+
+const log = getLogger('IMAGE UPLOADER');
 
 const ImageUploader:React.FC<ImageUploaderProps> = ({cancelFn,saveFn})=> {
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -24,8 +26,9 @@ const ImageUploader:React.FC<ImageUploaderProps> = ({cancelFn,saveFn})=> {
             }
         }
     };
+
     const isValidImageFile = (file: File): boolean => {
-        const validTypes = ['image/jpeg', 'image/png'];
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
         return validTypes.includes(file.type);
     };
 
@@ -38,10 +41,11 @@ const ImageUploader:React.FC<ImageUploaderProps> = ({cancelFn,saveFn})=> {
         const reader = new FileReader();
         reader.onloadend = () => {
             const result = reader.result as string;
-            const base64 = result.split(',')[1]; // removes "data:image/...;base64,"
-            setBase64Image(base64);
+            // const base64 = result.split(',')[1]; // removes "data:image/...;base64,"
+            setBase64Image(result);
         };
         reader.readAsDataURL(file);
+        log('FILE UPLOADED:',file)
     };
 
     const handleDrop = (e:React.DragEvent<HTMLDivElement>) => {
@@ -71,7 +75,7 @@ const ImageUploader:React.FC<ImageUploaderProps> = ({cancelFn,saveFn})=> {
                                        onDrop={handleDrop}>
                 {base64Image ? (
                     <img
-                        src={`data:image/jpeg;base64,${base64Image}`}
+                        src={base64Image}
                         alt="profile_img"
                         className="image-uploader-drag-and-drop-preview-img"
                     />
