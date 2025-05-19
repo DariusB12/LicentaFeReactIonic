@@ -95,7 +95,6 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
         };
     }, [resetPostsForm]);
 
-    //TODO: TESTEZ DACA MERGE IN TOATE CAZURILE DACA NU E NICIUN LABEL PREZENT IN POZA
     const handlePostDataDetected = useCallback(async (postData: DetectPostResponse) => {
         log('setting the detected post data');
         //RESET ALL THE ERRORS, PROPOSING NO ERROR EXISTS
@@ -151,8 +150,12 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
             setLockedLikes(true);
         }
 
-        if (postData.date)
-            setDatePosted(new Date(postData.date))
+        if (postData.date) {
+            // EXTRACT ONLY THE DATE WITHOUT TIME
+            const dateStr = postData.date.split('T')[0];
+            const localDate = new Date(dateStr);
+            setDatePosted(localDate);
+        }
         else
             setDatePosted(new Date())
         
