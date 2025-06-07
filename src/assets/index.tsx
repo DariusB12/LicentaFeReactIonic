@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import * as H from "history";
+import {Preferences} from "@capacitor/preferences";
 
 export const baseUrl = '127.0.0.1:8000';
 
@@ -73,38 +74,51 @@ export function handleRedirect(path: string, history:H.History<unknown>)  {
     }
 }
 
+
 export function usePersistentState<T>(key: string, defaultValue: T): [T, React.Dispatch<React.SetStateAction<T>>] {
-    const [state, setState] = useState<T>(() => {
-        const saved = localStorage.getItem(key);
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                // Custom fix: if default is Date and parsed is string, return Date object
-                if (defaultValue instanceof Date && typeof parsed === 'string') {
-                    return new Date(parsed) as T;
-                }
-                return parsed;
-            } catch (e) {
-                console.warn(`Failed to parse sessionStorage key "${key}":`, e);
-                return defaultValue;
-            }
-        }
-        return defaultValue;
-    });
+    const [state, setState] = useState<T>(defaultValue);
+    const [initialized, setInitialized] = useState(false);
 
     useEffect(() => {
-        try {
-            if (state !== undefined) {
-                localStorage.setItem(key, JSON.stringify(state));
-            } else {
-                localStorage.removeItem(key);
+        const loadState = async () => {
+            try {
+                const { value } = await Preferences.get({ key });
+                if (value !== null) {
+                    const parsed = JSON.parse(value);
+                    if (defaultValue instanceof Date && typeof parsed === 'string') {
+                        setState(new Date(parsed) as T);
+                    } else {
+                        setState(parsed);
+                    }
+                }
+            } catch (e) {
+                console.warn(`Failed to load Preferences key "${key}":`, e);
+            } finally {
+                setInitialized(true);
             }
-        } catch (e) {
-            console.warn(`Failed to save sessionStorage key "${key}":`, e);
-        }
-    }, [key, state]);
+        };
+
+        loadState();
+    }, [key]);
+
+    useEffect(() => {
+        // Nu salvăm în Preferences până nu s-a făcut încărcarea inițială
+        if (!initialized) return;
+
+        const saveState = async () => {
+            try {
+                if (state !== undefined) {
+                    await Preferences.set({ key, value: JSON.stringify(state) });
+                } else {
+                    await Preferences.remove({ key });
+                }
+            } catch (e) {
+                console.warn(`Failed to save Preferences key "${key}":`, e);
+            }
+        };
+
+        saveState();
+    }, [key, state, initialized]);
 
     return [state, setState];
-
 }
-

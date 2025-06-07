@@ -178,3 +178,13 @@
     background: #7c7c7c;
     border-radius: 8px;
 }
+
+ion-toast::part(message) {
+    white-space: nowrap;
+}
+ion-toast::part(container) {
+    max-width: fit-content;
+    width: fit-content;
+    min-width: fit-content;
+    margin: 0 auto;
+}

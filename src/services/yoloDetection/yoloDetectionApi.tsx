@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {baseUrl, configToken, withLogs} from "../../assets";
-import {DetectProfileResponse} from "../../assets/Responses/DetectProfileResponse";
-import {DetectPostResponse} from "../../assets/Responses/DetectPostResponse";
+import {DetectProfileResponse} from "../../assets/Responses/yoloResponses/DetectProfileResponse";
+import {DetectPostResponse} from "../../assets/Responses/yoloResponses/DetectPostResponse";
 
 const yoloDetectionUrl = `http://${baseUrl}/yolo`;
 

@@ -39,6 +39,9 @@ import {ViewAllAccounts} from "./pages/ViewAllAccounts/ViewAllAccounts";
 import {AccountDetails} from "./pages/AccountDetails/AccountDetails";
 import {AddAccountWizard} from "./pages/AddAccountWizard/AddAccountWizard";
 import {YoloDetectionProvider} from "./providers/YoloDetectionProvider/YoloDetectionProvider";
+import {NllbTranslationProvider} from "./providers/NllbTranslationProvider/NllbTranslationProvider";
+import {SocialAccountsProvider} from "./providers/SocialAccountsProvider/SocialAccountsProvider";
+import {SocialAccountPostsProvider} from "./providers/SocialAccountPostsProvider/SocialAccountPostsProvider";
 
 
 setupIonicReact();
@@ -58,12 +61,18 @@ const App: React.FC = () => (
                         <Route path="/register" component={Register} exact={true}/>
 
                         <YoloDetectionProvider>
-                            <PrivateRoute path="/about" component={About} exact={true}/>
-                            <PrivateRoute path="/viewAllAccounts" component={ViewAllAccounts} exact={true}/>
-                            <PrivateRoute path="/accountDetails/:id" component={AccountDetails} exact={true}/>
-                            <PrivateRoute path="/addAccount" component={AddAccountWizard} exact={true}/>
+                            <NllbTranslationProvider>
+                                <SocialAccountsProvider>
+                                    <SocialAccountPostsProvider>
+                                    <PrivateRoute path="/about" component={About} exact={true}/>
+                                    <PrivateRoute path="/viewAllAccounts" component={ViewAllAccounts} exact={true}/>
+                                    <PrivateRoute path="/accountDetails/:id" component={AccountDetails} exact={true}/>
+                                    <PrivateRoute path="/addAccount" component={AddAccountWizard} exact={true}/>
 
-                            <Route exact path="/" render={() => <Redirect to="/about"/>}/>
+                                    <Route exact path="/" render={() => <Redirect to="/about"/>}/>
+                                    </SocialAccountPostsProvider>
+                                </SocialAccountsProvider>
+                            </NllbTranslationProvider>
                         </YoloDetectionProvider>
                     </Switch>
                 </IonRouterOutlet>

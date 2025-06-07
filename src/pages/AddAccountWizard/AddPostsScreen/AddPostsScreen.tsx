@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
 import "./AddPostsScreen.css"
 import {getLogger, usePersistentState, useWindowWidth} from "../../../assets";
 import {motion} from "framer-motion";
@@ -6,10 +6,20 @@ import GenericList from "../../../components/GenericList/GenericList";
 import {PostPhoto} from "../../../assets/entities/PostPhoto";
 import {PostComment} from "../../../assets/entities/PostComment";
 import CommentsItem from "../../../components/CommentsItem/CommentsItem";
-import {IonDatetime, IonDatetimeButton, IonModal} from "@ionic/react";
+import {IonDatetime, IonDatetimeButton, IonModal, IonToast} from "@ionic/react";
 import * as H from "history";
 import DetectFromImage from "../../../components/DetectFromImage/DetectFromImage";
-import {DetectPostResponse} from "../../../assets/Responses/DetectPostResponse";
+import {DetectPostResponse} from "../../../assets/Responses/yoloResponses/DetectPostResponse";
+import {Preferences} from "@capacitor/preferences";
+import {NllbTranslationContext} from "../../../providers/NllbTranslationProvider/NllbTranslationContext";
+import {AuthContext} from "../../../providers/AuthProvider/AuthContext";
+import CirclesLoading from "../../../components/CirclesLoading/CirclesLoading";
+import CustomInfoAlert from "../../../components/CustomInfoAlert/CustomInfoAlert";
+import {
+    TranslatePostRequest
+} from "../../../assets/Requests/nllbTranslationRequest/TranslatePostRequest";
+import {SocialAccountPostsContext} from "../../../providers/SocialAccountPostsProvider/SocialAccountPostsContext";
+import {AddSocialAccountPostReq} from "../../../assets/Requests/socialAccountPostReq/AddSocialAccountPostReq";
 
 interface AddPostsScreenProps {
     idProfile: number,
@@ -21,23 +31,24 @@ interface AddPostsScreenProps {
 const log = getLogger('AddPostsScreen');
 
 const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUsername, accountPhoto, history}) => {
+    log('render idPofile:',idProfile)
     const [photoIndex, setPhotoIndex] = usePersistentState<number>('postScreenPhotoIndex', 0);
 
     const [photos, setPhotos] = usePersistentState<PostPhoto[]>('postScreenPhotos', []);
-    const [description, setDescription] = usePersistentState<string>('postScreenDescription','');
-    const [noLikes, setNoLikes] = usePersistentState<number | null>('postScreenNoLikes',null);
-    const [noComments, setNoComments] = usePersistentState<number | null>('postScreenNoComments',null);
-    const [comments, setComments] = usePersistentState<PostComment[]>('postScreenComments',[]);
-    const [datePosted, setDatePosted] = usePersistentState<Date>('postScreenDatePosted',new Date());
+    const [description, setDescription] = usePersistentState<string>('postScreenDescription', '');
+    const [noLikes, setNoLikes] = usePersistentState<number | null>('postScreenNoLikes', null);
+    const [noComments, setNoComments] = usePersistentState<number | null>('postScreenNoComments', null);
+    const [comments, setComments] = usePersistentState<PostComment[]>('postScreenComments', []);
+    const [datePosted, setDatePosted] = usePersistentState<Date>('postScreenDatePosted', new Date());
 
-    const [commentsGeneratedId, setCommentsGeneratedId] = usePersistentState<number>('postScreenCommentsGeneratedId',-1);
-    const [photosGeneratedId, setPhotosGeneratedId] = usePersistentState<number>('postScreenPhotosGeneratedId',-1);
+    const [commentsGeneratedId, setCommentsGeneratedId] = usePersistentState<number>('postScreenCommentsGeneratedId', -1);
+    const [photosGeneratedId, setPhotosGeneratedId] = usePersistentState<number>('postScreenPhotosGeneratedId', -1);
 
     const [lockedLikes, setLockedLikes] = useState<boolean>(noLikes == -1);
     const [lockedComments, setLockedComments] = useState<boolean>(noComments == -1);
 
-    const [profileToBeSaved, setProfileToBeSaved] = usePersistentState<boolean>('postScreenProfileToBeSaved',false);
-    const [profileToBeTranslated, setProfileToBeTranslated] = usePersistentState<boolean>('postScreenProfileToBeTranslated',false);
+    const [profileToBeSaved, setProfileToBeSaved] = usePersistentState<boolean>('postScreenProfileToBeSaved', false);
+    const [profileToBeTranslated, setProfileToBeTranslated] = usePersistentState<boolean>('postScreenProfileToBeTranslated', false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const inputRef = useRef(null);
@@ -56,19 +67,19 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
     const [detectFromImage, setDetectFromImage] = useState<boolean>(false);
     const windowWidth = useWindowWidth()
     //FUNCTIE CARE STERGE DIN LOCAL STORAGE DATELE PERSISTATE
-    const resetPostsForm = useCallback (async () => {
-        localStorage.removeItem('postScreenPhotoIndex');
-        localStorage.removeItem('postScreenPhotos');
-        localStorage.removeItem('postScreenDescription');
-        localStorage.removeItem('postScreenNoLikes');
-        localStorage.removeItem('postScreenNoComments');
-        localStorage.removeItem('postScreenComments');
-        localStorage.removeItem('postScreenDatePosted')
-        localStorage.removeItem('postScreenCommentsGeneratedId')
-        localStorage.removeItem('postScreenPhotosGeneratedId')
-        localStorage.removeItem('postScreenProfileToBeSaved')
-        localStorage.removeItem('postScreenProfileToBeTranslated')
-    },[])
+    const resetPostsForm = useCallback(async () => {
+        await Preferences.remove({key: 'postScreenPhotoIndex'});
+        await Preferences.remove({key: 'postScreenPhotos'});
+        await Preferences.remove({key: 'postScreenDescription'});
+        await Preferences.remove({key: 'postScreenNoLikes'});
+        await Preferences.remove({key: 'postScreenNoComments'});
+        await Preferences.remove({key: 'postScreenComments'});
+        await Preferences.remove({key: 'postScreenDatePosted'});
+        await Preferences.remove({key: 'postScreenCommentsGeneratedId'});
+        await Preferences.remove({key: 'postScreenPhotosGeneratedId'});
+        await Preferences.remove({key: 'postScreenProfileToBeSaved'});
+        await Preferences.remove({key: 'postScreenProfileToBeTranslated'});
+    }, [])
     //RESETS ALL THE STATES TO DEFAULT VALUES IF THE USER WANTS TO ADD ANOTHER POST
     const resetAllStates = useCallback(async () => {
         setPhotoIndex(0);
@@ -80,15 +91,15 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
         setDatePosted(new Date());
         setCommentsGeneratedId(-1);
         setPhotosGeneratedId(-1);
-        setLockedLikes(noLikes == -1);
-        setLockedComments(noComments == -1);
+        setLockedLikes(false);
+        setLockedComments(false);
         setProfileToBeSaved(false);
         setProfileToBeTranslated(false);
 
-    },[noComments, noLikes, setComments, setCommentsGeneratedId, setDatePosted, setDescription, setNoComments, setNoLikes, setPhotoIndex, setPhotos, setPhotosGeneratedId, setProfileToBeSaved, setProfileToBeTranslated])
+    }, [setComments, setCommentsGeneratedId, setDatePosted, setDescription, setNoComments, setNoLikes, setPhotoIndex, setPhotos, setPhotosGeneratedId, setProfileToBeSaved, setProfileToBeTranslated])
 
 
-    //PENTRU A STERGE DIN LOCAL STORAGE ATUNCI CAND SE PARASESTE PAGINA
+    //PENTRU A STERGE DIN LOCAL STORAGE ATUNCI CAND SE PARASESTE PAGINA (LA UNMOUNT)
     useEffect(() => {
         return () => {
             resetPostsForm().then()
@@ -109,21 +120,21 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
         setCommentsErrorMessage('')
         setCommentsError(false)
 
-        if (postData.description || postData.comments.length>0) {
+        if (postData.description || postData.comments.length > 0) {
             setProfileToBeTranslated(true)
             setProfileToBeSaved(false)
-        } else if(postData.post_photo || postData.no_comments || postData.no_likes || postData.date){
+        } else if (postData.post_photo || postData.no_comments || postData.no_likes || postData.date) {
             setProfileToBeSaved(true)
             setProfileToBeTranslated(false)
         }
 
-        if(postData.post_photo){
+        if (postData.post_photo) {
             //if a photo exists, reset the photos list
             const postPhoto: PostPhoto = {id: -1, photo: postData.post_photo}
             setPhotosGeneratedId(-2)
             setPhotos([postPhoto])
             setPhotoIndex(0)
-        }else{
+        } else {
             //set empty photos list
             setPhotoIndex(0)
             setPhotosGeneratedId(-1)
@@ -132,20 +143,18 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
 
         setDescription(postData.description ? postData.description : '')
 
-        if (postData.no_comments !== undefined && postData.no_comments  !== -1) {
+        if (postData.no_comments !== undefined && postData.no_comments !== -1) {
             setNoComments(postData.no_comments)
             setLockedComments(false);
-        }
-        else {
+        } else {
             setNoComments(-1)
             setLockedComments(true);
         }
 
-        if (postData.no_likes  !== undefined && postData.no_likes != -1) {
+        if (postData.no_likes !== undefined && postData.no_likes != -1) {
             setNoLikes(postData.no_likes)
             setLockedLikes(false);
-        }
-        else {
+        } else {
             setNoLikes(-1)
             setLockedLikes(true);
         }
@@ -155,36 +164,92 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
             const dateStr = postData.date.split('T')[0];
             const localDate = new Date(dateStr);
             setDatePosted(localDate);
-        }
-        else
+        } else
             setDatePosted(new Date())
-        
+
         if (postData.comments.length > 0) {
             setCommentsGeneratedId(-1);
             setComments([]);
 
             let tempId = -1;
             const newComments = postData.comments.map(comm => {
-                const newComment = { id: tempId, comment: comm };
-                tempId--; 
+                const newComment = {id: tempId, comment: comm};
+                tempId--;
                 return newComment;
             });
 
-            setComments(newComments); 
-            setCommentsGeneratedId(tempId); 
-        }else{
+            setComments(newComments);
+            setCommentsGeneratedId(tempId);
+        } else {
             setCommentsGeneratedId(-1);
             setComments([]);
         }
 
     }, [setComments, setCommentsGeneratedId, setDatePosted, setDescription, setNoComments, setNoLikes, setPhotoIndex, setPhotos, setPhotosGeneratedId, setProfileToBeSaved, setProfileToBeTranslated]);
 
+    const {translatePost} = useContext(NllbTranslationContext)
+    const {setTokenExpired} = useContext(AuthContext);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const [isOpenToastNotification, setIsOpenToastNotification] = useState<boolean>(false)
+    const [toastNotificationMessage, setToastNotificationMessage] = useState<string>('');
+
+    const [isError, setIsError] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string>('');
+
+
     const handleTranslateToEnglish = useCallback(async () => {
-        log('translate the description');
-        //todo: api pentru traducerea in engleza doar a descrierii (mai intai verific daca e empty si apoi daca trebuie tradus) si comentariilor
-        setProfileToBeSaved(true)
-        setProfileToBeTranslated(false)
-    }, [setProfileToBeSaved,setProfileToBeTranslated]);
+        log('translate the post data');
+        //RESET ALL THE ERRORS, PROPOSING NO ERROR EXISTS
+        setNoOfLikesErrorMessage('')
+        setNoOfLikesError(false)
+        setNoOfCommentsErrorMessage('')
+        setNoOfCommentsError(false)
+        setDateErrorMessage('')
+        setDateError(false)
+        setPhotosErrorMessage('')
+        setPhotosError(false)
+        setCommentsErrorMessage('')
+        setCommentsError(false)
+
+        // SET TOAST NOTIFY TO FALSE
+        // AND SLEEP SO THAT THE TOAST TIMEOUT IS RESET (IF OPENING MORE TOAST ONE AFTER ANOTHER FORCE TO RERENDER)
+        setIsOpenToastNotification(false)
+        await new Promise(resolve => setTimeout(resolve, 5))
+
+
+        const postReq: TranslatePostRequest = {
+            comments: comments.map((comm) => ({
+                id: comm.id,
+                comment: comm.comment
+            })),
+            description: description
+        }
+
+        setIsLoading(true)
+        log('POST DATA SENT:', postReq)
+        const response = await translatePost?.(postReq)
+        setIsLoading(false)
+
+        //200 OK data detected
+        if (response?.status_code == 200) {
+            setDescription(response.description ? response.description : '')
+            setComments(response.comments ? response.comments : [])
+
+            setIsOpenToastNotification(true)
+            setToastNotificationMessage('Translated successfully')
+
+            setProfileToBeSaved(true)
+            setProfileToBeTranslated(false)
+        } else if (response?.status_code == 403) {
+            //403 FORBIDDEN if the token is expired
+            setTokenExpired?.(true)
+        } else {
+            //Any other err is a server error
+            setErrorMessage('Network error')
+            setIsError(true)
+        }
+    }, [comments, description, setComments, setDescription, setProfileToBeSaved, setProfileToBeTranslated, setTokenExpired, translatePost]);
 
     const validateInputs = useCallback(async (): Promise<boolean> => {
         log('validating the inputs')
@@ -233,26 +298,60 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
             }
         })
 
-        return !hasError;
+        return hasError;
 
     }, [noLikes, noComments, datePosted, photos, comments]);
 
+    const {addSocialAccountPost} = useContext(SocialAccountPostsContext)
+    
     const handleSaveOnClick = useCallback(async () => {
         log('save post');
-        validateInputs().then((result) => {
-            if (result) {
-                //IF INPUTS ARE VALID, THEN SAVE THE EDITED POST
+        const hasError = await validateInputs()
+        if (!hasError) {
+            // SET TOAST NOTIFY TO FALSE
+            // AND SLEEP SO THAT THE TOAST TIMEOUT IS RESET (IF OPENING MORE TOAST ONE AFTER ANOTHER FORCE TO RERENDER)
+            setIsOpenToastNotification(false)
+            await new Promise(resolve => setTimeout(resolve, 5))
+            
+            //IF INPUTS ARE VALID, THEN SAVE THE EDITED POST
+            log('add post for account with id:', idProfile)
+            // log("Calling addSocialAccountPost", addSocialAccountPost);
 
-                //todo: API pentru salvarea postarii, CAND EXTRAG INPUTURILE NUMBER DACA SUNT GOALE LE PUN BY DEFAULT 0 (chiar daca validarea nu lasa userul sa lase inputurile goale la likes/comments),
-                //TODO: Se adauga postarea noua la cont
-                // AFISEZ LOADING ICON CAND ON CLICK SAVE
-                // daca e cu success, se face refresh la toate atributele si apare un alert cum ca s-a salvat cu success si poate introduce alta postare
-                resetPostsForm()
-                resetAllStates()
+            const toAddPostRequest: AddSocialAccountPostReq = {
+                description: description,
+                noLikes: noLikes ? noLikes : -1,
+                noComments: noComments ? noComments : -1,
+                datePosted: datePosted ? datePosted.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                comments: comments.map((comment) => comment.comment),
+                photos: photos.map((photo) => photo.photo),
+                social_account_id: idProfile
             }
-        })
-    }, [validateInputs,resetPostsForm,resetAllStates]);
-    log('render')
+
+            setIsLoading(true)
+            const response = await addSocialAccountPost?.(toAddPostRequest)
+            setIsLoading(false)
+            //200 OK data detected
+            if (response?.status_code == 200) {
+                //SHOW SUCCESS ADDED TOAST NOTIFICATION
+                setIsOpenToastNotification(true)
+                setToastNotificationMessage('Post added successfully')
+                // RESET BACK ALL THE FORM SO THAT ANOTHER POST CAN BE ADDED
+                await resetPostsForm()
+                await resetAllStates()
+            } else if (response?.status_code == 422) {
+                //422 Unprocessable Content => frontend error
+                setErrorMessage('Could not save the post')
+                setIsError(true)
+            } else if (response?.status_code == 403) {
+                //403 FORBIDDEN if the token is expired
+                setTokenExpired?.(true)
+            } else {
+                //Any other err is a server error
+                setErrorMessage('Network error')
+                setIsError(true)
+            }
+        }
+    }, [validateInputs, idProfile, description, noLikes, noComments, datePosted, comments, photos, addSocialAccountPost, resetPostsForm, resetAllStates, setTokenExpired]);
 
 
     const handleOnClickCancel = useCallback(async () => {
@@ -262,7 +361,7 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
             history.push(`/accountDetails/${idProfile}`)
         }
 
-    }, [history,idProfile,resetPostsForm]);
+    }, [history, idProfile, resetPostsForm]);
 
     const isValidImageFile = (file: File): boolean => {
         const validTypes = ['image/jpeg', 'image/png'];
@@ -453,7 +552,6 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
     </div>)
 
     //TODO: LOADING ICON/ADDED SUCCESSFULLY - ION MODAL BTTM/NETWORK ERRROR - ION MODAL BTTM
-    //TODO: DETECT FROM IMAGE
     return (
         <div className="add-posts-screen-content">
             <div className='add-posts-screen-title'>
@@ -629,7 +727,9 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
                         {windowWidth >= 1100 && 'Cancel'}
                     </button>
                     <button className="add-posts-screen-detect-from-image-button black-button roboto-style"
-                    onClick={()=>{setDetectFromImage(true)}}>
+                            onClick={() => {
+                                setDetectFromImage(true)
+                            }}>
                         {windowWidth >= 1100 ? 'Detect From Image' : 'Detect'}
                     </button>
                     {profileToBeTranslated &&
@@ -648,11 +748,30 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
 
             </div>
             {detectFromImage &&
-                <DetectFromImage forPost={true} forProfile={false} onPostDetected={handlePostDataDetected} onProfileDetected={async ()=>{}}
+                <DetectFromImage forPost={true} forProfile={false} onPostDetected={handlePostDataDetected}
+                                 onProfileDetected={async () => {
+                                 }}
                                  onCancel={() => {
                                      setDetectFromImage(false)
                                  }}/>
             }
+            {isOpenToastNotification &&
+                <IonToast
+                    isOpen={isOpenToastNotification}
+                    message={toastNotificationMessage}
+                    position="top"
+                    onDidDismiss={() => {
+                        setIsOpenToastNotification(false)
+                    }}
+                    duration={3000}/>
+            }
+            {(isLoading || isError) && <div className='add-post-popups-container'>
+                <CirclesLoading isOpen={isLoading} message={'Loading'}/>
+                <CustomInfoAlert isOpen={isError} header={"Error Detecting Data"}
+                                 message={errorMessage} onDismiss={() => {
+                    setIsError(false)
+                }}/>
+            </div>}
         </div>
     );
 };

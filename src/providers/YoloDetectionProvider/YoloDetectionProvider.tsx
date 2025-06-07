@@ -8,9 +8,9 @@ import {
 import axios from "axios";
 import {YoloDetectionContext} from "./YoloDetectionContext";
 import {AuthContext} from "../AuthProvider/AuthContext";
-import {DetectProfileResponse} from "../../assets/Responses/DetectProfileResponse";
+import {DetectProfileResponse} from "../../assets/Responses/yoloResponses/DetectProfileResponse";
 import {detectPostDataApi, detectProfileDataApi} from "../../services/yoloDetection/yoloDetectionApi";
-import {DetectPostResponse} from "../../assets/Responses/DetectPostResponse";
+import {DetectPostResponse} from "../../assets/Responses/yoloResponses/DetectPostResponse";
 
 const log = getLogger('YoloDetectionProvider');
 

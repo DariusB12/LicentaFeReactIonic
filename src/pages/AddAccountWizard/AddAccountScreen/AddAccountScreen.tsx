@@ -1,10 +1,18 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import "./AddAccountScreen.css"
 import {getLogger, usePersistentState, useWindowWidth} from "../../../assets";
 import ImageUploader from "../../../components/ImageUploader/ImageUploader";
 import DetectFromImage from "../../../components/DetectFromImage/DetectFromImage";
-import {DetectProfileResponse} from "../../../assets/Responses/DetectProfileResponse";
-import {thunderstorm} from "ionicons/icons";
+import {DetectProfileResponse} from "../../../assets/Responses/yoloResponses/DetectProfileResponse";
+import {Preferences} from "@capacitor/preferences";
+import {NllbTranslationContext} from "../../../providers/NllbTranslationProvider/NllbTranslationContext";
+import CirclesLoading from "../../../components/CirclesLoading/CirclesLoading";
+import CustomInfoAlert from "../../../components/CustomInfoAlert/CustomInfoAlert";
+import {IonToast} from "@ionic/react";
+import {AuthContext} from "../../../providers/AuthProvider/AuthContext";
+import {SocialAccountsContext} from "../../../providers/SocialAccountsProvider/SocialAccountsContext";
+import {AddSocialAccountReq} from "../../../assets/Requests/socialAccountsRequest/AddSocialAccountReq";
+
 
 interface EditProfilePopUpProps {
     savedSuccessfully: (photo: string, username: string, idProfile: number) => void
@@ -25,7 +33,7 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
     const [usernameErrorMessage, setUsernameErrorMessage] = useState<string>('');
 
     //useStates FOR INITIALIZING DATA
-    const [usernameState, setUsernameState] = usePersistentState<string>('username', '');
+    const [usernameState, setUsernameState] = usePersistentState<string>('addAccountUsername', '');
     const [descriptionState, setDescriptionState] = usePersistentState<string>('description', '');
     const [noOfPosts, setNoOfPosts] = usePersistentState<number | null>('noOfPosts', null);
     const [noOfFollowers, setNoOfFollowers] = usePersistentState<number | null>('noOfFollowers', null);
@@ -39,13 +47,64 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
     const [detectFromImage, setDetectFromImage] = useState<boolean>(false);
     const windowWidth = useWindowWidth()
 
+    const {translateProfile} = useContext(NllbTranslationContext)
+    const {setTokenExpired} = useContext(AuthContext);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const [isOpenToastNotification, setIsOpenToastNotification] = useState<boolean>(false)
+    const [toastNotificationMessage, setToastNotificationMessage] = useState<string>('');
+
+    const [isError, setIsError] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string>('');
+
     const handleTranslateToEnglish = useCallback(async () => {
         log('translate the description');
-        //TODO: DACA NU TREBUIE TRADUS ATUNCI DOAR NORMALIZEZ TEXTUL!
-        //todo: api pentru traducerea doar a descrierii in engleza (mai intai verific daca e empty si apoi daca trebuie tradus)
-        setProfileToBeSaved(true)
-        setProfileToBeTranslated(false)
-    }, [setProfileToBeTranslated, setProfileToBeSaved]);
+        //RESET ALL THE ERRORS, PROPOSING NO ERROR EXISTS
+        setNoOfPostsError(false)
+        setNoOfFollowersError(false)
+        setNoOfFollowingError(false)
+        setUsernameError(false)
+        setNoOfPostsErrorMessage('')
+        setNoOfFollowersErrorMessage('')
+        setNoOfFollowingErrorMessage('')
+        setUsernameErrorMessage('')
+
+        // SET TOAST NOTIFY TO FALSE
+        // AND SLEEP SO THAT THE TOAST TIMEOUT IS RESET (IF OPENING MORE TOAST ONE AFTER ANOTHER FORCE TO RERENDER)
+        setIsOpenToastNotification(false)
+        await new Promise(resolve => setTimeout(resolve, 5))
+
+        if (descriptionState) {
+            setIsLoading(true)
+            const response = await translateProfile?.(descriptionState)
+            setIsLoading(false)
+
+            //200 OK data detected
+            if (response?.status_code == 200) {
+                setDescriptionState(response.description ? response.description : '')
+
+                setIsOpenToastNotification(true)
+                setToastNotificationMessage('Translated successfully')
+
+                setProfileToBeSaved(true)
+                setProfileToBeTranslated(false)
+            } else if (response?.status_code == 403) {
+                //403 FORBIDDEN if the token is expired
+                setTokenExpired?.(true)
+            } else {
+                //Any other err is a server error
+                setErrorMessage('Network error')
+                setIsError(true)
+            }
+        } else {
+            setIsOpenToastNotification(true)
+            setToastNotificationMessage('No text to be translated')
+            setProfileToBeSaved(true)
+            setProfileToBeTranslated(false)
+        }
+
+    }, [descriptionState, translateProfile, setDescriptionState, setProfileToBeSaved, setProfileToBeTranslated, setTokenExpired]);
+
 
     const validateInputs = useCallback(async (): Promise<boolean> => {
         log('validating the inputs')
@@ -89,23 +148,81 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
             setUsernameError(true);
             hasError = true;
         }
-        return !hasError;
+        return hasError;
 
     }, [noOfPosts, noOfFollowing, noOfFollowers, usernameState]);
 
+    const {addSocialAccount} = useContext(SocialAccountsContext)
+
+    async function imageUrlToBase64(url: string): Promise<string> {
+        const response = await fetch(url);
+        const blob = await response.blob();
+
+        return await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                // reader.result is of type string | ArrayBuffer
+                if (typeof reader.result === 'string' && reader.result.startsWith('data:image/')) {
+                    resolve(reader.result);
+                } else {
+                    reject('Failed to convert image to base64');
+                }
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    }
+
+
+
     const handleSaveOnClick = useCallback(async () => {
         log('save edited profile');
-        validateInputs().then((result) => {
-            if (result) {
-                //IF INPUTS ARE VALID, THEN ADD THE EDITED PROFILE
-                //todo: API pentru ADAUGAREA profilului, CAND EXTRAG INPUTURILE NUMBER DACA SUNT GOALE LE PUN BY DEFAULT 0 (chiar daca validarea nu lasa userul sa lase inputurile goale la numbers/username),
-                // AFISEZ LOADING ICON CAND ON CLICK SAVE
-
-                //todo: DACA APIUL E SUCCES, DOAR ATUNCI APELAM FUNCTIA DE SAVED_SUCCESSFULLY
-                props.savedSuccessfully(profilePhotoState ? profilePhotoState : '', usernameState, -2)
+        const hasError = await validateInputs()
+        if (!hasError) {
+            //IF INPUTS ARE VALID, THEN ADD THE EDITED PROFILE
+            // LOAD THE ANONYMOUS IMAGE IN BASE64 IF THE PROFILE IMAGE IS NOT SET
+            let anonymous_image = ''
+            try {
+                anonymous_image = await imageUrlToBase64('/icons/anonim_image.png');
+                // log('Base64 image:', anonymous_image);
+            } catch (error) {
+                log('Error converting image to base64:', error);
+                setErrorMessage('Could not save the account')
+                setIsError(true)
+                return
             }
-        })
-    }, [usernameState, profilePhotoState, props, validateInputs]);
+            const toAddAccountRequest: AddSocialAccountReq = {
+                username: usernameState,
+                profile_description: descriptionState ? descriptionState : '',
+                no_followers: noOfFollowers ? noOfFollowers : 0,
+                no_following: noOfFollowing ? noOfFollowing : 0,
+                no_of_posts: noOfPosts ? noOfPosts : 0,
+                // IF THE PHOTO IS EMPTY, THEN WE STORE ON THE BACKEND THE ANONYMOUS IMAGE
+                profile_photo: profilePhotoState ? profilePhotoState : anonymous_image
+            }
+
+            setIsLoading(true)
+            const response = await addSocialAccount?.(toAddAccountRequest)
+            setIsLoading(false)
+
+            //200 OK data detected
+            if (response?.status_code == 200 && response.id) {
+                props.savedSuccessfully(profilePhotoState ? profilePhotoState : '', usernameState, response.id)
+            } else if (response?.status_code == 422) {
+                //422 Unprocessable Content => frontend error
+                setErrorMessage('Could not save the account')
+                setIsError(true)
+            } else if (response?.status_code == 403) {
+                //403 FORBIDDEN if the token is expired
+                setTokenExpired?.(true)
+            } else {
+                //Any other err is a server error
+                setErrorMessage('Network error')
+                setIsError(true)
+            }
+        }
+
+    }, [validateInputs, usernameState, descriptionState, noOfFollowers, noOfFollowing, noOfPosts, profilePhotoState, addSocialAccount, props, setTokenExpired]);
 
     const handleProfileDataDetected = useCallback(async (profileData: DetectProfileResponse) => {
         log('setting the detected profile data');
@@ -122,7 +239,7 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
         if (profileData.description) {
             setProfileToBeTranslated(true)
             setProfileToBeSaved(false)
-        } else if(profileData.profile_photo || profileData.username || profileData.no_of_posts || profileData.no_following || profileData.no_followers){
+        } else if (profileData.profile_photo || profileData.username || profileData.no_of_posts || profileData.no_following || profileData.no_followers) {
             setProfileToBeSaved(true)
             setProfileToBeTranslated(false)
         }
@@ -137,7 +254,7 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
             setNoOfFollowing(profileData.no_following)
         else
             setNoOfFollowing(null)
-        if (profileData.no_of_posts  !== undefined && profileData.no_of_posts != -1)
+        if (profileData.no_of_posts !== undefined && profileData.no_of_posts != -1)
             setNoOfPosts(profileData.no_of_posts)
         else
             setNoOfPosts(null)
@@ -145,28 +262,26 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
     }, [setDescriptionState, setNoOfFollowers, setNoOfFollowing, setNoOfPosts, setProfilePhotoState, setProfileToBeSaved, setProfileToBeTranslated, setUsernameState]);
 
     //FUNCTIE CARE STERGE DIN LOCAL STORAGE DATELE PERSISTATE
-    const resetProfileForm = () => {
-        localStorage.removeItem('username');
-        localStorage.removeItem('description');
-        localStorage.removeItem('noOfPosts');
-        localStorage.removeItem('noOfFollowers');
-        localStorage.removeItem('noOfFollowing');
-        localStorage.removeItem('profilePhoto');
-        localStorage.removeItem('addAccountScreenProfileToBeSaved')
-        localStorage.removeItem('addAccountScreenProfileToBeTranslated')
-    };
+    const resetProfileForm = useCallback(async () => {
+        await Preferences.remove({key: 'addAccountUsername'});
+        await Preferences.remove({key: 'description'});
+        await Preferences.remove({key: 'noOfPosts'});
+        await Preferences.remove({key: 'noOfFollowers'});
+        await Preferences.remove({key: 'noOfFollowing'});
+        await Preferences.remove({key: 'profilePhoto'});
+        await Preferences.remove({key: 'addAccountScreenProfileToBeSaved'});
+        await Preferences.remove({key: 'addAccountScreenProfileToBeTranslated'});
+    }, []);
 
     //PENTRU A STERGE DIN LOCAL STORAGE ATUNCI CAND SE PARASESTE PAGINA
     useEffect(() => {
         return () => {
-            resetProfileForm()
+            resetProfileForm().then()
         };
-    }, []);
+    }, [resetProfileForm]);
 
 
-    //TODO: DACA NU E INCARCATA NICIO IMAGINE DE PROFIL ATUNCI SE VA TRIMITE LA SERVER IMAGINEA ANONIMA, NU ARE VOIE SA FIE NULL
-    //TODO: LOADING ICON/ADDED SUCCESSFULLY - ion modal /NETWORK ERRROR - ion modal
-    //TODO: DETECT FROM IMAGE
+    //TODO: LA ADAUGARE DACA NU E INCARCATA NICIO IMAGINE DE PROFIL ATUNCI SE VA TRIMITE LA SERVER IMAGINEA ANONIMA, NU ARE VOIE SA FIE NULL
     return (
         <div className="add-account-screen-content">
             <div className='add-account-screen-title roboto-style'>Add profile data</div>
@@ -343,11 +458,30 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
                     </button>}
             </div>
             {detectFromImage &&
-                <DetectFromImage forPost={false} forProfile={true} onProfileDetected={handleProfileDataDetected} onPostDetected={async ()=>{}}
+                <DetectFromImage forPost={false} forProfile={true} onProfileDetected={handleProfileDataDetected}
+                                 onPostDetected={async () => {
+                                 }}
                                  onCancel={() => {
                                      setDetectFromImage(false)
                                  }}/>
             }
+            {isOpenToastNotification &&
+                <IonToast
+                    isOpen={isOpenToastNotification}
+                    message={toastNotificationMessage}
+                    position="top"
+                    onDidDismiss={() => {
+                        setIsOpenToastNotification(false)
+                    }}
+                    duration={3000}/>
+            }
+            {(isLoading || isError) && <div className='add-account-popups-container'>
+                <CirclesLoading isOpen={isLoading} message={'loading'}/>
+                <CustomInfoAlert isOpen={isError} header={"Error Adding Profile"}
+                                 message={errorMessage} onDismiss={() => {
+                    setIsError(false)
+                }}/>
+            </div>}
         </div>
 
 

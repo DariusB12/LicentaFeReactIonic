@@ -1,12 +1,12 @@
 import React, {useCallback, useContext, useRef, useState} from 'react';
 import "./DetectFromImage.css"
 import {getLogger, useWindowWidth} from "../../assets";
-import {DetectProfileResponse} from "../../assets/Responses/DetectProfileResponse";
+import {DetectProfileResponse} from "../../assets/Responses/yoloResponses/DetectProfileResponse";
 import {YoloDetectionContext} from "../../providers/YoloDetectionProvider/YoloDetectionContext";
 import {AuthContext} from "../../providers/AuthProvider/AuthContext";
 import CirclesLoading from "../CirclesLoading/CirclesLoading";
 import CustomInfoAlert from "../CustomInfoAlert/CustomInfoAlert";
-import {DetectPostResponse} from "../../assets/Responses/DetectPostResponse";
+import {DetectPostResponse} from "../../assets/Responses/yoloResponses/DetectPostResponse";
 
 export type OnProfileDetectedFn = (profileData: DetectProfileResponse) => Promise<void>;
 export type OnPostDetectedFn = (postData: DetectPostResponse) => Promise<void>;
