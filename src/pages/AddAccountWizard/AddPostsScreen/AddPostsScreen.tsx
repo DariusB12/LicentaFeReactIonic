@@ -130,7 +130,7 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
 
         if (postData.post_photo) {
             //if a photo exists, reset the photos list
-            const postPhoto: PostPhoto = {id: -1, photo: postData.post_photo}
+            const postPhoto: PostPhoto = {id: -1, photo_url: postData.post_photo}
             setPhotosGeneratedId(-2)
             setPhotos([postPhoto])
             setPhotoIndex(0)
@@ -323,7 +323,7 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
                 noComments: noComments ? noComments : -1,
                 datePosted: datePosted ? datePosted.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
                 comments: comments.map((comment) => comment.comment),
-                photos: photos.map((photo) => photo.photo),
+                photos: photos.map((photo) => photo.photo_url).filter(photo=>photo!==undefined),
                 social_account_id: idProfile
             }
 
@@ -378,7 +378,7 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
         reader.onloadend = () => {
             const result = reader.result as string;
 
-            const postPhoto: PostPhoto = {id: photosGeneratedId, photo: result}
+            const postPhoto: PostPhoto = {id: photosGeneratedId, photo_url: result}
             setPhotosGeneratedId(prevState => prevState - 1)
             setPhotos(prev => [postPhoto, ...prev])
             setPhotoIndex(0)
@@ -551,7 +551,6 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
         </div>
     </div>)
 
-    //TODO: LOADING ICON/ADDED SUCCESSFULLY - ION MODAL BTTM/NETWORK ERRROR - ION MODAL BTTM
     return (
         <div className="add-posts-screen-content">
             <div className='add-posts-screen-title'>
@@ -592,7 +591,7 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
                         {photos.length != 0 &&
                             <motion.img
                                 key={photoIndex} // This triggers re-animation when photoIndex changes
-                                src={photos?.at(photoIndex)?.photo}
+                                src={photos?.at(photoIndex)?.photo_url}
                                 alt="post_img"
                                 className="add-posts-screen-item-photo-image"
                                 initial={{x: 0, opacity: 0}}
@@ -768,6 +767,7 @@ const AddPostsScreen: React.FC<AddPostsScreenProps> = ({idProfile, accountUserna
             {(isLoading || isError) && <div className='add-post-popups-container'>
                 <CirclesLoading isOpen={isLoading} message={'Loading'}/>
                 <CustomInfoAlert isOpen={isError} header={"Error Detecting Data"}
+                                 error={true}
                                  message={errorMessage} onDismiss={() => {
                     setIsError(false)
                 }}/>

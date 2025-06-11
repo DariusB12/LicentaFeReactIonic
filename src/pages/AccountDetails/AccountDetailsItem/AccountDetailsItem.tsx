@@ -6,26 +6,28 @@ import {Post} from "../../../assets/entities/Post";
 import {motion} from 'framer-motion';
 
 export type EditFn = () => void;
+export type DeletePostFn = () => void;
 
 
 interface AccountDetailsItemProps {
     post: Post
     onClickEdit: EditFn
+    onClickDelete: DeletePostFn
 }
 
-const AccountDetailsItem: React.FC<AccountDetailsItemProps> = ({post,onClickEdit}) => {
+const AccountDetailsItem: React.FC<AccountDetailsItemProps> = ({post,onClickEdit,onClickDelete}) => {
     const [photoIndex, setPhotoIndex] = useState<number>(0);
     const [commentsButtonIsActive, setCommentsButtonIsActive] = useState(false);
 
     return (
-        <IonItem className="account-details-item unstyled-ion-item roboto-style">
+        <IonItem className="account-details-item unstyled-ion-item roboto-style" style={{cursor: 'default'}}>
             <div className="account-details-item-container">
                 <div className="account-details-item-photos-container">
-                    <div className="account-details-item-photo">
+                    {post.photos.length > 0 && <div className="account-details-item-photo">
                         <motion.img
                             key={photoIndex} // This triggers re-animation when photoIndex changes
-                            src={`data:image/jpeg;base64,${post.photos.at(photoIndex)?.photo}`}
-                            alt="post_img"
+                            src={post.photos.at(photoIndex)?.photo_url}
+                            alt="No Photos"
                             className="account-details-item-photo-image"
                             initial={{x: 0, opacity: 0}}
                             animate={{x: 0, opacity: 1}}
@@ -53,7 +55,7 @@ const AccountDetailsItem: React.FC<AccountDetailsItemProps> = ({post,onClickEdit
                                      className="account-details-item-arrow-forward-icon icon-size"/>
                             </button>
                         }
-                    </div>
+                    </div>}
                 </div>
                 <div className="account-details-item-no-comments-likes-container">
                     <div className="account-details-item-no-likes-container roboto-style">
@@ -83,7 +85,7 @@ const AccountDetailsItem: React.FC<AccountDetailsItemProps> = ({post,onClickEdit
                         <div className="account-details-item-comments-container">
                             <hr className="account-details-item-divider-comments"/>
                             {post.comments.map((postComment) =>
-                                <div className="account-details-item-comment">
+                                <div key={postComment.id} className="account-details-item-comment">
                                     {postComment.comment}
                                     <hr className="account-details-item-divider-comments"/>
                                 </div>
@@ -99,7 +101,7 @@ const AccountDetailsItem: React.FC<AccountDetailsItemProps> = ({post,onClickEdit
                             year: '2-digit',
                         })}
                     </div>
-                    <button className="account-details-item-delete-button roboto-style">
+                    <button className="account-details-item-delete-button roboto-style" onClick={()=>onClickDelete()}>
                         <img src="/icons/delete.png" alt="delete_img"
                              className="account-details-item-delete-button-icon icon-size"/>
                         Delete post

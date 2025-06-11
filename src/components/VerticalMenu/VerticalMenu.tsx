@@ -3,232 +3,16 @@ import './VerticalMenu.css';
 import {AuthContext} from "../../providers/AuthProvider/AuthContext";
 import {getLogger} from "../../assets";
 import MenuAccountsList from "./MenuAccountsList/MenuAccountsList";
-import {AccountDTO} from "../../assets/entities/AccountDTO";
 import DeleteAccountAlert from "./DeleteAccountAlert/DeleteAccountAlert";
 import {useHistory} from "react-router";
 import ExpiredSessionPopUp from "../ExpiredSessionPopUp/ExpiredSessionPopUp";
+import CirclesLoading from "../CirclesLoading/CirclesLoading";
+import {WebSocketContext} from "../../providers/WebsocketProvider/WebsocketContext";
+import CustomInfoAlert from "../CustomInfoAlert/CustomInfoAlert";
+import {SocialAccountsContext} from "../../providers/SocialAccountsProvider/SocialAccountsContext";
+import {IonSpinner} from "@ionic/react";
 
 const log = getLogger('VerticalMenu');
-
-const mockDataAccount: AccountDTO[] = [
-    {
-        id: 1,
-        username: 'darius',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 2,
-        username: 'alex',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 3,
-        username: 'marian',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 4,
-        username: 'ionut',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 5,
-        username: 'andrei',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 6,
-        username: 'elena',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 7,
-        username: 'simona',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 8,
-        username: 'george',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 9,
-        username: 'mihai',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 10,
-        username: 'claudia',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 11,
-        username: 'vlad',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 12,
-        username: 'andreea',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 13,
-        username: 'daniel',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 14,
-        username: 'roberta',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 15,
-        username: 'ion',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 16,
-        username: 'carmen',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 17,
-        username: 'mihai',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 18,
-        username: 'claudia',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 19,
-        username: 'vlad',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 20,
-        username: 'andreea',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 21,
-        username: 'daniel',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 22,
-        username: 'roberta',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 23,
-        username: 'ion',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    },
-    {
-        id: 24,
-        username: 'carmen',
-        profile_photo: undefined,
-        no_followers: 2,
-        no_following: 5,
-        no_of_posts: 12,
-        analysed: true
-    }
-
-]
 
 
 const VerticalMenu: React.FC = () => {
@@ -236,13 +20,16 @@ const VerticalMenu: React.FC = () => {
 
     const history = useHistory();
 
-    const {logout,tokenExpired} = useContext(AuthContext);
+    const {logout, tokenExpired} = useContext(AuthContext);
     const {username} = useContext(AuthContext);
     const [searchValue, setSearchValue] = useState('');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [showDeleteAccount, setShowDeleteAccount] = useState(false)
 
-    const filteredAccounts = mockDataAccount.filter(account =>
+    const {retries, maxRetries, websocketConnected,accountDeleted} = useContext(WebSocketContext);
+    const {fetching,fetchingError,socialAccounts} = useContext(SocialAccountsContext)
+
+    const filteredAccounts = socialAccounts.filter(account =>
         account.username.toLowerCase().includes(searchValue.toLowerCase())
     );
 
@@ -250,6 +37,13 @@ const VerticalMenu: React.FC = () => {
         log('redirecting to /about page')
         if (history.location.pathname !== '/about') {
             history.push("/about");
+        }
+    }, [history]);
+
+    const handleOnClickAccount = useCallback(async (account_id:number) => {
+        log(`redirecting to /accountDetails/${account_id} page`)
+        if (history.location.pathname !== `/accountDetails/${account_id}`) {
+            history.push(`/accountDetails/${account_id}`);
         }
     }, [history]);
 
@@ -306,7 +100,22 @@ const VerticalMenu: React.FC = () => {
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
                 />
-                <MenuAccountsList accounts={filteredAccounts}/>
+                {!fetching && !fetchingError && <MenuAccountsList accounts={filteredAccounts} onClick={handleOnClickAccount}/>}
+
+                {fetching &&
+                <div className="vertical-menu-list-container">
+                    <div className="vertical-menu-circles-loading-content">
+                        <IonSpinner name="circles" color="secondary"></IonSpinner>
+                        <div className="roboto-style">Loading...</div>
+                    </div>
+                </div>
+                }
+
+                {fetchingError &&
+                    <div className="vertical-menu-list-container">
+                            <div className="vertical-menu-list-fetching-error-message roboto-style">Couldn't load the list</div>
+                    </div>
+                }
 
                 <div className="vertical-menu-container-bottom-conatiner">
                     <div className="vertical-menu-container-bottom-buttons">
@@ -369,6 +178,14 @@ const VerticalMenu: React.FC = () => {
                 setShowDeleteAccount(false)
             }}/>
             {tokenExpired && <ExpiredSessionPopUp/>}
+            <CirclesLoading isOpen={!websocketConnected && retries != maxRetries}
+                            message={`Connecting to server... #${retries+1}`}/>
+            <CustomInfoAlert isOpen={!websocketConnected && retries >= maxRetries} header={'Server connection lost'}
+                             message={'Please come back later'} onDismiss={handleOnClickLogout} error={true}/>
+            {/*ALERT IF THE ACCOUNT HAS BEEN DELETED FROM ANOTHER DISPOSITIVE*/}
+            <CustomInfoAlert isOpen={accountDeleted && !showDeleteAccount} header={'Account Deleted'}
+                             message={'Your account was deleted from another device'} onDismiss={handleOnClickLogout} error={true}/>
+
         </>
     );
 };

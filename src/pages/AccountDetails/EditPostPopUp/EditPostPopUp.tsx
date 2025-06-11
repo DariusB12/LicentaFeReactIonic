@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useContext, useRef, useState} from 'react';
 import "./EditPostPopUp.css"
 import {getLogger, useWindowWidth} from "../../../assets";
 import {motion} from "framer-motion";
@@ -6,14 +6,22 @@ import GenericList from "../../../components/GenericList/GenericList";
 import {PostPhoto} from "../../../assets/entities/PostPhoto";
 import {PostComment} from "../../../assets/entities/PostComment";
 import CommentsItem from "../../../components/CommentsItem/CommentsItem";
-import {IonDatetime, IonDatetimeButton, IonModal} from "@ionic/react";
+import {IonDatetime, IonDatetimeButton, IonModal, IonToast} from "@ionic/react";
 import DetectFromImage from "../../../components/DetectFromImage/DetectFromImage";
+import {DetectPostResponse} from "../../../assets/Responses/yoloResponses/DetectPostResponse";
+import {TranslatePostRequest} from "../../../assets/Requests/nllbTranslationRequest/TranslatePostRequest";
+import CirclesLoading from "../../../components/CirclesLoading/CirclesLoading";
+import CustomInfoAlert from "../../../components/CustomInfoAlert/CustomInfoAlert";
+import {NllbTranslationContext} from "../../../providers/NllbTranslationProvider/NllbTranslationContext";
+import {AuthContext} from "../../../providers/AuthProvider/AuthContext";
+import {AddSocialAccountPostReq} from "../../../assets/Requests/socialAccountPostReq/AddSocialAccountPostReq";
+import {SocialAccountPostsContext} from "../../../providers/SocialAccountPostsProvider/SocialAccountPostsContext";
 
 interface EditPostPopUpProps {
     isOpen: boolean,
 
-    forAdd:boolean,
-    forEdit:boolean,
+    forAdd: boolean,
+    forEdit: boolean,
 
     idPost?: number,
     idProfile: number,
@@ -24,6 +32,9 @@ interface EditPostPopUpProps {
     no_comments?: number,
     comments?: PostComment[],
     date_posted?: Date
+
+    addedSuccessfully: () => void
+    editedSuccessfully: () => void
 
     closeFn: () => void
 }
@@ -66,12 +77,69 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
     const [detectFromImage, setDetectFromImage] = useState<boolean>(false);
     const windowWidth = useWindowWidth()
 
+    const {translatePost} = useContext(NllbTranslationContext)
+    const {setTokenExpired} = useContext(AuthContext);
+
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isOpenToastNotification, setIsOpenToastNotification] = useState<boolean>(false)
+    const [toastNotificationMessage, setToastNotificationMessage] = useState<string>('');
+
+    const [isError, setIsError] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string>('');
+
     const handleTranslateToEnglish = useCallback(async () => {
-        log('translate the description');
-        //todo: api pentru traducerea in engleza doar a descrierii (mai intai verific daca e empty si apoi daca trebuie tradus) si comentariilor
-        setProfileToBeSaved(true)
-        setProfileToBeTranslated(false)
-    }, []);
+        log('translate the post data');
+        //RESET ALL THE ERRORS, PROPOSING NO ERROR EXISTS
+        setNoOfLikesErrorMessage('')
+        setNoOfLikesError(false)
+        setNoOfCommentsErrorMessage('')
+        setNoOfCommentsError(false)
+        setDateErrorMessage('')
+        setDateError(false)
+        setPhotosErrorMessage('')
+        setPhotosError(false)
+        setCommentsErrorMessage('')
+        setCommentsError(false)
+
+        // SET TOAST NOTIFY TO FALSE
+        // AND SLEEP SO THAT THE TOAST TIMEOUT IS RESET (IF OPENING MORE TOAST ONE AFTER ANOTHER FORCE TO RERENDER)
+        setIsOpenToastNotification(false)
+        await new Promise(resolve => setTimeout(resolve, 5))
+
+
+        const postReq: TranslatePostRequest = {
+            comments: comments.map((comm) => ({
+                id: comm.id,
+                comment: comm.comment
+            })),
+            description: description
+        }
+
+        setIsLoading(true)
+        log('POST DATA SENT:', postReq)
+        const response = await translatePost?.(postReq)
+        setIsLoading(false)
+
+        //200 OK data detected
+        if (response?.status_code == 200) {
+            setDescription(response.description ? response.description : '')
+            setComments(response.comments ? response.comments : [])
+
+            setIsOpenToastNotification(true)
+            setToastNotificationMessage('Translated successfully')
+
+            setProfileToBeSaved(true)
+            setProfileToBeTranslated(false)
+        } else if (response?.status_code == 403) {
+            //403 FORBIDDEN if the token is expired
+            setTokenExpired?.(true)
+        } else {
+            //Any other err is a server error
+            setErrorMessage('Network error')
+            setIsError(true)
+        }
+    }, [comments, description, setComments, setDescription, setProfileToBeSaved, setProfileToBeTranslated, setTokenExpired, translatePost]);
+
 
     const validateInputs = useCallback(async (): Promise<boolean> => {
         log('validating the inputs')
@@ -120,26 +188,145 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
             }
         })
 
-        return !hasError;
+        return hasError;
 
     }, [noLikes, noComments, datePosted, photos, comments]);
 
-    const handleSaveOnClick = useCallback(async () => {
-        log('save edited post');
-        validateInputs().then((result) => {
-            if (result) {
-                //IF INPUTS ARE VALID, THEN SAVE THE EDITED POST
+    const {addSocialAccountPost} = useContext(SocialAccountPostsContext)
 
-                //todo: API pentru salvarea profilului, CAND EXTRAG INPUTURILE NUMBER DACA SUNT GOALE LE PUN BY DEFAULT 0 (chiar daca validarea nu lasa userul sa lase inputurile goale la likes/comments),
-                //TODO: CAND SE SALVEAZA - lista cu comentarii/fotografii se trimite asa cum a fost modificata si pe server in DB se inlocuieste cea veche cu asta noua
-                // AFISEZ LOADING ICON CAND ON CLICK SAVE
-                // forAdd?:boolean,
-                //     forEdit?:boolean, folosesc atributele astea ca sa stiu daca fac update sau add de postare
-                props.closeFn()
+    const handleSaveOnClick = useCallback(async () => {
+        log('save post');
+        const hasError = await validateInputs()
+        if (!hasError) {
+            // SET TOAST NOTIFY TO FALSE
+            // AND SLEEP SO THAT THE TOAST TIMEOUT IS RESET (IF OPENING MORE TOAST ONE AFTER ANOTHER FORCE TO RERENDER)
+            setIsOpenToastNotification(false)
+            await new Promise(resolve => setTimeout(resolve, 5))
+
+
+            const toAddPostRequest: AddSocialAccountPostReq = {
+                description: description,
+                noLikes: noLikes ? noLikes : -1,
+                noComments: noComments ? noComments : -1,
+                datePosted: datePosted ? datePosted.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                comments: comments.map((comment) => comment.comment),
+                photos: photos.map((photo) => photo.photo_url).filter(photo => photo !== undefined),
+                social_account_id: props.idProfile
             }
-        })
-    }, [props, validateInputs]);
+
+            log('add/update post for account with id:', props.idProfile)
+
+            //IF INPUTS ARE VALID, THEN ADD/UPDATE THE POST
+            setIsLoading(true)
+            const response = props.forAdd ? await addSocialAccountPost?.(toAddPostRequest) : await updateSocialAccountPost?.(toAddPostRequest)
+            setIsLoading(false)
+
+            //200 OK data detected
+            if (response?.status_code == 200) {
+                if(props.forAdd){
+                    log('post added')
+                    props.addedSuccessfully()
+                }else{
+                    log('post updated')
+                    props.editedSuccessfully()
+                }
+            } else if (response?.status_code == 422) {
+                //422 Unprocessable Content => frontend error
+                setErrorMessage('Could not save the post')
+                setIsError(true)
+            } else if (response?.status_code == 403) {
+                //403 FORBIDDEN if the token is expired
+                setTokenExpired?.(true)
+            } else {
+                //Any other err is a server error
+                setErrorMessage('Network error')
+                setIsError(true)
+            }
+        }
+    }, [validateInputs, description, noLikes, noComments, datePosted, comments, photos, props, addSocialAccountPost, setTokenExpired]);
+
     log('render')
+
+    const handlePostDataDetected = useCallback(async (postData: DetectPostResponse) => {
+        log('setting the detected post data');
+        //RESET ALL THE ERRORS, PROPOSING NO ERROR EXISTS
+        setNoOfLikesErrorMessage('')
+        setNoOfLikesError(false)
+        setNoOfCommentsErrorMessage('')
+        setNoOfCommentsError(false)
+        setDateErrorMessage('')
+        setDateError(false)
+        setPhotosErrorMessage('')
+        setPhotosError(false)
+        setCommentsErrorMessage('')
+        setCommentsError(false)
+
+        if (postData.description || postData.comments.length > 0) {
+            setProfileToBeTranslated(true)
+            setProfileToBeSaved(false)
+        } else if (postData.post_photo || postData.no_comments || postData.no_likes || postData.date) {
+            setProfileToBeSaved(true)
+            setProfileToBeTranslated(false)
+        }
+
+        if (postData.post_photo) {
+            //if a photo exists, reset the photos list
+            const postPhoto: PostPhoto = {id: -1, photo_url: postData.post_photo}
+            setPhotosGeneratedId(-2)
+            setPhotos([postPhoto])
+            setPhotoIndex(0)
+        } else {
+            //set empty photos list
+            setPhotoIndex(0)
+            setPhotosGeneratedId(-1)
+            setPhotos([])
+        }
+
+        setDescription(postData.description ? postData.description : '')
+
+        if (postData.no_comments !== undefined && postData.no_comments !== -1) {
+            setNoComments(postData.no_comments)
+            setLockedComments(false);
+        } else {
+            setNoComments(-1)
+            setLockedComments(true);
+        }
+
+        if (postData.no_likes !== undefined && postData.no_likes != -1) {
+            setNoLikes(postData.no_likes)
+            setLockedLikes(false);
+        } else {
+            setNoLikes(-1)
+            setLockedLikes(true);
+        }
+
+        if (postData.date) {
+            // EXTRACT ONLY THE DATE WITHOUT TIME
+            const dateStr = postData.date.split('T')[0];
+            const localDate = new Date(dateStr);
+            setDatePosted(localDate);
+        } else
+            setDatePosted(new Date())
+
+        if (postData.comments.length > 0) {
+            setCommentsGeneratedId(-1);
+            setComments([]);
+
+            let tempId = -1;
+            const newComments = postData.comments.map(comm => {
+                const newComment = {id: tempId, comment: comm};
+                tempId--;
+                return newComment;
+            });
+
+            setComments(newComments);
+            setCommentsGeneratedId(tempId);
+        } else {
+            setCommentsGeneratedId(-1);
+            setComments([]);
+        }
+
+    }, [setComments, setCommentsGeneratedId, setDatePosted, setDescription, setNoComments, setNoLikes, setPhotoIndex, setPhotos, setPhotosGeneratedId, setProfileToBeSaved, setProfileToBeTranslated]);
 
 
     if (!props.isOpen) return null;
@@ -158,8 +345,7 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
         const reader = new FileReader();
         reader.onloadend = () => {
             const result = reader.result as string;
-            const base64 = result.split(',')[1]; // removes "data:image/...;base64,"
-            const postPhoto: PostPhoto = {id: photosGeneratedId, photo: base64}
+            const postPhoto: PostPhoto = {id: photosGeneratedId, photo_url: result}
             setPhotosGeneratedId(prevState => prevState - 1)
             setPhotos(prev => [postPhoto, ...prev])
             setPhotoIndex(0)
@@ -192,6 +378,8 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
             }
         }
     };
+
+
     const uploadButtonSection = (
         <div className='edit-post-popup-div-upload-image-options'>
             <input
@@ -256,7 +444,7 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
             <img src="/icons/lock.png" alt="lock_img"
                  className="edit-post-popup-lock-icon icon-size"/>
         </button>
-        {windowWidth>=700 && noOfLikesError &&
+        {windowWidth >= 700 && noOfLikesError &&
             <div className="edit-post-popup-error-messaage">{noOfLikesErrorMessage}</div>}
 
     </div>)
@@ -279,7 +467,7 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                        e.preventDefault();
                    }
                }}
-               placeholder={noComments == -1 ? 'private' : (windowWidth >= 1100 ? 'comments no' : 'comm no') }/>
+               placeholder={noComments == -1 ? 'private' : (windowWidth >= 1100 ? 'comments no' : 'comm no')}/>
         {windowWidth >= 1100 && 'comments'}
         <button
             className={`edit-post-popup-comment-button ${lockedComments ? 'edit-post-popup-lock-clicked' : ''}`}
@@ -298,7 +486,7 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
             <img src="/icons/lock.png" alt="lock_img"
                  className="edit-post-popup-lock-icon icon-size"/>
         </button>
-        {windowWidth>=700 && noOfCommentsError &&
+        {windowWidth >= 700 && noOfCommentsError &&
             <div className="edit-post-popup-error-messaage">{noOfCommentsErrorMessage}</div>}
 
     </div>)
@@ -325,10 +513,10 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                     }}
                 />
             </IonModal>
-            {windowWidth>=700 && dateError && <div className="edit-post-popup-error-messaage">{dateErrorMessage}</div>}
+            {windowWidth >= 700 && dateError &&
+                <div className="edit-post-popup-error-messaage">{dateErrorMessage}</div>}
         </div>
     </div>)
-    //TODO: DETECT FROM IMAGE
     return (
         <div className="edit-post-popup-container">
             <div className="edit-post-popup-content">
@@ -355,7 +543,7 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                             {photos.length != 0 &&
                                 <motion.img
                                     key={photoIndex} // This triggers re-animation when photoIndex changes
-                                    src={`data:image/jpeg;base64,${photos?.at(photoIndex)?.photo}`}
+                                    src={photos?.at(photoIndex)?.photo_url}
                                     alt="post_img"
                                     className="edit-post-popup-item-photo-image"
                                     initial={{x: 0, opacity: 0}}
@@ -393,7 +581,7 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                                          className="account-details-item-arrow-back-icon icon-size"/>
                                 </button>
                             }
-                            {photoIndex < photos.length - 1  &&
+                            {photoIndex < photos.length - 1 &&
                                 <button className="edit-post-popup-item-arrow-forward-button" onClick={() => {
                                     setPhotoIndex(prevState => prevState + 1);
                                 }}>
@@ -413,7 +601,8 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                         {windowWidth < 700 && dateError &&
                             <div className="edit-post-popup-error-messaage">{dateErrorMessage}</div>}
                     </div>
-                    <div className='edit-post-mobile-responsive-div' style={windowWidth > 1100 ? {display: 'none'} : {}}>
+                    <div className='edit-post-mobile-responsive-div'
+                         style={windowWidth > 1100 ? {display: 'none'} : {}}>
                         <div className='edit-post-popup-mobile-responsive-add-and-date-container'>
                             {windowWidth < 1100 && uploadButtonSection}
                             {windowWidth < 1100 && dateSection}
@@ -481,14 +670,14 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
 
                 <div className="edit-post-popup-bottom-bar">
                     <button className="edit-post-popup-delete-button roboto-style">
-                    <img src="/icons/delete.png" alt="delete_img"
+                        <img src="/icons/delete.png" alt="delete_img"
                              className="edit-post-popup-delete-icon icon-size"/>
                         {windowWidth >= 1100 && 'Delete Post'}
                     </button>
 
                     <div className='edit-post-popup-right-content'>
                         <button className="edit-post-popup-detect-from-image-button grey-button roboto-style"
-                                onClick={()=>{
+                                onClick={() => {
                                     setDetectFromImage(true)
                                 }}
                         >
@@ -510,10 +699,31 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
 
                 </div>
             </div>
-            {detectFromImage && <DetectFromImage forPost={true} forProfile={false} onCancel={() => {
+            {detectFromImage && <DetectFromImage onPostDetected={handlePostDataDetected}
+                                                 onProfileDetected={async () => {
+                                                 }}
+                                                 forPost={true} forProfile={false} onCancel={() => {
                 setDetectFromImage(false)
             }}/>
             }
+            {isOpenToastNotification &&
+                <IonToast
+                    isOpen={isOpenToastNotification}
+                    message={toastNotificationMessage}
+                    position="top"
+                    onDidDismiss={() => {
+                        setIsOpenToastNotification(false)
+                    }}
+                    duration={3000}/>
+            }
+            {(isLoading || isError) && <div className='edit-post-popups-container'>
+                <CirclesLoading isOpen={isLoading} message={'Loading'}/>
+                <CustomInfoAlert isOpen={isError} header={"Error Detecting Data"}
+                                 error={true}
+                                 message={errorMessage} onDismiss={() => {
+                    setIsError(false)
+                }}/>
+            </div>}
         </div>
     );
 };

@@ -14,10 +14,21 @@
     display: flex;
     flex-direction: row;
 }
+.account-details-account-deleted-another-device{
+    width: 100vw;
+    height: 100vh;
+    color: red;
+    font-size: var(--font-sm);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
 .account-details-content-posts-container {
     width: 40%;
     height: 100vh;
+    border-right: 0.03rem solid rgb(255, 255, 255, 0.4);
     /*border: 1px solid white;*/
 }
 
@@ -205,4 +216,52 @@
         display: none;
     }
 }
+.account-details-circles-loading-content{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 
+    align-self: center;
+    justify-self: center;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    padding: 1rem 1rem;
+    border-radius: 0.3rem;
+    font-size: var(--font-sm);
+}
+.account-details-fetching-error-message{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    align-self: center;
+    justify-self: center;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    padding: 1rem 1rem;
+    border-radius: 0.3rem;
+    font-size: var(--font-sm);
+    color: red;
+}
+
+.account-details-content-posts-container-no-posts-container{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.account-details-popups-container{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10001;
+}

@@ -14,7 +14,7 @@ const InstaIconsBar: React.FC = () => {
             <img src="/images/insta_icons_bar/save-instagram.png" alt="image9" className="insta-icons-bar-icon"/>
             <img src="/images/insta_icons_bar/instagram-stories.png" alt="image6" className="insta-icons-bar-icon"/>
             <img src="/images/insta_icons_bar/profile.png" alt="image8" className="insta-icons-bar-icon"/>
-            <img src="/images/insta_icons_bar/verified%20(1).png" alt="image11" className="insta-icons-bar-icon"/>
+            {/*<img src="/images/insta_icons_bar/verified%20(1).png" alt="image11" className="insta-icons-bar-icon"/>*/}
         </div>
     );
 };

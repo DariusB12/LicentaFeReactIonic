@@ -1,49 +1,73 @@
 import {getLogger} from "../../assets";
 import {RouteComponentProps} from "react-router";
-import React, {useState} from "react";
-import {IonPage} from "@ionic/react";
+import React, {useCallback, useContext, useState} from "react";
+import {IonPage, IonSpinner, IonToast} from "@ionic/react";
 import './ViewAllAccounts.css'
 import VerticalMenu from "../../components/VerticalMenu/VerticalMenu";
-import {AccountDTO} from "../../assets/entities/AccountDTO";
 import ViewAllAccountsList from "../../components/ViewAllAccountsList/ViewAllAccountsList";
+import {SocialAccountsContext} from "../../providers/SocialAccountsProvider/SocialAccountsContext";
+import {AuthContext} from "../../providers/AuthProvider/AuthContext";
+import CirclesLoading from "../../components/CirclesLoading/CirclesLoading";
+import CustomInfoAlert from "../../components/CustomInfoAlert/CustomInfoAlert";
 
-const mockDataAccount: AccountDTO[] = [
-    {id: 1, username: 'darius', profile_photo: undefined,no_followers:2000000,no_following:5,no_of_posts:12,analysed:true},
-    {id: 2, username: 'alex', profile_photo: undefined,no_followers:2,no_following:649777,no_of_posts:1230,analysed:true},
-    {id: 3, username: 'marian', profile_photo: undefined,no_followers:649777,no_following:649777,no_of_posts:649777,analysed:false},
-    {id: 4, username: 'ionut', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:false},
-    {id: 5, username: 'andrei', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:false},
-    {id: 6, username: 'elena', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:false},
-    {id: 7, username: 'simona', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:true},
-    {id: 8, username: 'george', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:true},
-    {id: 9, username: 'mihai', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:true},
-    {id: 10, username: 'claudia', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:false},
-    {id: 11, username: 'vlad', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:false},
-    {id: 12, username: 'andreea', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:true},
-    {id: 13, username: 'daniel', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:true},
-    {id: 14, username: 'roberta', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:true},
-    {id: 15, username: 'ion', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:true},
-    {id: 16, username: 'carmen', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:true},
-    {id: 17, username: 'mihai', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:false},
-    {id: 18, username: 'claudia', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:true},
-    {id: 19, username: 'vlad', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:true},
-    {id: 20, username: 'andreea', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:false},
-    {id: 21, username: 'daniel', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:true},
-    {id: 22, username: 'roberta', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:false},
-    {id: 23, username: 'ion', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:true},
-    {id: 24, username: 'carmen', profile_photo: undefined,no_followers:2,no_following:5,no_of_posts:12,analysed:true}
-
-]
 
 const log = getLogger('ViewAllAccounts');
 
 export const ViewAllAccounts: React.FC<RouteComponentProps> = ({history}) => {
     log('render')
     const [searchValue, setSearchValue] = useState('');
+    const {fetching,fetchingError,socialAccounts} = useContext(SocialAccountsContext)
 
-    const filteredAccounts = mockDataAccount.filter(account =>
+    const {deleteSocialAccount} = useContext(SocialAccountsContext)
+    const {setTokenExpired} = useContext(AuthContext)
+
+    const [isOpenToastNotification, setIsOpenToastNotification] = useState<boolean>(false)
+    const [toastNotificationMessage, setToastNotificationMessage] = useState<string>('');
+
+    const [isError, setIsError] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+
+    const handleOnClickDeleteProfile = useCallback(async (account_id:number) => {
+        log('trying to delete social account');
+
+        // SET TOAST NOTIFY TO FALSE
+        // AND SLEEP SO THAT THE TOAST TIMEOUT IS RESET (IF OPENING MORE TOAST ONE AFTER ANOTHER FORCE TO RERENDER)
+        setIsOpenToastNotification(false)
+        await new Promise(resolve => setTimeout(resolve, 5))
+
+        setIsLoading(true)
+
+        const response = await deleteSocialAccount?.(account_id);
+        setIsLoading(false)
+
+        //200 OK data detected
+        if (response?.status_code == 200) {
+            setIsOpenToastNotification(true)
+            setToastNotificationMessage('Deleted successfully')
+        } else if (response?.status_code == 403) {
+            //403 FORBIDDEN if the token is expired
+            setTokenExpired?.(true)
+        } else {
+            //Any other err is a server error/system error
+            setErrorMessage('Network error')
+            setIsError(true)
+        }
+
+    }, [deleteSocialAccount, setTokenExpired]);
+
+
+    const filteredAccounts = socialAccounts.filter(account =>
         account.username.toLowerCase().includes(searchValue.toLowerCase())
     );
+
+    const handleOnClickAccount = useCallback(async (account_id:number) => {
+        log(`redirecting to /accountDetails/${account_id} page`)
+        if (history.location.pathname !== `/accountDetails/${account_id}`) {
+            history.push(`/accountDetails/${account_id}`);
+        }
+    }, [history]);
 
     return (
         <IonPage className="view-all-accounts-main-container">
@@ -56,9 +80,44 @@ export const ViewAllAccounts: React.FC<RouteComponentProps> = ({history}) => {
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}
                     />
-                    <ViewAllAccountsList accounts={filteredAccounts}/>
+                    {!fetching && !fetchingError && <ViewAllAccountsList accounts={filteredAccounts} onClickDelete={handleOnClickDeleteProfile} onClick={handleOnClickAccount}/>}
+
+                    {fetching &&
+                        <div className="view-all-accounts-list-container">
+                            <div className="view-all-accounts-circles-loading-content">
+                                <IonSpinner name="circles" color="secondary"></IonSpinner>
+                                <div className="roboto-style">Loading...</div>
+                            </div>
+                        </div>
+                    }
+
+                    {fetchingError &&
+                        <div className="view-all-accounts-list-container">
+                            <div className="view-all-accounts-list-fetching-error-message roboto-style">Couldn't load the list</div>
+                        </div>
+                    }
                 </div>
             </div>
+            {isOpenToastNotification &&
+                <IonToast
+                    isOpen={isOpenToastNotification}
+                    message={toastNotificationMessage}
+                    position="top"
+                    onDidDismiss={() => {
+                        setIsOpenToastNotification(false)
+                    }}
+                    duration={3000}/>
+            }
+
+            {(isLoading || isError) && <div className='view-all-accounts-popups-container'>
+                <CirclesLoading isOpen={isLoading} message={'Loading'}/>
+                <CustomInfoAlert isOpen={isError} header={"Error"}
+                                 error={true}
+                                 message={errorMessage} onDismiss={() => {
+                    setIsError(false)
+                }}/>
+            </div>}
+
         </IonPage>
 
     )

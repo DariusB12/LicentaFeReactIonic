@@ -5,12 +5,22 @@ import {getLogger} from "../../assets";
 import axios from "axios";
 
 import {AuthContext} from "../AuthProvider/AuthContext";
-import {AddSocialAccountPostFn, SocialAccountPostsContext} from "./SocialAccountPostsContext";
+import {
+    AddSocialAccountPostFn,
+    DeleteSocialAccountPostFn,
+    SocialAccountPostsContext
+} from "./SocialAccountPostsContext";
 import {AddSocialAccountPostReq} from "../../assets/Requests/socialAccountPostReq/AddSocialAccountPostReq";
 import {
     AddSocialAccountPostResponse
 } from "../../assets/Responses/socialAccountPostResponse/AddSocialAccountPostResponse";
-import {addSocialAccountPostApi} from "../../services/socialAccountPosts/socialAccountPostsApi";
+import {
+    addSocialAccountPostApi,
+    deleteSocialAccountPostApi
+} from "../../services/socialAccountPosts/socialAccountPostsApi";
+import {
+    DeleteSocialAccountPostResponse
+} from "../../assets/Responses/socialAccountPostResponse/DeleteSocialAccountPostResponse";
 
 const log = getLogger('SocialAccountPostsProvider');
 
@@ -23,9 +33,11 @@ export const SocialAccountPostsProvider: React.FC<SocialAccountPostsProviderProp
 
     //FUNCTIONS
     const addSocialAccountPost = useCallback<AddSocialAccountPostFn>(addPostCallback, [token])
+    const deleteSocialAccountPost = useCallback<DeleteSocialAccountPostFn>(deletePostCallback, [token])
 
     const value = {
         addSocialAccountPost,
+        deleteSocialAccountPost
     };
     log('render');
     return <SocialAccountPostsContext.Provider value={value}>{children}</SocialAccountPostsContext.Provider>
@@ -50,4 +62,22 @@ export const SocialAccountPostsProvider: React.FC<SocialAccountPostsProviderProp
         }
     }
 
+    async function deletePostCallback(post_id:number): Promise<DeleteSocialAccountPostResponse> {
+        log('trying to delete post');
+        try {
+            const response = await deleteSocialAccountPostApi(post_id, token); // Await the response directly
+            log('post deleted with success:', response);
+            return response;
+        } catch (error) {
+            //AXIOS ERROR IF SERVER RESPONDED WITH A REQUEST DIFFERENT THAN 200OK
+            if (axios.isAxiosError(error)) {
+                log('delete post error:', error.response?.data.message);
+                return {message:error.response?.data.message, status_code:error.response?.data.status_code}
+            } else {
+                log('delete post error:', 'SERVER ERROR');
+                //OTHERWISE IT IS A SERVER CRASH OR CONNECTION ERROR
+                return {message:'Server Error', status_code:500}
+            }
+        }
+    }
 };

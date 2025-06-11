@@ -207,6 +207,7 @@ const DetectFromImage: React.FC<DetectFromImageProps> = ({forPost, forProfile, o
             {(isDetecting || detectionErr) && <div className='detect-from-image-popups-container'>
                 <CirclesLoading isOpen={isDetecting} message={'Detecting'}/>
                 <CustomInfoAlert isOpen={detectionErr} header={"Error Detecting Data"}
+                                 error={true}
                                  message={detectionErrMessage} onDismiss={() => {
                     setDetectionErr(false)
                     onCancel()

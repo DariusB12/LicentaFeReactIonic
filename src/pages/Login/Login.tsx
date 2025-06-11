@@ -115,6 +115,7 @@ export const Login: React.FC<RouteComponentProps> = ({history}) => {
                 message="Login..."
             />
             <CustomInfoAlert
+                error={true}
                 isOpen={showAlert}
                 // isOpen={true}
                 header={"Login Failed"}

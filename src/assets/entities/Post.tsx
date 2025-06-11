@@ -3,10 +3,11 @@ import {PostComment} from "./PostComment";
 
 export interface Post {
     id: number,
-    photos: PostPhoto[],
     description: string,
     no_likes: number,
     no_comments: number,
+    date_posted: Date,
+
     comments: PostComment[],
-    date_posted: Date
+    photos: PostPhoto[],
 }

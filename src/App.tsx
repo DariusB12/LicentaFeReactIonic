@@ -42,6 +42,8 @@ import {YoloDetectionProvider} from "./providers/YoloDetectionProvider/YoloDetec
 import {NllbTranslationProvider} from "./providers/NllbTranslationProvider/NllbTranslationProvider";
 import {SocialAccountsProvider} from "./providers/SocialAccountsProvider/SocialAccountsProvider";
 import {SocialAccountPostsProvider} from "./providers/SocialAccountPostsProvider/SocialAccountPostsProvider";
+import {WebSocketProvider} from "./providers/WebsocketProvider/WebsocketProvider";
+import {AccountDetailsProvider} from "./providers/AccountDetailsProvider/AccountDetailsProvider";
 
 
 setupIonicReact();
@@ -60,16 +62,24 @@ const App: React.FC = () => (
                         <Route path="/login" component={Login} exact={true}/>
                         <Route path="/register" component={Register} exact={true}/>
 
+
                         <YoloDetectionProvider>
                             <NllbTranslationProvider>
                                 <SocialAccountsProvider>
                                     <SocialAccountPostsProvider>
-                                    <PrivateRoute path="/about" component={About} exact={true}/>
-                                    <PrivateRoute path="/viewAllAccounts" component={ViewAllAccounts} exact={true}/>
-                                    <PrivateRoute path="/accountDetails/:id" component={AccountDetails} exact={true}/>
-                                    <PrivateRoute path="/addAccount" component={AddAccountWizard} exact={true}/>
+                                        <AccountDetailsProvider>
+                                            <WebSocketProvider>
+                                                <PrivateRoute path="/about" component={About} exact={true}/>
+                                                <PrivateRoute path="/viewAllAccounts" component={ViewAllAccounts}
+                                                              exact={true}/>
+                                                <PrivateRoute path="/accountDetails/:id" component={AccountDetails}
+                                                              exact={true}/>
+                                                <PrivateRoute path="/addAccount" component={AddAccountWizard}
+                                                              exact={true}/>
 
-                                    <Route exact path="/" render={() => <Redirect to="/about"/>}/>
+                                                <Route exact path="/" render={() => <Redirect to="/about"/>}/>
+                                            </WebSocketProvider>
+                                        </AccountDetailsProvider>
                                     </SocialAccountPostsProvider>
                                 </SocialAccountsProvider>
                             </NllbTranslationProvider>

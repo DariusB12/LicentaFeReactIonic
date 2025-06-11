@@ -146,6 +146,7 @@ export const Register: React.FC<RouteComponentProps> = ({history}) => {
             <CustomInfoAlert
                 isOpen={showAlert}
                 // isOpen={true}
+                error={true}
                 header={"Register Failed"}
                 message={errorMessage}
                 onDismiss={() => {
@@ -156,6 +157,7 @@ export const Register: React.FC<RouteComponentProps> = ({history}) => {
             <CustomInfoAlert
                 isOpen={showAlertSuccessRegister}
                 // isOpen={true}
+                error={false}
                 header={"Registered Successfully"}
                 message={"Your account has been created"}
                 onDismiss={() => {

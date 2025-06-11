@@ -240,3 +240,24 @@
         height: 100vh;
     }
 }
+
+.vertical-menu-list-container{
+    display: flex;
+    flex-direction: column;
+    width: 13.5rem;
+    height: 100vh;
+    margin-right: 0.3rem;
+    justify-content: center;
+    align-items: center;
+}
+.vertical-menu-circles-loading-content{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+ }
+
+.vertical-menu-list-fetching-error-message{
+    font-size: var(--font-sm);
+    color: red;
+}

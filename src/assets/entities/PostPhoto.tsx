@@ -1,5 +1,5 @@
 
 export interface PostPhoto {
     id: number,
-    photo: string
+    photo_url?: string
 }

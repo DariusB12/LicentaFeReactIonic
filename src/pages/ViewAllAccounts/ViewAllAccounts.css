@@ -34,3 +34,24 @@
         width: 85vw;
     }
 }
+
+.view-all-accounts-list-container{
+    display: flex;
+    flex-direction: column;
+    width: 70vw;
+    height: 100vh;
+    margin-right: 0.3rem;
+
+    justify-content: center;
+    align-items: center;
+}
+.view-all-accounts-circles-loading-content{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.view-all-accounts-list-fetching-error-message{
+    font-size: var(--font-sm);
+    color: red;
+}

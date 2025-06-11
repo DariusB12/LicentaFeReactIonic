@@ -281,7 +281,6 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
     }, [resetProfileForm]);
 
 
-    //TODO: LA ADAUGARE DACA NU E INCARCATA NICIO IMAGINE DE PROFIL ATUNCI SE VA TRIMITE LA SERVER IMAGINEA ANONIMA, NU ARE VOIE SA FIE NULL
     return (
         <div className="add-account-screen-content">
             <div className='add-account-screen-title roboto-style'>Add profile data</div>
@@ -478,6 +477,7 @@ const AddAccountScreen: React.FC<EditProfilePopUpProps> = (props) => {
             {(isLoading || isError) && <div className='add-account-popups-container'>
                 <CirclesLoading isOpen={isLoading} message={'loading'}/>
                 <CustomInfoAlert isOpen={isError} header={"Error Adding Profile"}
+                                 error={true}
                                  message={errorMessage} onDismiss={() => {
                     setIsError(false)
                 }}/>

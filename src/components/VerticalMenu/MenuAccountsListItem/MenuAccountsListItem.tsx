@@ -1,19 +1,21 @@
 import React from 'react';
 import {IonItem} from "@ionic/react";
 import './MenuAccountsListItem.css'
-import {AccountDTO} from "../../../assets/entities/AccountDTO";
+import {SocialAccountDTOUrl} from "../../../assets/entities/SocialAccountDTOUrl";
 
 interface MenuAccountsListItemProps {
-    account: AccountDTO;
+    account: SocialAccountDTOUrl;
+    onClick: (account_id:number) => void
 }
 
-const MenuAccountsListItem: React.FC<MenuAccountsListItemProps> = ({account}) => {
+const MenuAccountsListItem: React.FC<MenuAccountsListItemProps> = ({account, onClick}) => {
+
     return (
-        <IonItem className="unstyled-ion-item roboto-style">
+        <IonItem className="unstyled-ion-item roboto-style" onClick={()=>onClick(account.id)}>
             <div className="accounts-list-item-container">
-                {account.profile_photo ?
+                {account.profile_photo_url ?
                     <img
-                        src={`data:image/jpeg;base64,${account.profile_photo}`}
+                        src={account.profile_photo_url}
                         alt="profile_img"
                         className="accounts-list-item-profile-image"
                     /> :
