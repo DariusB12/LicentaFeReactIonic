@@ -16,6 +16,7 @@ import {NllbTranslationContext} from "../../../providers/NllbTranslationProvider
 import {AuthContext} from "../../../providers/AuthProvider/AuthContext";
 import {AddSocialAccountPostReq} from "../../../assets/Requests/socialAccountPostReq/AddSocialAccountPostReq";
 import {SocialAccountPostsContext} from "../../../providers/SocialAccountPostsProvider/SocialAccountPostsContext";
+import {UpdateSocialAccountPostReq} from "../../../assets/Requests/socialAccountPostReq/UpdateSocialAccountPostReq";
 
 interface EditPostPopUpProps {
     isOpen: boolean,
@@ -192,7 +193,7 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
 
     }, [noLikes, noComments, datePosted, photos, comments]);
 
-    const {addSocialAccountPost} = useContext(SocialAccountPostsContext)
+    const {addSocialAccountPost, updateSocialAccountPost} = useContext(SocialAccountPostsContext)
 
     const handleSaveOnClick = useCallback(async () => {
         log('save post');
@@ -214,20 +215,41 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                 social_account_id: props.idProfile
             }
 
+            const toUpdatePostRequest: UpdateSocialAccountPostReq = {
+                id: props.idPost ? props.idPost : -1,
+                description: description,
+                no_likes: noLikes ? noLikes : -1,
+                no_comments: noComments ? noComments : -1,
+                date_posted: datePosted ? datePosted.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+
+                comments: comments.map((comment) => {
+                    return {
+                        id: comment.id,
+                        comment: comment.comment
+                    }
+                }),
+                photos: photos.filter(photo => photo.photo_url != undefined).map((photo) => {
+                    return {
+                        id: photo.id,
+                        photo_url: photo.photo_url
+                    } as {id:number,photo_url:string}
+                })
+            }
+
             log('add/update post for account with id:', props.idProfile)
 
             //IF INPUTS ARE VALID, THEN ADD/UPDATE THE POST
             setIsLoading(true)
-            const response = props.forAdd ? await addSocialAccountPost?.(toAddPostRequest) : await updateSocialAccountPost?.(toAddPostRequest)
+            const response = props.forAdd ? await addSocialAccountPost?.(toAddPostRequest) : await updateSocialAccountPost?.(toUpdatePostRequest)
             setIsLoading(false)
 
             //200 OK data detected
             if (response?.status_code == 200) {
-                if(props.forAdd){
-                    log('post added')
+                if (props.forAdd) {
+                    log('post added successfully')
                     props.addedSuccessfully()
-                }else{
-                    log('post updated')
+                } else {
+                    log('post updated successfully')
                     props.editedSuccessfully()
                 }
             } else if (response?.status_code == 422) {

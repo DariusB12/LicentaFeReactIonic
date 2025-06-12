@@ -8,15 +8,19 @@ import {SocialAccountDTO} from "../../assets/Responses/userResponses/SocialAccou
 import {AccountDetailsContext} from "../AccountDetailsProvider/AccountDetailsContext";
 import {UpdateSocialAccountNotify} from "../../assets/WebsocketNotifications/UpdateSocialAccountNotify";
 import {AddedPostNotify} from "../../assets/WebsocketNotifications/AddedPostNotify";
+import {UpdatedPostNotify} from "../../assets/WebsocketNotifications/UpdatedPostNotify";
 
 
 type WebSocketMessage =
     | { type: 'USER_ACCOUNT_DELETED'; payload: null }
+
     | { type: 'PROFILE_DELETED'; payload: number }
     | { type: 'PROFILE_ADDED'; payload: SocialAccountDTO }
     | {type: 'PROFILE_EDITED'; payload: UpdateSocialAccountNotify }
+
     | {type: 'POST_DELETED'; payload: number}
     | {type: 'POST_ADDED'; payload: AddedPostNotify}
+    | {type: 'POST_EDITED'; payload: UpdatedPostNotify}
 
 // IF USER CONNECTED ON MORE DISPOSITIVE, THEN THE DATA SHOULD BE UPDATED WITHIN THE WEBSOCKET
 // SO THAT ON THE OTHER DISPOSITIVE THE DATA IS UPDATED
@@ -46,7 +50,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({children}) 
     const maxRetries = 5;
 
     const {fetchSocialAccounts,notifySocialAccountDeleted,notifySocialAccountAdded,notifySocialAccountEdited} = useContext(SocialAccountsContext)
-    const {reFetchSocialAccount,notifyAccountDetailsDelete,notifyAccountDetailsEdited,notifyAccountDetailsPostDeleted,notifyAccountDetailsPostAdded} = useContext(AccountDetailsContext)
+    const {reFetchSocialAccount,notifyAccountDetailsDelete,notifyAccountDetailsEdited,notifyAccountDetailsPostDeleted,notifyAccountDetailsPostAdded,notifyAccountDetailsPostEdited} = useContext(AccountDetailsContext)
     const {setTokenExpired} = useContext(AuthContext);
 
     const messageQueue = useRef<WebSocketMessage[]>([]);
@@ -89,7 +93,10 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({children}) 
         else if(type == POST_ADDED){
             await notifyAccountDetailsPostAdded?.(payload)
         }
-    }, [notifyAccountDetailsPostAdded,notifySocialAccountDeleted, notifyAccountDetailsDelete, notifySocialAccountAdded, notifySocialAccountEdited, notifyAccountDetailsEdited, notifyAccountDetailsPostDeleted]); // Dependency array
+        else if(type == POST_EDITED){
+            await notifyAccountDetailsPostEdited?.(payload)
+        }
+    }, [notifyAccountDetailsPostEdited,notifyAccountDetailsPostAdded,notifySocialAccountDeleted, notifyAccountDetailsDelete, notifySocialAccountAdded, notifySocialAccountEdited, notifyAccountDetailsEdited, notifyAccountDetailsPostDeleted]); // Dependency array
 
 
     const processQueue = useCallback(async () => {

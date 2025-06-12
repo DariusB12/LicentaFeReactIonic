@@ -8,7 +8,7 @@ import {AuthContext} from "../AuthProvider/AuthContext";
 import {
     AddSocialAccountPostFn,
     DeleteSocialAccountPostFn,
-    SocialAccountPostsContext
+    SocialAccountPostsContext, UpdateSocialAccountPostFn
 } from "./SocialAccountPostsContext";
 import {AddSocialAccountPostReq} from "../../assets/Requests/socialAccountPostReq/AddSocialAccountPostReq";
 import {
@@ -16,11 +16,15 @@ import {
 } from "../../assets/Responses/socialAccountPostResponse/AddSocialAccountPostResponse";
 import {
     addSocialAccountPostApi,
-    deleteSocialAccountPostApi
+    deleteSocialAccountPostApi, updateSocialAccountPostApi
 } from "../../services/socialAccountPosts/socialAccountPostsApi";
 import {
     DeleteSocialAccountPostResponse
 } from "../../assets/Responses/socialAccountPostResponse/DeleteSocialAccountPostResponse";
+import {UpdateSocialAccountPostReq} from "../../assets/Requests/socialAccountPostReq/UpdateSocialAccountPostReq";
+import {
+    UpdateSocialAccountPostResponse
+} from "../../assets/Responses/socialAccountPostResponse/UpdateSocialAccountPostResponse";
 
 const log = getLogger('SocialAccountPostsProvider');
 
@@ -34,16 +38,19 @@ export const SocialAccountPostsProvider: React.FC<SocialAccountPostsProviderProp
     //FUNCTIONS
     const addSocialAccountPost = useCallback<AddSocialAccountPostFn>(addPostCallback, [token])
     const deleteSocialAccountPost = useCallback<DeleteSocialAccountPostFn>(deletePostCallback, [token])
+    const updateSocialAccountPost = useCallback<UpdateSocialAccountPostFn>(updateSocialAccountPostCallback, [token])
+
 
     const value = {
         addSocialAccountPost,
-        deleteSocialAccountPost
+        deleteSocialAccountPost,
+        updateSocialAccountPost,
     };
     log('render');
     return <SocialAccountPostsContext.Provider value={value}>{children}</SocialAccountPostsContext.Provider>
 
 
-    async function addPostCallback(post:AddSocialAccountPostReq): Promise<AddSocialAccountPostResponse> {
+    async function addPostCallback(post: AddSocialAccountPostReq): Promise<AddSocialAccountPostResponse> {
         log('trying to add post');
         try {
             const response = await addSocialAccountPostApi(post, token); // Await the response directly
@@ -53,16 +60,35 @@ export const SocialAccountPostsProvider: React.FC<SocialAccountPostsProviderProp
             //AXIOS ERROR IF SERVER RESPONDED WITH A REQUEST DIFFERENT THAN 200OK
             if (axios.isAxiosError(error)) {
                 log('add post error:', error.response?.data.message);
-                return {message:error.response?.data.message, status_code:error.response?.data.status_code}
+                return {message: error.response?.data.message, status_code: error.response?.data.status_code}
             } else {
                 log('add post error:', 'SERVER ERROR');
                 //OTHERWISE IT IS A SERVER CRASH OR CONNECTION ERROR
-                return {message:'Server Error', status_code:500}
+                return {message: 'Server Error', status_code: 500}
             }
         }
     }
 
-    async function deletePostCallback(post_id:number): Promise<DeleteSocialAccountPostResponse> {
+    async function updateSocialAccountPostCallback(postToUpdate: UpdateSocialAccountPostReq): Promise<UpdateSocialAccountPostResponse> {
+        log('trying to update post');
+        try {
+            const response = await updateSocialAccountPostApi(postToUpdate, token); // Await the response directly
+            log('post added with success:', response);
+            return response;
+        } catch (error) {
+            //AXIOS ERROR IF SERVER RESPONDED WITH A REQUEST DIFFERENT THAN 200OK
+            if (axios.isAxiosError(error)) {
+                log('add post error:', error.response?.data.message);
+                return {message: error.response?.data.message, status_code: error.response?.data.status_code}
+            } else {
+                log('add post error:', 'SERVER ERROR');
+                //OTHERWISE IT IS A SERVER CRASH OR CONNECTION ERROR
+                return {message: 'Server Error', status_code: 500}
+            }
+        }
+    }
+
+    async function deletePostCallback(post_id: number): Promise<DeleteSocialAccountPostResponse> {
         log('trying to delete post');
         try {
             const response = await deleteSocialAccountPostApi(post_id, token); // Await the response directly
@@ -72,11 +98,11 @@ export const SocialAccountPostsProvider: React.FC<SocialAccountPostsProviderProp
             //AXIOS ERROR IF SERVER RESPONDED WITH A REQUEST DIFFERENT THAN 200OK
             if (axios.isAxiosError(error)) {
                 log('delete post error:', error.response?.data.message);
-                return {message:error.response?.data.message, status_code:error.response?.data.status_code}
+                return {message: error.response?.data.message, status_code: error.response?.data.status_code}
             } else {
                 log('delete post error:', 'SERVER ERROR');
                 //OTHERWISE IT IS A SERVER CRASH OR CONNECTION ERROR
-                return {message:'Server Error', status_code:500}
+                return {message: 'Server Error', status_code: 500}
             }
         }
     }

@@ -7,6 +7,10 @@ import {
 import {
     DeleteSocialAccountPostResponse
 } from "../../assets/Responses/socialAccountPostResponse/DeleteSocialAccountPostResponse";
+import {UpdateSocialAccountPostReq} from "../../assets/Requests/socialAccountPostReq/UpdateSocialAccountPostReq";
+import {
+    UpdateSocialAccountPostResponse
+} from "../../assets/Responses/socialAccountPostResponse/UpdateSocialAccountPostResponse";
 
 const socialAccountPostsApiUrl = `http://${baseUrl}/posts`;
 
@@ -22,5 +26,12 @@ export const deleteSocialAccountPostApi = (post_id:number,  token: string | null
     return withLogs(
         axios.delete(`${socialAccountPostsApiUrl}/${post_id}`, configToken(token)),
         'deleteSocialAccountPostApi'
+    );
+};
+
+export const updateSocialAccountPostApi = (postToUpdate:UpdateSocialAccountPostReq,  token: string | null): Promise<UpdateSocialAccountPostResponse> => {
+    return withLogs(
+        axios.put(`${socialAccountPostsApiUrl}/update`, postToUpdate, configToken(token)),
+        'updateSocialAccountPostApi'
     );
 };

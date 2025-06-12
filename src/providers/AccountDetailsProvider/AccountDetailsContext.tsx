@@ -2,14 +2,17 @@ import React from "react";
 import {SocialAccount} from "../../assets/entities/SocialAccount";
 import {UpdateSocialAccountNotify} from "../../assets/WebsocketNotifications/UpdateSocialAccountNotify";
 import {AddedPostNotify} from "../../assets/WebsocketNotifications/AddedPostNotify";
+import {UpdatedPostNotify} from "../../assets/WebsocketNotifications/UpdatedPostNotify";
 
 export type FetchSocialAccountFn = (socialAccountId:number) => void;
 export type ReFetchSocialAccountFn = () => void;
 
 export type NotifyAccountDetailsDeleteFn = (socialAccountId:number) => Promise<void>;
 export type NotifyAccountDetailsEditedFn = (socialAccountEdited:UpdateSocialAccountNotify) => Promise<void>;
+
 export type NotifyAccountDetailsPostDeletedFn = (postId:number) => Promise<void>;
 export type NotifyAccountDetailsPostAddedFn = (postAdded:AddedPostNotify) => Promise<void>;
+export type NotifyAccountDetailsPostEditedFn = (postEdited:UpdatedPostNotify) => Promise<void>;
 
 
 export interface AccountDetailsState {
@@ -18,8 +21,10 @@ export interface AccountDetailsState {
 
     notifyAccountDetailsDelete?:NotifyAccountDetailsDeleteFn
     notifyAccountDetailsEdited?:NotifyAccountDetailsEditedFn
+
     notifyAccountDetailsPostDeleted?: NotifyAccountDetailsPostDeletedFn
     notifyAccountDetailsPostAdded?: NotifyAccountDetailsPostAddedFn
+    notifyAccountDetailsPostEdited?: NotifyAccountDetailsPostEditedFn
 
     socialAccount?: SocialAccount
     fetching:boolean

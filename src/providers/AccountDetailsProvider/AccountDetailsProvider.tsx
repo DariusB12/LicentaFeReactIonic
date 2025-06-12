@@ -14,7 +14,7 @@ import {
     NotifyAccountDetailsDeleteFn,
     NotifyAccountDetailsEditedFn,
     NotifyAccountDetailsPostAddedFn,
-    NotifyAccountDetailsPostDeletedFn,
+    NotifyAccountDetailsPostDeletedFn, NotifyAccountDetailsPostEditedFn,
     ReFetchSocialAccountFn,
 } from "./AccountDetailsContext";
 import {getSocialAccountApi} from "../../services/socialAccounts/socialAccountsApi";
@@ -26,6 +26,7 @@ import {PostPhoto} from "../../assets/entities/PostPhoto";
 import {PostComment} from "../../assets/entities/PostComment";
 import {UpdateSocialAccountNotify} from "../../assets/WebsocketNotifications/UpdateSocialAccountNotify";
 import {AddedPostNotify} from "../../assets/WebsocketNotifications/AddedPostNotify";
+import {UpdatedPostNotify} from "../../assets/WebsocketNotifications/UpdatedPostNotify";
 
 
 const log = getLogger('AccountDetailsProvider');
@@ -49,7 +50,7 @@ const UPDATE_SOCIAL_ACCOUNT_EDITED = 'UPDATE_SOCIAL_ACCOUNT_EDITED';
 
 const UPDATE_SOCIAL_ACCOUNT_POST_DELETED = 'UPDATE_SOCIAL_ACCOUNT_POST_DELETED';
 const UPDATE_SOCIAL_ACCOUNT_POST_ADDED = 'UPDATE_SOCIAL_ACCOUNT_POST_ADDED';
-
+const UPDATE_SOCIAL_ACCOUNT_POST_EDITED = 'UPDATE_SOCIAL_ACCOUNT_POST_EDITED'
 
 const reducer: (state: AccountDetailsState, action: ActionProps) => AccountDetailsState =
     (state, action) => {
@@ -118,6 +119,31 @@ const reducer: (state: AccountDetailsState, action: ActionProps) => AccountDetai
                             modified: true
                         }
                     }
+                }
+                return {...state}
+            }
+            case UPDATE_SOCIAL_ACCOUNT_POST_EDITED: {
+                const postExists = state.socialAccount?.posts.some(post => post.id === action.post?.id);
+
+                if (!postExists || !action.post ) {
+                    return {...state};
+                }
+
+                let updatedPosts = state.socialAccount?.posts
+                    .filter(post => post.id !== action.post?.id)
+
+                if(!updatedPosts)
+                    updatedPosts = []
+
+                if(state.socialAccount) {
+                    return {
+                        ...state,
+                        socialAccount: {
+                            ...state.socialAccount,
+                            posts: [...updatedPosts, action.post],
+                            modified: true
+                        }
+                    };
                 }
                 return {...state}
             }
@@ -248,9 +274,10 @@ export const AccountDetailsProvider: React.FC<SocialAccountsProviderProps> = ({c
     //functions for websocket update notifications
     const notifyAccountDetailsDelete = useCallback<NotifyAccountDetailsDeleteFn>(notifyAccountDetailsDeleteCallback, [])
     const notifyAccountDetailsEdited = useCallback<NotifyAccountDetailsEditedFn>(notifyAccountDetailsEditedCallback, [token])
+
     const notifyAccountDetailsPostDeleted = useCallback<NotifyAccountDetailsPostDeletedFn>(notifyAccountDetailsPostDeletedCallback, [])
     const notifyAccountDetailsPostAdded = useCallback<NotifyAccountDetailsPostAddedFn>(notifyAccountDetailsPostAddedCallback, [token])
-
+    const notifyAccountDetailsPostEdited = useCallback<NotifyAccountDetailsPostEditedFn>(notifyAccountDetailsPostEditedCallback, [token])
 
     useEffect(() => {
         //RESET THE ACCOUNT ID WHEN UNMOUNTING THE COMPONENT
@@ -274,6 +301,7 @@ export const AccountDetailsProvider: React.FC<SocialAccountsProviderProps> = ({c
         notifyAccountDetailsEdited,
         notifyAccountDetailsPostDeleted,
         notifyAccountDetailsPostAdded,
+        notifyAccountDetailsPostEdited,
     };
     log('render');
 
@@ -427,5 +455,40 @@ export const AccountDetailsProvider: React.FC<SocialAccountsProviderProps> = ({c
 
     }
 
+    async function notifyAccountDetailsPostEditedCallback(postEdited: UpdatedPostNotify): Promise<void> {
+        log('ws notify post edited');
+
+        //UPDATE THE POST ONLY IF IT BELONGS TO THE CURRENT SOCIAL ACCOUNT
+        if (socialAccountId.current == postEdited.profileId) {
+            const postComments: PostComment[] = []
+            const postPhotos: PostPhoto[] = []
+
+            postEdited.comments.forEach(( (comment)=>{
+                postComments.push({
+                    id: comment.id,
+                    comment:comment.comment
+                })
+            }))
+            for(const photo of postEdited.photos){
+                const postPhotoImageBlob = await fetchImageApi(photo.photo_filename, token);
+                postPhotos.push({
+                    id: photo.id,
+                    photo_url: postPhotoImageBlob ? postPhotoImageBlob : undefined
+                })
+            }
+
+            const post = {
+                id: postEdited.id,
+                description: postEdited.description,
+                no_likes: postEdited.no_likes,
+                no_comments: postEdited.no_comments,
+                date_posted: new Date(postEdited.date_posted),
+
+                comments: postComments,
+                photos: postPhotos,
+            } as Post
+            dispatch({type: UPDATE_SOCIAL_ACCOUNT_POST_EDITED, post: post});
+        }
+    }
 
 };
