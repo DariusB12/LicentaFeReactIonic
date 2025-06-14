@@ -9,6 +9,7 @@ import {AccountDetailsContext} from "../AccountDetailsProvider/AccountDetailsCon
 import {UpdateSocialAccountNotify} from "../../assets/WebsocketNotifications/UpdateSocialAccountNotify";
 import {AddedPostNotify} from "../../assets/WebsocketNotifications/AddedPostNotify";
 import {UpdatedPostNotify} from "../../assets/WebsocketNotifications/UpdatedPostNotify";
+import {Analysis} from "../../assets/entities/Analysis";
 
 
 type WebSocketMessage =
@@ -16,11 +17,12 @@ type WebSocketMessage =
 
     | { type: 'PROFILE_DELETED'; payload: number }
     | { type: 'PROFILE_ADDED'; payload: SocialAccountDTO }
-    | {type: 'PROFILE_EDITED'; payload: UpdateSocialAccountNotify }
+    | { type: 'PROFILE_EDITED'; payload: UpdateSocialAccountNotify }
 
-    | {type: 'POST_DELETED'; payload: number}
-    | {type: 'POST_ADDED'; payload: AddedPostNotify}
-    | {type: 'POST_EDITED'; payload: UpdatedPostNotify}
+    | { type: 'POST_DELETED'; payload: number }
+    | { type: 'POST_ADDED'; payload: AddedPostNotify }
+    | { type: 'POST_EDITED'; payload: UpdatedPostNotify }
+    | { type: 'ANALYSIS_MADE'; payload: Analysis }
 
 // IF USER CONNECTED ON MORE DISPOSITIVE, THEN THE DATA SHOULD BE UPDATED WITHIN THE WEBSOCKET
 // SO THAT ON THE OTHER DISPOSITIVE THE DATA IS UPDATED
@@ -49,8 +51,24 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({children}) 
     const wsRef = useRef<WebSocket | null>(null);
     const maxRetries = 5;
 
-    const {fetchSocialAccounts,notifySocialAccountDeleted,notifySocialAccountAdded,notifySocialAccountEdited} = useContext(SocialAccountsContext)
-    const {reFetchSocialAccount,notifyAccountDetailsDelete,notifyAccountDetailsEdited,notifyAccountDetailsPostDeleted,notifyAccountDetailsPostAdded,notifyAccountDetailsPostEdited} = useContext(AccountDetailsContext)
+    const {
+        fetchSocialAccounts,
+        notifySocialAccountDeleted,
+        notifySocialAccountAdded,
+        notifySocialAccountEdited,
+        notifySocialAccountAnalysisMade
+    } = useContext(SocialAccountsContext)
+
+    const {
+        reFetchSocialAccount,
+        notifyAccountDetailsDelete,
+        notifyAccountDetailsEdited,
+        notifyAccountDetailsPostDeleted,
+        notifyAccountDetailsPostAdded,
+        notifyAccountDetailsPostEdited,
+        notifyAccountDetailsAnalysisMade
+    } = useContext(AccountDetailsContext)
+
     const {setTokenExpired} = useContext(AuthContext);
 
     const messageQueue = useRef<WebSocketMessage[]>([]);
@@ -68,35 +86,31 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({children}) 
         }
     }, [retries]);
 
-    
+
     const handleMessage = useCallback(async (message: WebSocketMessage) => {
         const {type, payload} = message;
-        // TODO: handle messages
         log('MESSAGE RECEIVED, type:', type, 'payload:', payload);
         if (type == USER_ACCOUNT_DELETED) {
             setAccountDeleted(true)
-        }
-        else if(type == PROFILE_DELETED){
+        } else if (type == PROFILE_DELETED) {
             await notifySocialAccountDeleted?.(payload)
             await notifyAccountDetailsDelete?.(payload)
-        }
-        else if(type == PROFILE_ADDED){
+        } else if (type == PROFILE_ADDED) {
             await notifySocialAccountAdded?.(payload)
-        }
-        else if(type == PROFILE_EDITED){
+        } else if (type == PROFILE_EDITED) {
             await notifySocialAccountEdited?.(payload)
             await notifyAccountDetailsEdited?.(payload)
-        }
-        else if(type == POST_DELETED){
+        } else if (type == POST_DELETED) {
             await notifyAccountDetailsPostDeleted?.(payload)
-        }
-        else if(type == POST_ADDED){
+        } else if (type == POST_ADDED) {
             await notifyAccountDetailsPostAdded?.(payload)
-        }
-        else if(type == POST_EDITED){
+        } else if (type == POST_EDITED) {
             await notifyAccountDetailsPostEdited?.(payload)
+        } else if (type == ANALYSIS_MADE) {
+            await notifySocialAccountAnalysisMade?.(payload.social_account_id)
+            await notifyAccountDetailsAnalysisMade?.(payload)
         }
-    }, [notifyAccountDetailsPostEdited,notifyAccountDetailsPostAdded,notifySocialAccountDeleted, notifyAccountDetailsDelete, notifySocialAccountAdded, notifySocialAccountEdited, notifyAccountDetailsEdited, notifyAccountDetailsPostDeleted]); // Dependency array
+    }, [notifySocialAccountAnalysisMade,notifySocialAccountDeleted, notifyAccountDetailsDelete, notifySocialAccountAdded, notifySocialAccountEdited, notifyAccountDetailsEdited, notifyAccountDetailsPostDeleted, notifyAccountDetailsPostAdded, notifyAccountDetailsPostEdited, notifyAccountDetailsAnalysisMade]); // Dependency array
 
 
     const processQueue = useCallback(async () => {
@@ -120,11 +134,11 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({children}) 
     //FUNCTIE DE TEST PT A VEDEA CA DACA FAC RELOAD LA PAGINA SE ASTEAPTA 10 SECUNDE PANA SA SE I-A DIN COADA
     //REQUEST-URILE, IAR DIN ALT WINDOW FAC DELETE LA CONTURI SI IN PRIMUL WINDOW DOAR DUPA 10 SECUNDE SE EXECUTA
     //NOTIFICARILE
-    function delay(ms:number) {
+    function delay(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    const connectWebSocket = useCallback( () => {
+    const connectWebSocket = useCallback(() => {
         if (retries >= maxRetries || !token) {
             log('Max retries reached or token is missing. Giving up on WebSocket connection.');
             return;
@@ -145,7 +159,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({children}) 
             //AND WHILE WAITING THE PROVIDERS TO FETCH ITEMS, WE PUT THE NOTIFIES INTO A LIST 
             const response = await fetchSocialAccounts?.()
             reFetchSocialAccount?.()
-            
+
             //FUNCTIE DE TEST PT A VEDEA CA DACA FAC RELOAD LA PAGINA SE ASTEAPTA 10 SECUNDE PANA SA SE I-A DIN COADA
             //REQUEST-URILE, IAR DIN ALT WINDOW FAC DELETE LA CONTURI SI IN PRIMUL WINDOW DOAR DUPA 10 SECUNDE SE EXECUTA
             //NOTIFICARILE
@@ -176,7 +190,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({children}) 
         };
 
         ws.onmessage = async (event) => {
-            const message:WebSocketMessage = JSON.parse(event.data);
+            const message: WebSocketMessage = JSON.parse(event.data);
             if (!canHandleMessages.current) {
                 //IF MESSAGES ARE RECEIVED WHILE FETCHING THE ACCOUNTS, THEN BUFFER THEM
                 //ADDS AT THE END OF QUEUE
@@ -189,7 +203,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({children}) 
         };
     }, [fetchSocialAccounts, processQueue, reFetchSocialAccount, retries, retryConnection, setTokenExpired, token]);
 
-    
 
     useEffect(() => {
         connectWebSocket();
@@ -211,7 +224,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({children}) 
         retries: retries,
         websocketConnected: websocketConnected,
         maxRetries: maxRetries,
-        accountDeleted:accountDeleted,
+        accountDeleted: accountDeleted,
     }
 
     return (

@@ -1,0 +1,84 @@
+.social-account-analysis-content{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.social-account-analysis-modified-text{
+    color: red;
+    margin-bottom: 0.5rem;
+}
+
+.social-account-analysis-title{
+    font-size: var(--font-sm);
+    border: 1px white solid;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin: 0.5rem;
+}
+.social-account-analysis-horizontal-list-container{
+    max-width: 100%;
+}
+
+.social-account-analysis-horizontal-list{
+    width: 100%;
+    display: flex; /* Make the container a flex container */
+    flex-direction: row; /* Arrange items horizontally (default for flex, but good to be explicit) */
+    align-items: center;
+
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.social-account-analysis-horizontal-list .social-account-analysis-horizontal-list-item {
+    margin: 0.5rem 0.5rem;
+}
+
+
+.big-five-model-item-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background-color: transparent;
+}
+
+.progress-bar-vertical {
+    width: 3rem;
+    height: 150px;
+    background-color: transparent;
+    border: 1px solid white;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+}
+
+.progress-bar-fill {
+    width: 100%;
+    background-color: #00b5ff;
+    transition: height 0.5s ease-out;
+}
+
+.percentage-text {
+    font-size: var(--font-sm);
+    margin-top: 10px;
+    margin-bottom: 0;
+    text-align: center;
+    color: white;
+}
+
+.name-text {
+    font-size: var(--font-sm);
+    text-align: center;
+    overflow: hidden;
+    color: white;
+}
+.social-account-analysis-not-detected{
+    color: red;
+    font-size: var(--font-sm);
+}

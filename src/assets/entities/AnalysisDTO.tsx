@@ -1,10 +1,11 @@
 import {InterestDomainType} from "./enums/InterestDomainType";
-import {HobbyType} from "./enums/HobbyType";
-import {GeneralEmotionType} from "./enums/GeneralEmotionType";
-import {PersonalityType} from "./enums/PersonalityType";
 import {BigFiveModelType} from "./enums/BigFiveModelType";
+import {PersonalityType} from "./enums/PersonalityType";
+import {GeneralEmotionType} from "./enums/GeneralEmotionType";
+import {HobbyType} from "./enums/HobbyType";
 
-export interface Analysis {
+
+export interface AnalysisDTO {
     id: number
     interest_domains:  InterestDomainType[]
     hobbies: HobbyType[]
@@ -13,8 +14,7 @@ export interface Analysis {
     personality_types: Record<PersonalityType, number>
     big_five_model: Record<BigFiveModelType, number>
 
-    creationDate: Date
+    creationDate: string  // isoFormat()
 
     social_account_id: number
 }
-

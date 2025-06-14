@@ -265,3 +265,20 @@
     height: 100%;
     z-index: 10001;
 }
+.account-details-analysis-container{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+.account-details-analysis-top-bar-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.account-details-analysis-top-bar-date{
+    font-size: var(--font-sm);
+
+}

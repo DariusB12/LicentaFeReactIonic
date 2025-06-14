@@ -10,7 +10,7 @@ import {
     AccountDetailsContext,
     AccountDetailsState,
     FetchSocialAccountFn,
-    initialState,
+    initialState, NotifyAccountDetailsAnalysisMadeFn,
     NotifyAccountDetailsDeleteFn,
     NotifyAccountDetailsEditedFn,
     NotifyAccountDetailsPostAddedFn,
@@ -38,6 +38,7 @@ interface ActionProps {
     socialAccountId?: number
     post_id?: number
     post?: Post
+    analysis?: Analysis
 }
 
 
@@ -51,6 +52,8 @@ const UPDATE_SOCIAL_ACCOUNT_EDITED = 'UPDATE_SOCIAL_ACCOUNT_EDITED';
 const UPDATE_SOCIAL_ACCOUNT_POST_DELETED = 'UPDATE_SOCIAL_ACCOUNT_POST_DELETED';
 const UPDATE_SOCIAL_ACCOUNT_POST_ADDED = 'UPDATE_SOCIAL_ACCOUNT_POST_ADDED';
 const UPDATE_SOCIAL_ACCOUNT_POST_EDITED = 'UPDATE_SOCIAL_ACCOUNT_POST_EDITED'
+
+const UPDATE_SOCIAL_ACCOUNT_ANALYSIS_MADE = 'UPDATE_SOCIAL_ACCOUNT_ANALYSIS_MADE'
 
 const reducer: (state: AccountDetailsState, action: ActionProps) => AccountDetailsState =
     (state, action) => {
@@ -147,6 +150,20 @@ const reducer: (state: AccountDetailsState, action: ActionProps) => AccountDetai
                 }
                 return {...state}
             }
+            case UPDATE_SOCIAL_ACCOUNT_ANALYSIS_MADE:{
+                if(state.socialAccount && state.socialAccount?.analysis?.id != action.analysis?.id){
+                    return {
+                        ...state,
+                        socialAccount: {
+                            ...state.socialAccount,
+                            analysis: action.analysis,
+                            modified: false
+                        }
+                    };
+                }
+                return {...state}
+
+            }
             default:
                 return state;
         }
@@ -216,8 +233,10 @@ export const AccountDetailsProvider: React.FC<SocialAccountsProviderProps> = ({c
 
     const convertSocialAccountFullToSocialAccount = useCallback(
         async (socialAccountFull: SocialAccountFull): Promise<SocialAccount> => {
-            //TODO: DACA FAC ANALIZA, SA CONVERTESC TOATE ATRIBUTELE DIN ANALIZA
-            const analysis: Analysis | undefined = socialAccountFull.analysis ? {id: socialAccountFull.analysis?.id} : undefined
+            const analysis: Analysis | undefined = socialAccountFull.analysis ? {
+                ...socialAccountFull.analysis,
+                creationDate:new Date(socialAccountFull.analysis.creationDate)
+            } as Analysis : undefined
 
             const posts: Post[] = []
             for (const post of socialAccountFull.posts) {
@@ -271,6 +290,7 @@ export const AccountDetailsProvider: React.FC<SocialAccountsProviderProps> = ({c
     // FUNCTION USED FOR WEBSOCKET WHEN RECONNECTING IN ORDER TO RETRY TO FETCH THE ACCOUNT DETAILS BASED ON THE ACCOUNT ID STATE
     const reFetchSocialAccount = useCallback<ReFetchSocialAccountFn>(reFetchSocialAccountCallback, [convertSocialAccountFullToSocialAccount, setTokenExpired, token])
 
+
     //functions for websocket update notifications
     const notifyAccountDetailsDelete = useCallback<NotifyAccountDetailsDeleteFn>(notifyAccountDetailsDeleteCallback, [])
     const notifyAccountDetailsEdited = useCallback<NotifyAccountDetailsEditedFn>(notifyAccountDetailsEditedCallback, [token])
@@ -278,6 +298,8 @@ export const AccountDetailsProvider: React.FC<SocialAccountsProviderProps> = ({c
     const notifyAccountDetailsPostDeleted = useCallback<NotifyAccountDetailsPostDeletedFn>(notifyAccountDetailsPostDeletedCallback, [])
     const notifyAccountDetailsPostAdded = useCallback<NotifyAccountDetailsPostAddedFn>(notifyAccountDetailsPostAddedCallback, [token])
     const notifyAccountDetailsPostEdited = useCallback<NotifyAccountDetailsPostEditedFn>(notifyAccountDetailsPostEditedCallback, [token])
+
+    const notifyAccountDetailsAnalysisMade = useCallback<NotifyAccountDetailsAnalysisMadeFn>(notifyAccountDetailsAnalysisMadeCallback, [])
 
     useEffect(() => {
         //RESET THE ACCOUNT ID WHEN UNMOUNTING THE COMPONENT
@@ -302,6 +324,7 @@ export const AccountDetailsProvider: React.FC<SocialAccountsProviderProps> = ({c
         notifyAccountDetailsPostDeleted,
         notifyAccountDetailsPostAdded,
         notifyAccountDetailsPostEdited,
+        notifyAccountDetailsAnalysisMade,
     };
     log('render');
 
@@ -453,6 +476,19 @@ export const AccountDetailsProvider: React.FC<SocialAccountsProviderProps> = ({c
             dispatch({type: UPDATE_SOCIAL_ACCOUNT_POST_ADDED, post: post});
         }
 
+    }
+
+    async function notifyAccountDetailsAnalysisMadeCallback(analysis: Analysis): Promise<void> {
+        log('ws notify analysis made');
+        // CASE 1:EACH ANALYSIS HAS A DIFFERENT ID, WHEN USER IS CREATING THE ANALYSIS WE ADD IT FROM THE RESPONSE ENTITY RECEIVED
+        // CASE 2:BUT IF THE SAME USER IS CONNECTED ON ANOTHER BROWSER, IN ORDER TO NOTIFY ONLY HIM ABOUT THE ANALYSIS
+        // WE RECEIVE A WS MESSAGE AND ADD IT VIA THE WS NOTIFICATION
+        // IF THE ANALYSIS WITH THIS ID IS ADDED ALREADY (CASE 1), THEN WHEN RECEIVING THE WS NOTIFY, WE DON'T ADD IT AGAIN
+
+        //ADD THE Analysis ONLY IF IT BELONGS TO THE CURRENT SOCIAL ACCOUNT
+        if (socialAccountId.current == analysis.social_account_id) {
+            dispatch({type: UPDATE_SOCIAL_ACCOUNT_ANALYSIS_MADE, analysis: analysis});
+        }
     }
 
     async function notifyAccountDetailsPostEditedCallback(postEdited: UpdatedPostNotify): Promise<void> {

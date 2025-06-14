@@ -691,12 +691,8 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                 </div>
 
                 <div className="edit-post-popup-bottom-bar">
-                    <button className="edit-post-popup-delete-button roboto-style">
-                        <img src="/icons/delete.png" alt="delete_img"
-                             className="edit-post-popup-delete-icon icon-size"/>
-                        {windowWidth >= 1100 && 'Delete Post'}
-                    </button>
-
+                    <div>
+                    </div>
                     <div className='edit-post-popup-right-content'>
                         <button className="edit-post-popup-detect-from-image-button grey-button roboto-style"
                                 onClick={() => {

@@ -7,14 +7,17 @@ import {DeleteSocialAccountResponse} from "../../assets/Responses/socialAccounts
 import {UpdateSocialAccountRequest} from "../../assets/Requests/socialAccountsRequest/UpdateSocialAccountRequest";
 import {UpdateSocialAccountResponse} from "../../assets/Responses/socialAccountsResponse/UpdateSocialAccountResponse";
 import {UpdateSocialAccountNotify} from "../../assets/WebsocketNotifications/UpdateSocialAccountNotify";
+import {AnalyseSocialAccountResponse} from "../../assets/Responses/socialAccountsResponse/AnalyseSocialAccountResponse";
 
 export type AddSocialAccountFn = (socialAccountRequest:AddSocialAccountReq) => Promise<AddSocialAccountResponse>;
 export type DeleteSocialAccountFn = (socialAccountId:number) => Promise<DeleteSocialAccountResponse>;
 export type UpdateSocialAccountFn = (updateSocialAccount:UpdateSocialAccountRequest) => Promise<UpdateSocialAccountResponse>;
+export type AnalyseSocialAccountFn = (socialAccountId:number) => Promise<AnalyseSocialAccountResponse>;
 
 export type NotifySocialAccountDeletedFn = (socialAccountId:number) => Promise<void>;
 export type NotifySocialAccountAddedFn = (socialAccount:SocialAccountDTO) => Promise<void>;
 export type NotifySocialAccountEditedFn = (socialAccountEdited:UpdateSocialAccountNotify) => Promise<void>;
+export type NotifySocialAccountAnalysisMadeFn = (socialAccountId:number) => Promise<void>;
 
 export type FetchSocialAccountsFn = () => Promise<SocialAccountsResponse>;
 
@@ -23,6 +26,7 @@ export interface SocialAccountsState {
     addSocialAccount?:AddSocialAccountFn
     deleteSocialAccount?:DeleteSocialAccountFn
     updateSocialAccount?:UpdateSocialAccountFn
+    analyseSocialAccount?:AnalyseSocialAccountFn
 
     fetchSocialAccounts?:FetchSocialAccountsFn
     socialAccounts: SocialAccountDTOUrl[]
@@ -32,6 +36,7 @@ export interface SocialAccountsState {
     notifySocialAccountDeleted?: NotifySocialAccountDeletedFn
     notifySocialAccountAdded?: NotifySocialAccountAddedFn
     notifySocialAccountEdited?: NotifySocialAccountEditedFn
+    notifySocialAccountAnalysisMade?: NotifySocialAccountAnalysisMadeFn
 }
 
 export const initialState: SocialAccountsState = {

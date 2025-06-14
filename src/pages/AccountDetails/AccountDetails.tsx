@@ -16,6 +16,9 @@ import CirclesLoading from "../../components/CirclesLoading/CirclesLoading";
 import CustomInfoAlert from "../../components/CustomInfoAlert/CustomInfoAlert";
 import {SocialAccountPostsContext} from "../../providers/SocialAccountPostsProvider/SocialAccountPostsContext";
 import {PostPhoto} from "../../assets/entities/PostPhoto";
+import SocialAccountAnalysis from "../../components/SocialAccountAnalysis/SocialAccountAnalysis";
+import {Analysis} from "../../assets/entities/Analysis";
+import {AnalysisDTO} from "../../assets/entities/AnalysisDTO";
 
 
 const log = getLogger('AccountDetails');
@@ -24,10 +27,18 @@ const log = getLogger('AccountDetails');
 export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
     log('render')
     const {id} = useParams<{ id: string }>(); // used to select from provider the social media account
-    const {socialAccount,accountDeleted, fetchingError, fetchSocialAccount, fetching, errorMessage} = useContext(AccountDetailsContext)
+    const {
+        socialAccount,
+        accountDeleted,
+        fetchingError,
+        fetchSocialAccount,
+        notifyAccountDetailsAnalysisMade,
+        fetching,
+        errorMessage
+    } = useContext(AccountDetailsContext)
     const [profilePhotoBase64, setProfilePhotoBase64] = useState<string | undefined>();
 
-    const {deleteSocialAccount} = useContext(SocialAccountsContext)
+    const {deleteSocialAccount, analyseSocialAccount} = useContext(SocialAccountsContext)
     const {deleteSocialAccountPost} = useContext(SocialAccountPostsContext)
 
     const width = useWindowWidth();
@@ -46,13 +57,14 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
     const [errorMessageApi, setErrorMessageApi] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
+    const [analysisIsLoading, setAnalysisIsLoading] = useState<boolean>(false);
 
 
     useEffect(() => {
         fetchSocialAccount?.(Number.parseFloat(id))
     }, [fetchSocialAccount, id]);
 
-    const handleOnClickDeleteProfile = useCallback(async (account_id:number) => {
+    const handleOnClickDeleteProfile = useCallback(async (account_id: number) => {
         log('trying to delete social media account');
 
         // SET TOAST NOTIFY TO FALSE
@@ -98,7 +110,7 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
         });
     }
 
-    const handleOnClickEditProfile = useCallback(async()=>{
+    const handleOnClickEditProfile = useCallback(async () => {
         if (socialAccount?.profile_photo_url) {
             try {
                 const base64 = await blobUrlToBase64(socialAccount.profile_photo_url);
@@ -111,7 +123,7 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
 
         setShowEditProfile(true)
 
-    },[socialAccount])
+    }, [socialAccount])
 
     const handleEditPostClicked = useCallback(async (post: Post) => {
         log('edit post clicked');
@@ -145,7 +157,7 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
     }, []);
 
 
-    const handleOnClickDeletePost = useCallback(async(post_id:number)=>{
+    const handleOnClickDeletePost = useCallback(async (post_id: number) => {
         log('trying to delete post account');
 
         // SET TOAST NOTIFY TO FALSE
@@ -170,8 +182,59 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
             setErrorMessageApi('Network error')
             setIsError(true)
         }
-    },[deleteSocialAccountPost, setTokenExpired])
+    }, [deleteSocialAccountPost, setTokenExpired])
 
+
+    const handleDoAnalysisClicked = useCallback(async (social_account_id: number) => {
+        log('trying to analyse social account');
+
+        // SET TOAST NOTIFY TO FALSE
+        // AND SLEEP SO THAT THE TOAST TIMEOUT IS RESET (IF OPENING MORE TOAST ONE AFTER ANOTHER FORCE TO RERENDER)
+        setIsOpenToastNotification(false)
+        await new Promise(resolve => setTimeout(resolve, 5))
+
+        setAnalysisIsLoading(true)
+        const response = await analyseSocialAccount?.(social_account_id);
+
+        //200 OK data detected
+        if (response?.status_code == 200 && response.analysis) {
+            // SET THE ANALYSIS MADE SO THAT WE DON'T WAIT FOR THE WEBSOCKET NOTIFICATION
+            // IF WAITING FOR WEBSOCKET NOTIFICATION THEN WE DON'T HAVE WHAT TO DISPLAY FOR ANALYSIS UNTIL THE SOCKET
+            // NOTIFICATION IS RECEIVED
+
+            const analysisDTO: AnalysisDTO = response.analysis
+            const analysis = {
+                ...analysisDTO,
+                creationDate: new Date(analysisDTO.creationDate),
+            } as Analysis
+            await notifyAccountDetailsAnalysisMade?.(analysis)
+
+            setAnalysisIsLoading(false)
+
+            setIsOpenToastNotification(true)
+            setToastNotificationMessage('Analysed successfully')
+        } else if (response?.status_code == 403) {
+            //403 FORBIDDEN if the token is expired
+            setAnalysisIsLoading(false)
+
+            setTokenExpired?.(true)
+        } else if (response?.status_code == 400) {
+            //400 BAD_REQUEST if the AI model's JSON response could not be parsed
+            setAnalysisIsLoading(false)
+            setErrorMessageApi('AI model sent invalid JSON')
+            setIsError(true)
+        } else if (response?.status_code == 503) {
+            // HTTP_503_SERVICE_UNAVAILABLE if both gemini and ollama didn't work
+            setAnalysisIsLoading(false)
+            setErrorMessageApi('AI models did not respond, please try again later')
+            setIsError(true)
+        } else {
+            //Any other err is a server error/system error
+            setAnalysisIsLoading(false)
+            setErrorMessageApi('Network error')
+            setIsError(true)
+        }
+    }, [analyseSocialAccount, notifyAccountDetailsAnalysisMade, setTokenExpired])
 
     return (
         <IonPage className="account-details-main-container">
@@ -196,15 +259,17 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
                          style={width <= 1350 ? {display: `${showPosts ? 'flex' : 'none'}`} : {}}>
                         {socialAccount.posts.length <= 0 &&
                             <div className="account-details-content-posts-container-no-posts-container">
-                                    No posts
+                                No posts
                             </div>}
                         <GenericList items={socialAccount.posts.map((post) =>
                             <div key={post.id} className='account-details-list-div-for-center'>
                                 <AccountDetailsItem post={post}
-                                            onClickDelete={()=>handleOnClickDeletePost(post.id)}
-                                            onClickEdit={() => {
-                                                handleEditPostClicked(post).then(() => {setShowEditPost(true)})
-                                }}
+                                                    onClickDelete={() => handleOnClickDeletePost(post.id)}
+                                                    onClickEdit={() => {
+                                                        handleEditPostClicked(post).then(() => {
+                                                            setShowEditPost(true)
+                                                        })
+                                                    }}
                                 />
                             </div>
                         )}/>
@@ -250,7 +315,8 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
                             </div>
                         }
                         <div className="account-details-content-profile-buttons-bar">
-                            <button className="account-details-edit-profile-button roboto-style" onClick={handleOnClickEditProfile}>
+                            <button className="account-details-edit-profile-button roboto-style"
+                                    onClick={handleOnClickEditProfile}>
                                 <img src="/icons/edit.png" alt="edit_icon"
                                      className="account-details-content-profile-edit-icon icon-size"/>
                                 {width >= 695 && <div>Edit profile</div>}
@@ -265,7 +331,7 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
                                 {width >= 695 && <div>Add new post</div>}
                             </button>
                             <button className="account-details-delete-profile-button roboto-style"
-                                    onClick={()=>handleOnClickDeleteProfile(socialAccount?.id)}>
+                                    onClick={() => handleOnClickDeleteProfile(socialAccount?.id)}>
                                 <img src="/icons/delete.png" alt="delete_icon"
                                      className="account-details-content-profile-delete-icon icon-size"/>
                                 {width >= 695 && <div>Delete profile</div>}
@@ -273,11 +339,44 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
                         </div>
                         <hr className="account-details-divider"/>
                         <div className="account-details-content-analysis-container">
-                            <button className="account-details-content-analysis-button black-button roboto-style">
-                                <img src="/icons/analysis.png" alt="anaysis_icon"
-                                     className="account-details-content-analysis-analysis-icon icon-size"/>
-                                Do Analysis
-                            </button>
+
+                            {!analysisIsLoading && socialAccount.analysis  && <div className="account-details-analysis-container">
+                                <div className="account-details-analysis-top-bar-container">
+                                    <div className="account-details-analysis-top-bar-date">
+                                            Analysis created on: {new Date(socialAccount.analysis.creationDate).toISOString().split("T")[0]}
+                                    </div>
+                                    <button
+                                        className="account-details-content-analysis-button black-button roboto-style"
+                                        onClick={() => {
+                                            handleDoAnalysisClicked(socialAccount?.id).then(() => {
+                                            })
+                                        }}>
+                                        <img src="/icons/analysis.png" alt="anaysis_icon"
+                                             className="account-details-content-analysis-analysis-icon icon-size"/>
+                                        Redo Analysis
+                                    </button>
+                                </div>
+                                <SocialAccountAnalysis analysis={socialAccount.analysis}
+                                                       modified={socialAccount.modified}/>
+                            </div>
+                            }
+                            {!socialAccount.analysis && !analysisIsLoading &&
+                                <button className="account-details-content-analysis-button black-button roboto-style"
+                                        onClick={() => {
+                                            handleDoAnalysisClicked(socialAccount?.id).then(() => {
+                                            })
+                                        }}>
+                                    <img src="/icons/analysis.png" alt="anaysis_icon"
+                                         className="account-details-content-analysis-analysis-icon icon-size"/>
+                                    Do Analysis
+                                </button>
+                            }
+                            {analysisIsLoading &&
+                                <div className="circles-loading-content">
+                                    <IonSpinner name="circles" color="secondary"></IonSpinner>
+                                    <div className="roboto-style">Analysing...</div>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -295,7 +394,7 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
                                           setIsOpenToastNotification(true)
                                           setToastNotificationMessage('Edit profile canceled.')
                                       }}
-                                      savedSuccessfully={()=> {
+                                      savedSuccessfully={() => {
                                           setShowEditProfile(false)
                                           setIsOpenToastNotification(true)
                                           setToastNotificationMessage('Profile edited successfully.')
@@ -315,12 +414,12 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
                     no_comments={editClickedPost?.no_comments}
                     comments={editClickedPost?.comments}
                     date_posted={editClickedPost?.date_posted}
-                    addedSuccessfully={()=> {
+                    addedSuccessfully={() => {
                         setShowEditPost(false)
                         setIsOpenToastNotification(true)
                         setToastNotificationMessage('Post added successfully.')
                     }}
-                    editedSuccessfully={()=> {
+                    editedSuccessfully={() => {
                         setShowEditPost(false)
                         setIsOpenToastNotification(true)
                         setToastNotificationMessage('Post edited successfully.')
@@ -337,12 +436,12 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
                     forEdit={false}
 
                     idProfile={socialAccount.id}
-                    addedSuccessfully={()=> {
+                    addedSuccessfully={() => {
                         setShowAddPost(false)
                         setIsOpenToastNotification(true)
                         setToastNotificationMessage('Post added successfully.')
                     }}
-                    editedSuccessfully={()=> {
+                    editedSuccessfully={() => {
                         setShowAddPost(false)
                         setIsOpenToastNotification(true)
                         setToastNotificationMessage('Post edited successfully.')
@@ -358,7 +457,7 @@ export const AccountDetails: React.FC<RouteComponentProps> = ({history}) => {
                 <div className="account-details-account-deleted-another-device">
                     Account deleted
                 </div>
-                }
+            }
             {fetching &&
                 <div className="account-details-circles-loading-content">
                     <IonSpinner name="circles" color="secondary"></IonSpinner>

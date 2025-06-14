@@ -1,3 +1,4 @@
+import {AnalysisDTO} from "../../entities/AnalysisDTO";
 
 
 export interface CommentFull {
@@ -21,11 +22,6 @@ export interface PostFull {
     comments: CommentFull[]
 }
 
-
-export interface AnalysisFull {
-    id: number,
-}
-
 export interface SocialAccountFull {
     id: number,
     username: string,
@@ -37,7 +33,7 @@ export interface SocialAccountFull {
     modified: boolean,
 
     posts: PostFull[]
-    analysis: AnalysisFull | null
+    analysis: AnalysisDTO | null
 
 }
 

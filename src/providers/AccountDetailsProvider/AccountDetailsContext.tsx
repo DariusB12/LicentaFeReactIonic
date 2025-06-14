@@ -3,9 +3,11 @@ import {SocialAccount} from "../../assets/entities/SocialAccount";
 import {UpdateSocialAccountNotify} from "../../assets/WebsocketNotifications/UpdateSocialAccountNotify";
 import {AddedPostNotify} from "../../assets/WebsocketNotifications/AddedPostNotify";
 import {UpdatedPostNotify} from "../../assets/WebsocketNotifications/UpdatedPostNotify";
+import {Analysis} from "../../assets/entities/Analysis";
 
 export type FetchSocialAccountFn = (socialAccountId:number) => void;
 export type ReFetchSocialAccountFn = () => void;
+export type NotifyAccountDetailsAnalysisMadeFn = (analysis:Analysis) => Promise<void>;
 
 export type NotifyAccountDetailsDeleteFn = (socialAccountId:number) => Promise<void>;
 export type NotifyAccountDetailsEditedFn = (socialAccountEdited:UpdateSocialAccountNotify) => Promise<void>;
@@ -25,6 +27,7 @@ export interface AccountDetailsState {
     notifyAccountDetailsPostDeleted?: NotifyAccountDetailsPostDeletedFn
     notifyAccountDetailsPostAdded?: NotifyAccountDetailsPostAddedFn
     notifyAccountDetailsPostEdited?: NotifyAccountDetailsPostEditedFn
+    notifyAccountDetailsAnalysisMade?: NotifyAccountDetailsAnalysisMadeFn
 
     socialAccount?: SocialAccount
     fetching:boolean

@@ -6,14 +6,21 @@ import axios from "axios";
 
 import {AuthContext} from "../AuthProvider/AuthContext";
 import {
-    AddSocialAccountFn, DeleteSocialAccountFn,
+    AddSocialAccountFn,
+    AnalyseSocialAccountFn,
+    DeleteSocialAccountFn,
     FetchSocialAccountsFn,
-    initialState, NotifySocialAccountAddedFn, NotifySocialAccountDeletedFn, NotifySocialAccountEditedFn,
+    initialState,
+    NotifySocialAccountAddedFn,
+    NotifySocialAccountAnalysisMadeFn,
+    NotifySocialAccountDeletedFn,
+    NotifySocialAccountEditedFn,
     SocialAccountsContext,
-    SocialAccountsState, UpdateSocialAccountFn
+    SocialAccountsState,
+    UpdateSocialAccountFn
 } from "./SocialAccountsContext";
 import {
-    addSocialAccountApi,
+    addSocialAccountApi, analyseSocialAccountApi,
     deleteSocialAccountApi,
     updateSocialAccountApi
 } from "../../services/socialAccounts/socialAccountsApi";
@@ -27,6 +34,8 @@ import {DeleteSocialAccountResponse} from "../../assets/Responses/socialAccounts
 import {UpdateSocialAccountRequest} from "../../assets/Requests/socialAccountsRequest/UpdateSocialAccountRequest";
 import {UpdateSocialAccountResponse} from "../../assets/Responses/socialAccountsResponse/UpdateSocialAccountResponse";
 import {UpdateSocialAccountNotify} from "../../assets/WebsocketNotifications/UpdateSocialAccountNotify";
+import {AnalyseSocialAccountResponse} from "../../assets/Responses/socialAccountsResponse/AnalyseSocialAccountResponse";
+import {Analysis} from "../../assets/entities/Analysis";
 
 const log = getLogger('SocialAccountsProvider');
 
@@ -44,6 +53,8 @@ const FETCH_ACCOUNTS_FAILED = 'FETCH_ITEMS_FAILED';
 const UPDATE_SOCIAL_ACCOUNT_DELETED = 'UPDATE_SOCIAL_ACCOUNT_DELETED';
 const UPDATE_SOCIAL_ACCOUNT_ADDED = 'UPDATE_SOCIAL_ACCOUNT_ADDED';
 const UPDATE_SOCIAL_ACCOUNT_EDITED = 'UPDATE_SOCIAL_ACCOUNT_EDITED';
+
+const UPDATE_SOCIAL_ACCOUNT_ANALYSIS_MADE = 'UPDATE_SOCIAL_ACCOUNT_ANALYSIS_MADE';
 
 
 const reducer: (state: SocialAccountsState, action: ActionProps) => SocialAccountsState =
@@ -92,6 +103,23 @@ const reducer: (state: SocialAccountsState, action: ActionProps) => SocialAccoun
                     }
                 );
 
+                return {
+                    ...state,
+                    socialAccounts: socialAccountsUpdated
+                };
+            }
+            case UPDATE_SOCIAL_ACCOUNT_ANALYSIS_MADE:{
+                const socialAccountsUpdated: SocialAccountDTOUrl[] = state.socialAccounts.map(account => {
+                        if (account.id === action.socialAccountId) {
+                            return {
+                                ...account,
+                                //MARK THE ACCOUNT AS ANALYSED
+                                analysed: true
+                            }
+                        }
+                        return account;
+                    }
+                );
                 return {
                     ...state,
                     socialAccounts: socialAccountsUpdated
@@ -156,21 +184,26 @@ export const SocialAccountsProvider: React.FC<SocialAccountsProviderProps> = ({c
     const addSocialAccount = useCallback<AddSocialAccountFn>(addSocialAccountCallback, [token])
     const updateSocialAccount = useCallback<UpdateSocialAccountFn>(updateSocialAccountCallback, [token])
     const deleteSocialAccount = useCallback<DeleteSocialAccountFn>(deleteSocialAccountCallback, [token])
+    const analyseSocialAccount = useCallback<AnalyseSocialAccountFn>(analyseSocialAccountCallback, [token])
 
     //FUNCTIONS FOR WS UPDATES
     const notifySocialAccountDeleted = useCallback<NotifySocialAccountDeletedFn>(notifySocialAccountDeletedCallback, [])
     const notifySocialAccountAdded = useCallback<NotifySocialAccountAddedFn>(notifySocialAccountAddedCallback, [token])
     const notifySocialAccountEdited = useCallback<NotifySocialAccountEditedFn>(notifySocialAccountEditedCallback, [token])
-
+    const notifySocialAccountAnalysisMade = useCallback<NotifySocialAccountAnalysisMadeFn>(notifySocialAccountAnalysisMadeCallback, [])
     const fetchSocialAccounts = useCallback<FetchSocialAccountsFn>(fetchSocialAccountsCallback, [token])
 
     const value = {
         addSocialAccount,
         updateSocialAccount,
         deleteSocialAccount,
+        analyseSocialAccount,
+
         notifySocialAccountDeleted,
         notifySocialAccountAdded,
         notifySocialAccountEdited,
+        notifySocialAccountAnalysisMade,
+
         fetchSocialAccounts,
         fetching,
         fetchingError,
@@ -255,6 +288,25 @@ export const SocialAccountsProvider: React.FC<SocialAccountsProviderProps> = ({c
         }
     }
 
+    async function analyseSocialAccountCallback(socialAccountId: number): Promise<AnalyseSocialAccountResponse> {
+        log('trying to analyse social account');
+        try {
+            const response = await analyseSocialAccountApi(socialAccountId, token); // Await the response directly
+            log('social account analysed with success:', response);
+            return response;
+        } catch (error) {
+            //AXIOS ERROR IF SERVER RESPONDED WITH A REQUEST DIFFERENT THAN 200OK
+            if (axios.isAxiosError(error)) {
+                log('analyse social account error:', error.response?.data.message);
+                return {message: error.response?.data.message, status_code: error.response?.data.status_code}
+            } else {
+                log('analyse social account error:', 'SERVER ERROR');
+                //OTHERWISE IT IS A SERVER CRASH OR CONNECTION ERROR
+                return {message: 'Server Error', status_code: 500}
+            }
+        }
+    }
+
     async function updateSocialAccountCallback(socialAccountReq: UpdateSocialAccountRequest): Promise<UpdateSocialAccountResponse> {
         log('trying to update social account');
         try {
@@ -332,5 +384,10 @@ export const SocialAccountsProvider: React.FC<SocialAccountsProviderProps> = ({c
         } as SocialAccountDTOUrl
 
         dispatch({type: UPDATE_SOCIAL_ACCOUNT_EDITED, socialAccount: socialAccountUpdated});
+    }
+
+    async function notifySocialAccountAnalysisMadeCallback(socialAccountId: number): Promise<void> {
+        log('ws update analysis made');
+        dispatch({type: UPDATE_SOCIAL_ACCOUNT_ANALYSIS_MADE, socialAccountId: socialAccountId});
     }
 };

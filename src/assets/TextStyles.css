@@ -173,6 +173,7 @@
 
 .custom-scroll-area::-webkit-scrollbar {
     width: 4px;
+    height: 4px;
 }
 
 .custom-scroll-area::-webkit-scrollbar-thumb {
