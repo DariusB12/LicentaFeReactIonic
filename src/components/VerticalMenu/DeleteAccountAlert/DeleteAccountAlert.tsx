@@ -4,7 +4,6 @@ import {getLogger} from "../../../assets";
 import {AuthContext} from "../../../providers/AuthProvider/AuthContext";
 import {IonSpinner} from "@ionic/react";
 import {useHistory} from "react-router";
-import CustomInfoAlert from "../../CustomInfoAlert/CustomInfoAlert";
 
 interface DeleteAccountAlertProps {
     isOpen: boolean,

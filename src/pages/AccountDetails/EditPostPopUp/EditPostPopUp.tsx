@@ -265,7 +265,7 @@ const EditPostPopUp: React.FC<EditPostPopUpProps> = (props) => {
                 setIsError(true)
             }
         }
-    }, [validateInputs, description, noLikes, noComments, datePosted, comments, photos, props, addSocialAccountPost, setTokenExpired]);
+    }, [validateInputs, description, noLikes, noComments, datePosted, comments, photos, props, addSocialAccountPost, updateSocialAccountPost, setTokenExpired]);
 
     log('render')
 

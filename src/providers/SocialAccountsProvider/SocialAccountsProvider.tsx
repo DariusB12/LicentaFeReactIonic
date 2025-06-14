@@ -35,7 +35,6 @@ import {UpdateSocialAccountRequest} from "../../assets/Requests/socialAccountsRe
 import {UpdateSocialAccountResponse} from "../../assets/Responses/socialAccountsResponse/UpdateSocialAccountResponse";
 import {UpdateSocialAccountNotify} from "../../assets/WebsocketNotifications/UpdateSocialAccountNotify";
 import {AnalyseSocialAccountResponse} from "../../assets/Responses/socialAccountsResponse/AnalyseSocialAccountResponse";
-import {Analysis} from "../../assets/entities/Analysis";
 
 const log = getLogger('SocialAccountsProvider');
 

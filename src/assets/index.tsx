@@ -102,7 +102,7 @@ export function usePersistentState<T>(key: string, defaultValue: T): [T, React.D
     }, [key]);
 
     useEffect(() => {
-        // Nu salvăm în Preferences până nu s-a făcut încărcarea inițială
+        // DON'T SAVE IN PREFERENCES UNTIL THE INITIAL UPLOAD WAS MADE
         if (!initialized) return;
 
         const saveState = async () => {
