@@ -1,6 +1,7 @@
 .custom-alert-container{
     position: fixed;
     width: 100%;
+    color: white;
     height: 100%;
     background-color: rgb(255,255,255,0.05);
     justify-items: center;
@@ -25,6 +26,7 @@
 
 .custom-alert-message{
     margin-top: 0.3rem;
+    color: white;
     font-size: var(--font-sm);
 }
 
@@ -33,4 +35,5 @@
 
 .custom-alert-close-button{
     margin-top: 0.8rem;
+    color: white;
 }

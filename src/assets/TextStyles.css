@@ -4,6 +4,7 @@
     --font-lg: 1.5rem;     /* 24px */
     --font-xl: 1.875rem;     /* 30px */
     --font-xxl: 2.5rem;
+    color:white;
 }
 .icon-size{
     max-width: 1.5rem;
@@ -32,6 +33,8 @@
 }
 
 .blue-button {
+    color: white;
+
     margin: 0;
     /*font-size: 11px;*/
     /*font-size: 2vh;*/
@@ -50,6 +53,7 @@
 }
 
 .grey-button {
+    color: white;
     margin: 0;
     font-size: var(--font-sm);
     background-color: rgb(255, 255, 255, 20%);
@@ -64,6 +68,7 @@
 }
 
 .black-button {
+    color: white;
     margin: 0;
     font-size: var(--font-sm);
     background-color: black;

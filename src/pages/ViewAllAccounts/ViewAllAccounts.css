@@ -1,5 +1,6 @@
 .view-all-accounts-main-container{
     display: flex;
+    color: white;
     flex-direction: row;
     gap: 0;
 }

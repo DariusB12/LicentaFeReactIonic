@@ -27,6 +27,7 @@
 }
 
 .edit-profile-popup-cancel-button {
+    color: white;
     font-size: var(--font-sm);
     display: flex;
     justify-content: center;

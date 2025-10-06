@@ -1,5 +1,6 @@
 .account-details-main-container {
     display: flex;
+    color: white;
     flex-direction: row;
     gap: 0;
 }
@@ -26,6 +27,7 @@
 }
 
 .account-details-content-posts-container {
+    color: white;
     width: 40%;
     height: 100vh;
     border-right: 0.03rem solid rgb(255, 255, 255, 0.4);
@@ -33,6 +35,8 @@
 }
 
 .account-details-content-profile-container {
+    color: white;
+
     width: 60%;
     /*border: 1px solid white;*/
     height: 100vh;
@@ -42,6 +46,8 @@
 }
 
 .account-details-divider {
+    color: white;
+
     border: none;
     border-top: 1px solid #ccc; /* adjust color as needed */
     width: 90%; /* or a custom width */
@@ -49,6 +55,8 @@
 }
 
 .account-details-content-profile-top-content {
+    color: white;
+
     width: 90%;
     display: flex;
     flex-direction: row;
@@ -57,6 +65,7 @@
 }
 
 .account-details-content-profile-buttons-bar {
+    color: white;
     display: flex;
     flex-direction: row;
     width: 90%;
@@ -67,6 +76,7 @@
 }
 
 .account-details-edit-profile-button {
+    color: white;
     font-size: var(--font-sm);
     background-color: black;
     display: flex;
@@ -81,6 +91,8 @@
 }
 
 .account-details-add-new-post-button {
+    color: white;
+
     font-size: var(--font-sm);
     display: flex;
     flex-direction: row;
@@ -98,6 +110,7 @@
 
 
 .account-details-delete-profile-button {
+    color: white;
     font-size: var(--font-sm);
     background-color: black;
     display: flex;
@@ -111,7 +124,6 @@
     background-color: rgb(255,0,0,0.5);
 }
 
-
 .account-details-content-analysis-container{
     /*background-color: red;*/
     width: 100%;
@@ -123,6 +135,8 @@
     align-items: center;
 }
 .account-details-content-analysis-button{
+    color: white;
+
     font-size: var(--font-sm);
     display: flex;
     flex-direction: row;
@@ -139,10 +153,12 @@
     border-radius: 100%;
 }
 .account-details-content-profile-details{
+    color: white;
     width: 100%;
     margin-top: 0.2rem;
 }
 .account-details-content-profile-details-numbers{
+    color: white;
     margin-top: 0.2rem;
     display: flex;
     flex-direction: row;
@@ -157,10 +173,12 @@
     }
 }
 .account-details-content-profile-details-username{
+    color: white;
     font-size: var(--font-md);
 }
 .account-details-content-profile-details-no{
     font-size: var(--font-sm);
+    color: white;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -169,6 +187,7 @@
 }
 .account-details-content-profile-details-description{
     font-size: var(--font-sm);
+    color: white;
     width: 90%;
     margin-top: 0.5rem;
 }
@@ -182,6 +201,8 @@
     }
 }
 .account-details-content-container-view-posts-button,.account-details-content-container-view-profile-button {
+    color: white;
+
     background-color: transparent;
     justify-content: center;
     font-size: var(--font-sm);

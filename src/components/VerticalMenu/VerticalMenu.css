@@ -1,4 +1,5 @@
 .vertical-menu-container {
+    color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -95,6 +96,7 @@
 }
 
 .vertical-menu-container-logout-button {
+    color: white;
     font-size: var(--font-sm);
     background-color: black;
     transition: 0.1s ease-in;
@@ -102,6 +104,7 @@
 }
 
 .vertical-menu-container-delete-account-button {
+    color: white;
     background-color: black;
     font-size: var(--font-sm);
     transition: 0.1s ease-in;

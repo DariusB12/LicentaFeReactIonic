@@ -4,6 +4,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: normal;
+    color: white;
 }
 .register-top-titles{
     width: 100% ;

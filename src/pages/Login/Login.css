@@ -1,5 +1,6 @@
 .login-main-container{
     background-color: black;
+    color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
