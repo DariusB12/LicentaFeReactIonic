@@ -2,7 +2,8 @@ import React, {useState, useEffect} from 'react';
 import * as H from "history";
 import {Preferences} from "@capacitor/preferences";
 
-export const baseUrl = '127.0.0.1:8000';
+export const baseUrl = import.meta.env.VITE_BACKEND_URL || '127.0.0.1:8000';
+
 
 export const configNoToken = {
     headers: {

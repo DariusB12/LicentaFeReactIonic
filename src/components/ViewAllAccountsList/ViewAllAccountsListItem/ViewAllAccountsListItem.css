@@ -9,6 +9,7 @@
     margin-bottom: 0.2rem;
     border-radius: 0.2rem;
     transition: 0.1s ease;
+    color: white;
 }
 .view-all-accounts-list-item-container:hover{
     background-color: rgb(255, 255, 255, 0.2);
@@ -79,6 +80,7 @@
     font-size: var(--font-sm);
 }
 .view-all-accounts-list-delete-profile-button{
+    color: white;
     background-color: transparent;
     display: flex;
     flex-direction: row;

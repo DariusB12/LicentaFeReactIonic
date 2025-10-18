@@ -15,6 +15,7 @@
     background-color: rgb(255, 255, 255, 0.2);
 }
 .accounts-list-item-username {
+    color: white;
     font-size: var(--font-sm);
     padding: 0.3rem;
 }
