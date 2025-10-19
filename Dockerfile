@@ -2,22 +2,22 @@ FROM node:18.19.1
 
 WORKDIR /app
 
-COPY ./licenta/frontend/package*.json ./
+COPY ./package*.json ./
 
-COPY ./licenta/frontend/capacitor.config.json ./
-COPY ./licenta/frontend/capacitor.config.ts ./
-COPY ./licenta/frontend/cypress.config.ts ./
-COPY ./licenta/frontend/eslint.config.js ./
-COPY ./licenta/frontend/index.html ./
-COPY ./licenta/frontend/ionic.config.json ./
-COPY ./licenta/frontend/tsconfig.json ./
-COPY ./licenta/frontend/tsconfig.node.json ./
-COPY ./licenta/frontend/vite.config.ts ./
+COPY ./capacitor.config.json ./
+COPY ./capacitor.config.ts ./
+COPY ./cypress.config.ts ./
+COPY ./eslint.config.js ./
+COPY ./index.html ./
+COPY ./ionic.config.json ./
+COPY ./tsconfig.json ./
+COPY ./tsconfig.node.json ./
+COPY /vite.config.ts ./
 
 RUN npm install
 
-COPY ./licenta/frontend/src ./src
-COPY ./licenta/frontend/public ./
+COPY ./src ./src
+COPY ./public ./
 
 EXPOSE 5173
 
